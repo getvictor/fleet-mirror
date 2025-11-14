@@ -230,9 +230,9 @@ func testInHouseAppsCrud(t *testing.T, ds *Datastore) {
 	payload2 := fleet.UploadSoftwareInstallerPayload{
 		TeamID:           &team.ID,
 		UserID:           user1.ID,
-		Title:            "foo2",
-		Filename:         "foo2.ipa",
-		BundleIdentifier: "com.foo2",
+		Title:            "bar",
+		Filename:         "bar.ipa",
+		BundleIdentifier: "com.bar",
 		StorageID:        "testingtesting1234",
 		Platform:         "ios",
 		Extension:        "ipa",
@@ -250,6 +250,9 @@ func testInHouseAppsCrud(t *testing.T, ds *Datastore) {
 	require.Equal(t, payload2.Title, installer2.SoftwareTitle)
 	require.True(t, installer2.SelfService)
 
+	// -------------------------
+	// Duplicate tests
+
 	// Upload a custom package installer with the same bundle identifier? or title?
 	// Upload a VPP app with the same bundle identifier
 	// Check for duplicates
@@ -257,7 +260,7 @@ func testInHouseAppsCrud(t *testing.T, ds *Datastore) {
 	err = ds.DeleteInHouseApp(ctx, installerID)
 	require.NoError(t, err)
 
-	existingInstaller, existingTitle, err := ds.MatchOrCreateSoftwareInstaller(ctx, &fleet.UploadSoftwareInstallerPayload{
+	pkgPayload := &fleet.UploadSoftwareInstallerPayload{
 		TeamID:           &team.ID,
 		UserID:           user1.ID,
 		Title:            "bar",
@@ -266,17 +269,56 @@ func testInHouseAppsCrud(t *testing.T, ds *Datastore) {
 		Source:           "apps",
 		BundleIdentifier: "com.bar",
 		ValidatedLabels:  &fleet.LabelIdentsWithScope{},
+	}
+
+	// foo.ipa, foo.pkg with the same bundle_id, should fail
+	// foo.ipa, foo.pkg with different bundle_id, should succeed??
+
+	// Upload installer when iha with that bundle_id exists
+	_, _, err = ds.MatchOrCreateSoftwareInstaller(ctx, pkgPayload)
+	require.ErrorContains(t, err, "existing in-house app")
+
+	// Upload installer when iha with different bundle_id exists
+	pkgPayloadDifferent := pkgPayload
+	pkgPayloadDifferent.BundleIdentifier = "com.different"
+	pkgInstallerID, _, err := ds.MatchOrCreateSoftwareInstaller(ctx, pkgPayload)
+	require.NoError(t, err)
+	ds.DeleteSoftwareInstaller(ctx, pkgInstallerID)
+	require.NoError(t, err)
+
+	// Upload a vpp when iha with that bundle_id exists
+	// TODO(JK)
+
+	// Remove com.bar in-house apps
+	var ipadInstallerID uint
+	ExecAdhocSQL(t, ds, func(q sqlx.ExtContext) error {
+		err := sqlx.GetContext(ctx, q, &ipadInstallerID, `SELECT id FROM in_house_apps LIMIT 1`)
+		return err
 	})
+	err = ds.DeleteInHouseApp(ctx, installer2.InstallerID)
+	require.NoError(t, err)
+	err = ds.DeleteInHouseApp(ctx, ipadInstallerID)
+	require.NoError(t, err)
+
+	ExecAdhocSQL(t, ds, func(tx sqlx.ExtContext) error {
+		DumpTable(t, tx, "software_titles", "id", "name", "source", "bundle_identifier", "additional_identifier", "unique_identifier")
+		DumpTable(t, tx, "in_house_apps", "id", "filename", "bundle_identifier", "title_id", "platform")
+		DumpTable(t, tx, "software_installers", "id", "filename", "title_id")
+		return nil
+	})
+
+	// Add fresh installer
+	existingInstaller, existingTitle, err := ds.MatchOrCreateSoftwareInstaller(ctx, pkgPayload)
 	require.NoError(t, err)
 	require.NotZero(t, existingInstaller)
 	require.NotZero(t, existingTitle)
 
-	ExecAdhocSQL(t, ds, func(tx sqlx.ExtContext) error {
-		DumpTable(t, tx, "software_titles", "id", "name", "source", "bundle_identifier", "additional_identifier", "unique_identifier")
-		DumpTable(t, tx, "in_house_apps", "id", "filename", "bundle_identifier", "title_id")
-		DumpTable(t, tx, "software_installers", "id", "filename", "title_id")
-		return nil
-	})
+	// Try to upload iha, should fail because installer exists
+	// TODO(JK)
+
+	// Remove installer, add VPP
+	// Try to upload iha, should fail because vpp exists
+	// TODO(JK)
 }
 
 func testInHouseAppsMultipleTeams(t *testing.T, ds *Datastore) {

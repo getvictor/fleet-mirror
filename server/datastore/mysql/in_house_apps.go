@@ -1368,3 +1368,23 @@ WHERE in_house_app_id = ?
 
 	return affectedHostIDs, nil
 }
+
+func (ds *Datastore) checkInHouseAppExistsForIdentifier(ctx context.Context, q sqlx.QueryerContext, teamID *uint, bundleIdentifier string) (bool, error) {
+	const stmt = `
+SELECT 1 
+FROM software_titles st
+INNER JOIN in_house_apps iha ON st.id = iha.title_id
+WHERE iha.global_or_team_id = ? AND st.unique_identifier = ?
+`
+
+	var globalOrTeamID uint
+	if teamID != nil {
+		globalOrTeamID = *teamID
+	}
+	var exists int
+	err := sqlx.GetContext(ctx, q, &exists, stmt, globalOrTeamID, bundleIdentifier)
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		return false, ctxerr.Wrap(ctx, err, "check in-house app exists")
+	}
+	return exists == 1, nil
+}

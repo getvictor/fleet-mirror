@@ -243,8 +243,24 @@ func (ds *Datastore) MatchOrCreateSoftwareInstaller(ctx context.Context, payload
 			return 0, 0, ctxerr.Wrap(ctx, fleet.ConflictError{
 				Message: fmt.Sprintf(fleet.CantAddSoftwareConflictMessage,
 					payload.Title, teamName),
-			}, "vpp app conflicts with existing software installer")
+			}, "existing vpp app conflicts with software installer")
 		}
+	}
+
+	// check if an in-house app with the same bundle id already exists.
+	if payload.BundleIdentifier != "" {
+		exists, err := ds.checkInHouseAppExistsForIdentifier(ctx, ds.reader(ctx), payload.TeamID, payload.BundleIdentifier)
+		if err != nil {
+			// quite not good at all
+			return 0, 0, ctxerr.Wrap(ctx, err, "check in-house app exists")
+		}
+		if exists {
+			// not good and stuff
+			return 0, 0, ctxerr.Wrap(ctx, fleet.ConflictError{
+				Message: fmt.Sprintf(fleet.CantAddSoftwareConflictMessage, payload.Title),
+			}, "existing in-house app conflicts with software installer")
+		}
+
 	}
 
 	// Enforce team-scoped uniqueness by storage hash, aligning upload behavior with GitOps.
