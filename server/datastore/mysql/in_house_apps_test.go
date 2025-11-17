@@ -286,8 +286,7 @@ func testInHouseAppsCrud(t *testing.T, ds *Datastore) {
 	pkgInstallerID, _, err := ds.MatchOrCreateSoftwareInstaller(ctx, pkgPayloadDifferent)
 	require.NoError(t, err)
 
-	ds.DeleteSoftwareInstaller(ctx, pkgInstallerID)
-	require.NoError(t, err)
+	require.NoError(t, ds.DeleteSoftwareInstaller(ctx, pkgInstallerID))
 
 	// Upload a VPP app when IHA with that bundle_id exists
 	test.CreateInsertGlobalVPPToken(t, ds)
@@ -318,7 +317,7 @@ func testInHouseAppsCrud(t *testing.T, ds *Datastore) {
 	require.ErrorContains(t, err, fmt.Sprintf(`software installer %q already exists`, payload2.Title))
 
 	// Remove installer, add VPP app
-	ds.DeleteSoftwareInstaller(ctx, existingInstaller)
+	require.NoError(t, ds.DeleteSoftwareInstaller(ctx, existingInstaller))
 	_, err = ds.InsertVPPAppWithTeam(ctx, &fleet.VPPApp{
 		Name: "vppBar", BundleIdentifier: "com.bar",
 		VPPAppTeam: fleet.VPPAppTeam{VPPAppID: fleet.VPPAppID{AdamID: "adam_vpp_app", Platform: fleet.IOSPlatform}},
