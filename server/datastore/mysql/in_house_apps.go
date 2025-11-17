@@ -48,7 +48,7 @@ func (ds *Datastore) insertInHouseApp(ctx context.Context, payload *fleet.InHous
 		}
 		if count > 0 {
 			// ios or ipados version of this installer exists
-			return alreadyExists("In-house app", payload.Filename)
+			return alreadyExists("in-house app", payload.Filename)
 		}
 
 		argsIos := []any{
@@ -1395,7 +1395,7 @@ SELECT st.name
 FROM software_titles st
 INNER JOIN in_house_apps iha ON iha.title_id = st.id AND 
 	iha.global_or_team_id = ?
-INNER JOIN vpp_apps va ON va.title_id = st.id
+INNER JOIN vpp_apps va ON va.bundle_identifier = st.bundle_identifier
 INNER JOIN vpp_apps_teams vat ON vat.adam_id = va.adam_id AND
 	vat.global_or_team_id = ?
 WHERE
@@ -1407,19 +1407,14 @@ LIMIT 1
 	if teamID != nil {
 		globalOrTeamID = *teamID
 	}
-	fmt.Println("globalor: ", globalOrTeamID)
 
 	// Scan to see if either ios/ipados IHAs exist
 	err = sqlx.GetContext(ctx, q, &title, stmt, globalOrTeamID, globalOrTeamID, adamID)
-	fmt.Println("title: ", title)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			fmt.Println("sql no rows")
 			return false, "", nil
 		}
-		fmt.Println("false but with some other error")
 		return false, "", err
 	}
-	fmt.Println("true !!!!")
 	return true, title, nil
 }

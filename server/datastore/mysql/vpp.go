@@ -2183,7 +2183,7 @@ func (ds *Datastore) checkSoftwareConflictsForVPPApp(ctx context.Context, tx sql
 
 	// check if the vpp app conflicts with an existing in-house app
 	if appID.Platform == fleet.IOSPlatform || appID.Platform == fleet.IPadOSPlatform {
-		exists, conflictingTitle, err := ds.checkInHouseAppExistsForAdamID(ctx, ds.reader(ctx), teamID, appID.AdamID)
+		exists, conflictingTitle, err := ds.checkInHouseAppExistsForAdamID(ctx, tx, teamID, appID.AdamID)
 		if err != nil {
 			return ctxerr.Wrap(ctx, err, "check if in-house app exists")
 		}

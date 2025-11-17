@@ -450,6 +450,7 @@ func (svc *Service) AddAppStoreApp(ctx context.Context, teamID *uint, appID flee
 		}
 
 		if appID.Platform == fleet.MacOSPlatform {
+			// TODO(JK):
 			// Check if we've already added an installer for this app
 			exists, err := svc.ds.UploadedSoftwareExists(ctx, assetMD.BundleID, teamID)
 			if err != nil {

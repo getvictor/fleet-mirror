@@ -163,7 +163,7 @@ func (ds *Datastore) GetSoftwareInstallDetails(ctx context.Context, executionId 
 	return result, nil
 }
 
-func (ds *Datastore) checkVPPAppExistsForTitleIdentifier(ctx context.Context, q sqlx.QueryerContext, teamID *uint, bundleIdentifier, source, browser string) (bool, error) {
+func (ds *Datastore) checkVPPAppExistsForTitleIdentifier(ctx context.Context, q sqlx.QueryerContext, teamID *uint, platform, bundleIdentifier, source, browser string) (bool, error) {
 	const stmt = `
 SELECT
 	1
@@ -183,7 +183,7 @@ WHERE
 		globalOrTeamID = *teamID
 	}
 	var exists int
-	err := sqlx.GetContext(ctx, q, &exists, stmt, fleet.MacOSPlatform, globalOrTeamID, bundleIdentifier, source, browser)
+	err := sqlx.GetContext(ctx, q, &exists, stmt, platform, globalOrTeamID, bundleIdentifier, source, browser)
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		return false, ctxerr.Wrap(ctx, err, "check VPP app exists for title identifier")
 	}
@@ -199,6 +199,7 @@ func (ds *Datastore) MatchOrCreateSoftwareInstaller(ctx context.Context, payload
 
 	err = ds.checkSoftwareConflictsByIdentifier(ctx, payload)
 	if err != nil {
+		// TODO(JK): this needs a teamName message
 		// teamName := fleet.TeamNameNoTeam
 		// if payload.TeamID != nil && *payload.TeamID > 0 {
 		// 	tm, err := ds.TeamLite(ctx, *payload.TeamID)
@@ -2250,7 +2251,7 @@ VALUES
 			// platform (if that platform is macOS), then this is a conflict.
 			// See https://github.com/fleetdm/fleet/issues/32082
 			if installer.Platform == string(fleet.MacOSPlatform) {
-				exists, err := ds.checkVPPAppExistsForTitleIdentifier(ctx, tx, tmID, installer.BundleIdentifier, installer.Source, "")
+				exists, err := ds.checkVPPAppExistsForTitleIdentifier(ctx, tx, tmID, installer.Platform, installer.BundleIdentifier, installer.Source, "")
 				if err != nil {
 					return ctxerr.Wrap(ctx, err, "check existing VPP app for installer title identifier")
 				}
@@ -3091,37 +3092,53 @@ WHERE
 }
 
 func (ds *Datastore) checkSoftwareConflictsByIdentifier(ctx context.Context, payload *fleet.UploadSoftwareInstallerPayload) error {
-	// check if a VPP app already exists for that software title in the same
-	// platform and team.
-	if payload.Platform == string(fleet.MacOSPlatform) || payload.Platform == string(fleet.IOSPlatform) || payload.Platform == string(fleet.IPadOSPlatform) {
-		exists, err := ds.checkVPPAppExistsForTitleIdentifier(ctx, ds.reader(ctx), payload.TeamID, payload.BundleIdentifier, payload.Source, "")
-		if err != nil {
-			return ctxerr.Wrap(ctx, err, "check VPP app exists for title identifier")
-		}
-		if exists {
-			return alreadyExists("VPP app", payload.Title)
-		}
-	}
-
-	// check if an in-house app with the same bundle id already exists.
-	if payload.BundleIdentifier != "" {
-		exists, err := ds.checkInstallerOrInHouseAppExists(ctx, ds.reader(ctx), payload.TeamID, payload.BundleIdentifier, softwareTypeInHouseApp)
-		if err != nil {
-			return err
-		}
-		if exists {
-			return alreadyExists("in-house app", payload.Title)
-		}
-	}
-
 	// if this is an in-house app, check if an installer exists
 	if payload.Extension == "ipa" {
 		exists, err := ds.checkInstallerOrInHouseAppExists(ctx, ds.reader(ctx), payload.TeamID, payload.BundleIdentifier, softwareTypeInstaller)
 		if err != nil {
-			return err
+			return ctxerr.Wrap(ctx, err, "check if software installer exists for title identifier")
 		}
 		if exists {
 			return alreadyExists("software installer", payload.Title)
+		}
+
+		exists, err = ds.checkVPPAppExistsForTitleIdentifier(ctx, ds.reader(ctx), payload.TeamID, string(fleet.IOSPlatform), payload.BundleIdentifier, "ios_apps", "")
+		if err != nil {
+			return ctxerr.Wrap(ctx, err, "check if VPP app (ios) exists for title identifier")
+		}
+		if exists {
+			return alreadyExists("VPP app", payload.Title)
+		}
+
+		exists, err = ds.checkVPPAppExistsForTitleIdentifier(ctx, ds.reader(ctx), payload.TeamID, string(fleet.IPadOSPlatform), payload.BundleIdentifier, "ipados_apps", "")
+		if err != nil {
+			return ctxerr.Wrap(ctx, err, "check if VPP app (ipados) exists for title identifier")
+		}
+		if exists {
+			return alreadyExists("VPP app", payload.Title)
+		}
+	} else {
+		// check if a VPP app already exists for that software title in the same
+		// platform and team.
+		if payload.Platform == string(fleet.MacOSPlatform) || payload.Platform == string(fleet.IOSPlatform) || payload.Platform == string(fleet.IPadOSPlatform) {
+			exists, err := ds.checkVPPAppExistsForTitleIdentifier(ctx, ds.reader(ctx), payload.TeamID, payload.Platform, payload.BundleIdentifier, payload.Source, "")
+			if err != nil {
+				return ctxerr.Wrap(ctx, err, "check if VPP app exists for title identifier")
+			}
+			if exists {
+				return alreadyExists("VPP app", payload.Title)
+			}
+		}
+
+		// check if an in-house app with the same bundle id already exists.
+		if payload.BundleIdentifier != "" {
+			exists, err := ds.checkInstallerOrInHouseAppExists(ctx, ds.reader(ctx), payload.TeamID, payload.BundleIdentifier, softwareTypeInHouseApp)
+			if err != nil {
+				return ctxerr.Wrap(ctx, err, "check if in-house app exists for title identifier")
+			}
+			if exists {
+				return alreadyExists("in-house app", payload.Title)
+			}
 		}
 	}
 
