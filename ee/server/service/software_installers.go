@@ -1921,7 +1921,7 @@ func (svc *Service) BatchSetSoftwareInstallers(
 		if payload.Slug != nil && *payload.Slug != "" {
 			err := svc.softwareInstallerPayloadFromSlug(ctx, payload, teamID)
 			if err != nil {
-				return "", ctxerr.Wrap(ctx, err, "getting fleet maintained software installer payload from slug")
+				return "", ctxerr.Wrapf(ctx, err, "getting fleet maintained software installer payload from slug %q", *payload.Slug)
 			}
 		}
 
@@ -2000,7 +2000,7 @@ func (svc *Service) softwareInstallerPayloadFromSlug(ctx context.Context, payloa
 
 	app, err := svc.ds.GetMaintainedAppBySlug(ctx, *slug, teamID)
 	if err != nil {
-		return err
+		return ctxerr.Wrapf(ctx, err, "maintained app with slug %q", *slug)
 	}
 	_, err = maintained_apps.Hydrate(ctx, app)
 	if err != nil {
