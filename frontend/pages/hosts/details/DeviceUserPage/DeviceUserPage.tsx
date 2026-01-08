@@ -290,7 +290,12 @@ const DeviceUserPage = ({
 
           // Only set timer if not already running
           if (!refetchStartTime) {
-            if (responseHost.status === "online") {
+            // iOS/iPadOS devices don't have osquery, so their "online" status is
+            // unreliable (based on stale host_seen_times). Allow refetch regardless.
+            const isIOSOrIPadOS =
+              responseHost.platform === "ios" ||
+              responseHost.platform === "ipados";
+            if (responseHost.status === "online" || isIOSOrIPadOS) {
               setRefetchStartTime(Date.now());
               setTimeout(() => {
                 refetchHostDetails();
@@ -306,7 +311,12 @@ const DeviceUserPage = ({
           } else {
             const totalElapsedTime = Date.now() - refetchStartTime;
             if (totalElapsedTime < 180000) {
-              if (responseHost.status === "online") {
+              // iOS/iPadOS devices don't have osquery, so their "online" status is
+              // unreliable (based on stale host_seen_times). Allow refetch regardless.
+              const isIOSOrIPadOS =
+                responseHost.platform === "ios" ||
+                responseHost.platform === "ipados";
+              if (responseHost.status === "online" || isIOSOrIPadOS) {
                 setTimeout(() => {
                   refetchHostDetails();
                   refetchExtensions();
@@ -319,11 +329,19 @@ const DeviceUserPage = ({
                 );
               }
             } else {
+              // Timeout reached (3 minutes)
               resetHostRefetchStates();
-              renderFlash(
-                "error",
-                "We're having trouble fetching fresh vitals for this host. Please try again later."
-              );
+              // iOS/iPadOS refetches use MDM commands which can be slower/less predictable
+              // than osquery. Don't show an error - just reset and let user try again.
+              const isIOSOrIPadOS =
+                responseHost.platform === "ios" ||
+                responseHost.platform === "ipados";
+              if (!isIOSOrIPadOS) {
+                renderFlash(
+                  "error",
+                  "We're having trouble fetching fresh vitals for this host. Please try again later."
+                );
+              }
             }
           }
         } else {
