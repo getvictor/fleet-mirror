@@ -133,7 +133,10 @@ const TeamManagementPage = (): JSX.Element => {
               name: `"No ${TEAM_LBL}" is a reserved ${TEAM_LBL} name. Please try another name.`,
             });
           } else {
-            renderFlash("error", `Could not create ${TEAM_LBL}. Please try again.`);
+            renderFlash(
+              "error",
+              `Could not create ${TEAM_LBL}. Please try again.`
+            );
             toggleCreateTeamModal();
           }
         })
@@ -289,13 +292,13 @@ const TeamManagementPage = (): JSX.Element => {
             defaultSortDirection="asc"
             actionButton={{
               name: "create team",
-              buttonText: "Create team",
+              buttonText: `Create ${TEAM_LBL}`,
               variant: "default",
               onClick: toggleCreateTeamModal,
               hideButton: teams && teams.length === 0,
               disabledTooltipContent: disabledPrimaryActionTooltip,
             }}
-            resultsTitle="teams"
+            resultsTitle={TEAMS_LBL}
             emptyComponent={() => (
               <EmptyTeamsTable
                 className={noTeamsClass}

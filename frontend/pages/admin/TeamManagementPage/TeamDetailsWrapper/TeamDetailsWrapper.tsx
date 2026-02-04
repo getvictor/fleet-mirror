@@ -441,7 +441,7 @@ const TeamDetailsWrapper = ({
               },
               {
                 type: "secondary",
-                label: "Rename team",
+                label: `Rename ${TEAM_LBL}`,
                 buttonVariant: "inverse",
                 iconName: "pencil",
                 onClick: toggleRenameTeamModal,
@@ -449,7 +449,7 @@ const TeamDetailsWrapper = ({
               },
               {
                 type: "secondary",
-                label: "Delete team",
+                label: `Delete ${TEAM_LBL}`,
                 buttonVariant: "inverse",
                 iconName: "trash",
                 hideAction: !isGlobalAdmin,

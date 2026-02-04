@@ -72,7 +72,9 @@ const getProfileMessageSuffix = (
         {platformDisplayName} hosts assigned to the <b>{teamName}</b> {TEAM_LBL}
       </>
     ) : (
-      <>{platformDisplayName} hosts with no {TEAM_LBL}</>
+      <>
+        {platformDisplayName} hosts with no {TEAM_LBL}
+      </>
     );
   }
   return messageSuffix;
@@ -167,7 +169,8 @@ const TAGGED_TEMPLATES = {
     const count = activity.details?.teams?.length;
     return count === 1 && activity.details?.teams ? (
       <>
-        edited the <b>{activity.details?.teams[0].name}</b> {TEAM_LBL} using fleetctl.
+        edited the <b>{activity.details?.teams[0].name}</b> {TEAM_LBL} using
+        fleetctl.
       </>
     ) : (
       `edited multiple ${TEAMS_LBL} using fleetctl.`
@@ -837,7 +840,8 @@ const TAGGED_TEMPLATES = {
       return (
         <>
           {" "}
-          transferred host <b>{hostNames[0]}</b> to {teamName ? `${TEAM_LBL} ` : ""}
+          transferred host <b>{hostNames[0]}</b> to{" "}
+          {teamName ? `${TEAM_LBL} ` : ""}
           <b>{teamName || `no ${TEAM_LBL}`}</b>.
         </>
       );

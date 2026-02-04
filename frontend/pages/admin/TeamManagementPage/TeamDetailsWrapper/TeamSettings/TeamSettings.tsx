@@ -297,7 +297,7 @@ const TeamSettings = ({ location, router }: ITeamSubnavProps) => {
           onChange={onInputChange}
           parseTarget
           value={formData.teamHostStatusWebhookEnabled}
-          helpText="This will trigger webhooks specific to this team, separate from the global host status webhook."
+          helpText={`This will trigger webhooks specific to this ${TEAM_LBL}, separate from the global host status webhook.`}
           labelTooltipContent="Send an alert if a portion of your hosts go offline."
           disabled={gitopsModeEnabled}
         >

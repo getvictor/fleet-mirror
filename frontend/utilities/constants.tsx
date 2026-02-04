@@ -401,7 +401,9 @@ export const BATTERY_TOOLTIP: Record<string, string | React.ReactNode> = {
   ),
 };
 
-export const PRIMO_TOOLTIP = `${upperFirst(TEAMS_LBL)} are disabled while using Primo`;
+export const PRIMO_TOOLTIP = `${upperFirst(
+  TEAMS_LBL
+)} are disabled while using Primo`;
 
 /** Must pass agent options config as empty object */
 export const EMPTY_AGENT_OPTIONS = {
