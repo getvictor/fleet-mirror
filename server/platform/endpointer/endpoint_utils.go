@@ -18,6 +18,7 @@ import (
 	"github.com/fleetdm/fleet/v4/server/contexts/ctxerr"
 	"github.com/fleetdm/fleet/v4/server/contexts/license"
 	"github.com/fleetdm/fleet/v4/server/contexts/logging"
+	"github.com/fleetdm/fleet/v4/server/fleet"
 	platform_http "github.com/fleetdm/fleet/v4/server/platform/http"
 	"github.com/fleetdm/fleet/v4/server/platform/middleware/authzcheck"
 	"github.com/fleetdm/fleet/v4/server/platform/middleware/ratelimit"
@@ -173,7 +174,7 @@ func DecodeURLTagValue(r *http.Request, field reflect.Value, urlTagValue string,
 // It returns true if it handled the field, false if default handling should be used.
 type DomainQueryFieldDecoder func(queryTagName, queryVal string, field reflect.Value) (handled bool, err error)
 
-func DecodeQueryTagValue(r *http.Request, fp fieldPair, customDecoder DomainQueryFieldDecoder) error {
+func DecodeQueryTagValue(r *http.Request, fp fieldPair, customDecoder DomainQueryFieldDecoder, ctx context.Context) error {
 	queryTagValue, ok := fp.Sf.Tag.Lookup("query")
 
 	if ok {
@@ -184,6 +185,27 @@ func DecodeQueryTagValue(r *http.Request, fp fieldPair, customDecoder DomainQuer
 			return err
 		}
 		queryVal := r.URL.Query().Get(queryTagValue)
+
+		// Check if this field has a deprecated alias
+		var deprecatedName string
+		for oldName, newName := range fleet.APIFieldAliases {
+			if newName == queryTagValue {
+				deprecatedName = oldName
+				break
+			}
+		}
+
+		if deprecatedName != "" {
+			deprecatedVal := r.URL.Query().Get(deprecatedName)
+			if queryVal != "" && deprecatedVal != "" {
+				return &platform_http.BadRequestError{Message: fmt.Sprintf("cannot specify both '%s' and '%s'", queryTagValue, deprecatedName)}
+			}
+			if deprecatedVal != "" {
+				logging.WithExtras(ctx, "deprecated_param", deprecatedName)
+				queryVal = deprecatedVal
+			}
+		}
+
 		// if optional and it's a ptr, leave as nil
 		if queryVal == "" {
 			if optional {
@@ -454,7 +476,7 @@ func MakeDecoder(
 				return nil, platform_http.NewUserMessageError(errors.New("Expected Content-Type \"application/json\""), http.StatusUnsupportedMediaType)
 			}
 
-			err = DecodeQueryTagValue(r, fp, customQueryDecoder)
+			err = DecodeQueryTagValue(r, fp, customQueryDecoder, ctx)
 			if err != nil {
 				return nil, err
 			}
