@@ -12,8 +12,21 @@ import { IHost } from "interfaces/host";
 const { origin } = global.window.location;
 export const BASE_URL = `${origin}${URL_PREFIX}/api`;
 
-export const TEAM_LBL = "fleet";
-export const TEAMS_LBL = "fleets";
+const getTeamLabelsFromUrl = () => {
+  if (typeof window !== "undefined") {
+    const params = new URLSearchParams(window.location.search);
+    return {
+      team: params.get("team_label") || "fleet",
+      teams: params.get("teams_label") || "fleets",
+    };
+  }
+  return { team: "fleet", teams: "fleets" };
+};
+
+const teamLabels = getTeamLabelsFromUrl();
+
+export const TEAM_LBL = teamLabels.team;
+export const TEAMS_LBL = teamLabels.teams;
 
 export const UNCHANGED_PASSWORD_API_RESPONSE = "********";
 
