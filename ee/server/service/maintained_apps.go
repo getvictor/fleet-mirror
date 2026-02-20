@@ -113,14 +113,9 @@ func (svc *Service) AddFleetMaintainedApp(
 		maintainedAppID = nil // don't set app as maintained if scripts have been modified
 	}
 
-	// For platforms other than macOS, installer name has to match what we see in software inventory,
-	// so we have the UniqueIdentifier field to indicate what that should be (independent of the name we
-	// display when listing the FMA). For macOS, unique identifier is bundle name, and we use bundle
-	// identifier to link installers with inventory, so we set the name to the FMA's display name instead.
-	appName := app.UniqueIdentifier
-	if app.Platform == "darwin" || appName == "" {
-		appName = app.Name
-	}
+	// For macOS, we use bundle identifier to link the installer with the software title.
+	// For Windows, the unique identifier is upgrade code or name. Since upgrade code isn't surfaced in
+	// the fleet_maintained_apps table we use name to match the installer to the software title.
 
 	version := app.Version
 	if version == "latest" { // download URL isn't version-pinned; extract version from installer
@@ -139,7 +134,7 @@ func (svc *Service) AddFleetMaintainedApp(
 
 	payload := &fleet.UploadSoftwareInstallerPayload{
 		InstallerFile:         installerTFR,
-		Title:                 appName,
+		Title:                 app.Name,
 		UserID:                vc.UserID(),
 		TeamID:                teamID,
 		Version:               version,
