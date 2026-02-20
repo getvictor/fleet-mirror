@@ -1524,12 +1524,12 @@ WHERE
 	if teamID != nil {
 		globalOrTeamID = *teamID
 	}
-	var exists int
+	var exists bool
 	err := sqlx.GetContext(ctx, q, &exists, stmt, globalOrTeamID, bundleIdentifier, platform)
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		return false, ctxerr.Wrap(ctx, err, fmt.Sprintf("check %s exists", swType))
 	}
-	return exists == 1, nil
+	return exists, nil
 }
 
 func (ds *Datastore) checkInHouseAppExistsForAdamID(ctx context.Context, q sqlx.QueryerContext, teamID *uint, appID fleet.VPPAppID) (exists bool, title string, err error) {
