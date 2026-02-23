@@ -22,6 +22,7 @@ type appListing struct {
 	Slug             string `json:"slug"`
 	Platform         string `json:"platform"`
 	UniqueIdentifier string `json:"unique_identifier"`
+	UpgradeCode      string `json:"upgrade_code"`
 }
 
 type AppsList struct {
@@ -95,6 +96,11 @@ func upsertMaintainedApps(ctx context.Context, appsList *AppsList, ds fleet.Data
 
 		if app.UniqueIdentifier == "" {
 			app.UniqueIdentifier = app.Name
+		}
+
+		// we want to set unique identifier to upgrade_code if possible
+		if app.UpgradeCode != "" { // no need to double check platform really
+			app.UniqueIdentifier = app.UpgradeCode
 		}
 
 		if _, err := ds.UpsertMaintainedApp(ctx, &fleet.MaintainedApp{

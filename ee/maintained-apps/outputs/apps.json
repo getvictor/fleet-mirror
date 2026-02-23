@@ -6,1792 +6,2048 @@
       "slug": "010-editor/darwin",
       "platform": "darwin",
       "unique_identifier": "com.SweetScape.010Editor",
-      "description": "010 Editor is a toolkit for working with text and binary data."
+      "description": "010 Editor is a toolkit for working with text and binary data.",
+      "upgrade_code": ""
     },
     {
       "name": "010 Editor",
       "slug": "010-editor/windows",
       "platform": "windows",
       "unique_identifier": "010 Editor 16.0.2 (64-bit)",
-      "description": "010 Editor is a toolkit for working with text and binary data."
+      "description": "010 Editor is a toolkit for working with text and binary data.",
+      "upgrade_code": ""
     },
     {
       "name": "1Password",
       "slug": "1password/darwin",
       "platform": "darwin",
       "unique_identifier": "com.1password.1password",
-      "description": "1Password is a password manager that keeps all passwords secure behind one password."
+      "description": "1Password is a password manager that keeps all passwords secure behind one password.",
+      "upgrade_code": ""
     },
     {
       "name": "1Password",
       "slug": "1password/windows",
       "platform": "windows",
       "unique_identifier": "1Password",
-      "description": "1Password is a password manager that keeps all passwords secure behind one password."
+      "description": "1Password is a password manager that keeps all passwords secure behind one password.",
+      "upgrade_code": ""
     },
     {
       "name": "7-zip",
       "slug": "7-zip/windows",
       "platform": "windows",
       "unique_identifier": "7-Zip 25.01 (x64)",
-      "description": "7-zip is a file archiver."
+      "description": "7-zip is a file archiver.",
+      "upgrade_code": "{23170F69-40C1-2702-0000-000004000000}"
     },
     {
       "name": "8x8 Work",
       "slug": "8x8-work/darwin",
       "platform": "darwin",
       "unique_identifier": "com.electron.8x8---virtual-office",
-      "description": "8x8 Work is a communications application with voice, video, chat, and web conferencing.<br/><br/>Note: After installation, the app may show an auto-update error on each login if file ownership is set to root; changing ownership of 8x8 Work.app to the logged-in user resolves this, or auto-updates can be disabled via the Profile Policies setting in the 8x8 Admin Console."
+      "description": "8x8 Work is a communications application with voice, video, chat, and web conferencing.<br/><br/>Note: After installation, the app may show an auto-update error on each login if file ownership is set to root; changing ownership of 8x8 Work.app to the logged-in user resolves this, or auto-updates can be disabled via the Profile Policies setting in the 8x8 Admin Console.",
+      "upgrade_code": ""
     },
     {
       "name": "8x8 Work",
       "slug": "8x8-work/windows",
       "platform": "windows",
       "unique_identifier": "8x8 Work",
-      "description": "8x8 Work is a communications application with voice, video, chat, and web conferencing."
+      "description": "8x8 Work is a communications application with voice, video, chat, and web conferencing.",
+      "upgrade_code": "{66F8B350-94E0-43AF-9D26-C2385B310C96}"
     },
     {
       "name": "Abstract",
       "slug": "abstract/darwin",
       "platform": "darwin",
       "unique_identifier": "com.elasticprojects.abstract-desktop",
-      "description": "Abstract is a collaborative design tool with support for Sketch files."
+      "description": "Abstract is a collaborative design tool with support for Sketch files.",
+      "upgrade_code": ""
     },
     {
       "name": "Adobe Acrobat Pro DC",
       "slug": "adobe-acrobat-pro/darwin",
       "platform": "darwin",
       "unique_identifier": "com.adobe.Acrobat.Pro",
-      "description": "Adobe Acrobat Pro DC is a professional PDF editor for creating, editing, converting, and managing PDF documents."
+      "description": "Adobe Acrobat Pro DC is a professional PDF editor for creating, editing, converting, and managing PDF documents.",
+      "upgrade_code": ""
     },
     {
       "name": "Adobe Acrobat Reader",
       "slug": "adobe-acrobat-reader/darwin",
       "platform": "darwin",
       "unique_identifier": "com.adobe.Reader",
-      "description": "Adobe Acrobat Reader is the industry-standard tool for viewing, printing, and commenting on PDF documents."
+      "description": "Adobe Acrobat Reader is the industry-standard tool for viewing, printing, and commenting on PDF documents.",
+      "upgrade_code": ""
     },
     {
       "name": "Adobe Acrobat Reader",
       "slug": "adobe-acrobat-reader/windows",
       "platform": "windows",
       "unique_identifier": "Adobe Acrobat (64-bit)",
-      "description": "Adobe Acrobat Reader is the industry-standard tool for viewing, printing, and commenting on PDF documents."
+      "description": "Adobe Acrobat Reader is the industry-standard tool for viewing, printing, and commenting on PDF documents.",
+      "upgrade_code": ""
     },
     {
       "name": "Adobe Creative Cloud",
       "slug": "adobe-creative-cloud/darwin",
       "platform": "darwin",
       "unique_identifier": "com.adobe.acc.AdobeCreativeCloud",
-      "description": "Adobe Creative Cloud is a platform for creative software management and installation, including access to Adobe’s suite of tools like Photoshop, Illustrator, and Premiere Pro."
+      "description": "Adobe Creative Cloud is a platform for creative software management and installation, including access to Adobe’s suite of tools like Photoshop, Illustrator, and Premiere Pro.",
+      "upgrade_code": ""
     },
     {
       "name": "Adobe Digital Editions",
       "slug": "adobe-digital-editions/darwin",
       "platform": "darwin",
       "unique_identifier": "com.adobe.adobedigitaleditions.app",
-      "description": "Adobe Digital Editions is an E-book reader."
+      "description": "Adobe Digital Editions is an E-book reader.",
+      "upgrade_code": ""
     },
     {
       "name": "Adobe DNG Converter",
       "slug": "adobe-dng-converter/darwin",
       "platform": "darwin",
       "unique_identifier": "com.adobe.DNGConverter",
-      "description": "Adobe DNG Conver is a DNG file converter."
+      "description": "Adobe DNG Conver is a DNG file converter.",
+      "upgrade_code": ""
     },
     {
       "name": "Aircall",
       "slug": "aircall/darwin",
       "platform": "darwin",
       "unique_identifier": "io.aircall.phone",
-      "description": "Aircall is cloud-based call center and phone system software."
+      "description": "Aircall is cloud-based call center and phone system software.",
+      "upgrade_code": ""
     },
     {
       "name": "Aircall",
       "slug": "aircall/windows",
       "platform": "windows",
       "unique_identifier": "Aircall",
-      "description": "Aircall is cloud-based call center and phone system software."
+      "description": "Aircall is cloud-based call center and phone system software.",
+      "upgrade_code": ""
     },
     {
       "name": "Airtame",
       "slug": "airtame/darwin",
       "platform": "darwin",
       "unique_identifier": "com.airtame.airtame-application",
-      "description": "Airtame is an app that makes shared screens easy to use — for screen sharing, conferencing, digital signage, and alerts."
+      "description": "Airtame is an app that makes shared screens easy to use — for screen sharing, conferencing, digital signage, and alerts.",
+      "upgrade_code": ""
     },
     {
       "name": "Airtame",
       "slug": "airtame/windows",
       "platform": "windows",
       "unique_identifier": "Airtame 4.15.0",
-      "description": "Airtame is an app that makes shared screens easy to use — for screen sharing, conferencing, digital signage, and alerts."
+      "description": "Airtame is an app that makes shared screens easy to use — for screen sharing, conferencing, digital signage, and alerts.",
+      "upgrade_code": ""
     },
     {
       "name": "Amazon Chime",
       "slug": "amazon-chime/darwin",
       "platform": "darwin",
       "unique_identifier": "com.runningwithcrayons.Alfred",
-      "description": "Amazon Chime is a communications service that lets you meet, chat, and place business calls inside and outside your organization."
+      "description": "Amazon Chime is a communications service that lets you meet, chat, and place business calls inside and outside your organization.",
+      "upgrade_code": ""
     },
     {
       "name": "Android Studio",
       "slug": "android-studio/darwin",
       "platform": "darwin",
       "unique_identifier": "com.google.android.studio",
-      "description": "Android Studio is the official integrated development environment for Android app development, based on IntelliJ IDEA."
+      "description": "Android Studio is the official integrated development environment for Android app development, based on IntelliJ IDEA.",
+      "upgrade_code": ""
     },
     {
       "name": "Anka",
       "slug": "anka-virtualization/darwin",
       "platform": "darwin",
       "unique_identifier": "com.veertu.ankaview",
-      "description": "Anka is a tool for managing and creating virtual machines."
+      "description": "Anka is a tool for managing and creating virtual machines.",
+      "upgrade_code": ""
     },
     {
       "name": "AnyDesk",
       "slug": "anydesk/darwin",
       "platform": "darwin",
       "unique_identifier": "com.philandro.anydesk",
-      "description": "AnyDesk is an app that allows connection to a computer remotely."
+      "description": "AnyDesk is an app that allows connection to a computer remotely.",
+      "upgrade_code": ""
     },
     {
       "name": "Apparency",
       "slug": "apparency/darwin",
       "platform": "darwin",
       "unique_identifier": "com.mothersruin.Apparency",
-      "description": "Apparency is an app to inspect application bundles."
+      "description": "Apparency is an app to inspect application bundles.",
+      "upgrade_code": ""
     },
     {
       "name": "AppCleaner",
       "slug": "appcleaner/darwin",
       "platform": "darwin",
       "unique_identifier": "net.freemacsoft.AppCleaner",
-      "description": "AppCleaner is an application uninstaller."
+      "description": "AppCleaner is an application uninstaller.",
+      "upgrade_code": ""
     },
     {
       "name": "Arc",
       "slug": "arc/darwin",
       "platform": "darwin",
       "unique_identifier": "company.thebrowser.Browser",
-      "description": "Arc is a productivity-focused browser."
+      "description": "Arc is a productivity-focused browser.",
+      "upgrade_code": ""
     },
     {
       "name": "Archaeology",
       "slug": "archaeology/darwin",
       "platform": "darwin",
       "unique_identifier": "com.mothersruin.Archaeology",
-      "description": "Archaeology is a tool for digging into binary files."
+      "description": "Archaeology is a tool for digging into binary files.",
+      "upgrade_code": ""
     },
     {
       "name": "Asana",
       "slug": "asana/darwin",
       "platform": "darwin",
       "unique_identifier": "com.electron.asana",
-      "description": "Asana is an app to manage team projects and tasks."
+      "description": "Asana is an app to manage team projects and tasks.",
+      "upgrade_code": ""
     },
     {
       "name": "Asana",
       "slug": "asana/windows",
       "platform": "windows",
       "unique_identifier": "Asana",
-      "description": "Asana is an app to manage team projects and tasks."
+      "description": "Asana is an app to manage team projects and tasks.",
+      "upgrade_code": ""
     },
     {
       "name": "Audacity",
       "slug": "audacity/darwin",
       "platform": "darwin",
       "unique_identifier": "org.audacityteam.audacity",
-      "description": "Audacity is a multi-track audio editor and recorder."
+      "description": "Audacity is a multi-track audio editor and recorder.",
+      "upgrade_code": ""
     },
     {
       "name": "Avast Secure Browser",
       "slug": "avast-secure-browser/darwin",
       "platform": "darwin",
       "unique_identifier": "com.avast.AvastSecureBrowser",
-      "description": "Avast Secure Browser is a web browser focusing on privacy."
+      "description": "Avast Secure Browser is a web browser focusing on privacy.",
+      "upgrade_code": ""
     },
     {
       "name": "AWS Client VPN",
       "slug": "aws-vpn-client/darwin",
       "platform": "darwin",
       "unique_identifier": "com.amazonaws.acvc.osx",
-      "description": "AWS Client VPN is a managed client-based VPN service to securely access AWS resources."
+      "description": "AWS Client VPN is a managed client-based VPN service to securely access AWS resources.",
+      "upgrade_code": ""
     },
     {
       "name": "balenaEtcher",
       "slug": "balenaetcher/darwin",
       "platform": "darwin",
       "unique_identifier": "io.balena.etcher",
-      "description": "balenaEtcher is a tool to flash OS images to SD cards & USB drives."
+      "description": "balenaEtcher is a tool to flash OS images to SD cards & USB drives.",
+      "upgrade_code": ""
     },
     {
       "name": "BBEdit",
       "slug": "bbedit/darwin",
       "platform": "darwin",
       "unique_identifier": "com.barebones.bbedit",
-      "description": "BBEdit is a text, code, and markup editor."
+      "description": "BBEdit is a text, code, and markup editor.",
+      "upgrade_code": ""
     },
     {
       "name": "BetterDisplay",
       "slug": "betterdisplay/darwin",
       "platform": "darwin",
       "unique_identifier": "pro.betterdisplay.BetterDisplay",
-      "description": "BetterDisplay is a display management tool."
+      "description": "BetterDisplay is a display management tool.",
+      "upgrade_code": ""
     },
     {
       "name": "Beyond Compare",
       "slug": "beyond-compare/darwin",
       "platform": "darwin",
       "unique_identifier": "com.scootersoftware.BeyondCompare",
-      "description": "Beyond Compare is an app used to compare files and folders."
+      "description": "Beyond Compare is an app used to compare files and folders.",
+      "upgrade_code": ""
     },
     {
       "name": "Bitwarden",
       "slug": "bitwarden/darwin",
       "platform": "darwin",
       "unique_identifier": "com.bitwarden.desktop",
-      "description": "Bitwarden is a desktop password and login vault."
+      "description": "Bitwarden is a desktop password and login vault.",
+      "upgrade_code": ""
     },
     {
       "name": "Blender",
       "slug": "blender/darwin",
       "platform": "darwin",
       "unique_identifier": "org.blenderfoundation.blender",
-      "description": "Blender is a 3D creation suite."
+      "description": "Blender is a 3D creation suite.",
+      "upgrade_code": ""
     },
     {
       "name": "Blender",
       "slug": "blender/windows",
       "platform": "windows",
       "unique_identifier": "Blender",
-      "description": "Blender is a 3D creation suite."
+      "description": "Blender is a 3D creation suite.",
+      "upgrade_code": "{004FFCA1-B269-51EE-8768-5C75526A8DE2}"
     },
     {
       "name": "Box Drive",
       "slug": "box-drive/darwin",
       "platform": "darwin",
       "unique_identifier": "com.box.desktop",
-      "description": "Box Drive is the desktop client for Box Cloud, enabling seamless access to your files without taking up local storage."
+      "description": "Box Drive is the desktop client for Box Cloud, enabling seamless access to your files without taking up local storage.",
+      "upgrade_code": ""
     },
     {
       "name": "Box Drive",
       "slug": "box-drive/windows",
       "platform": "windows",
       "unique_identifier": "Box",
-      "description": "Box Drive is the desktop client for Box Cloud, enabling seamless access to your files without taking up local storage."
+      "description": "Box Drive is the desktop client for Box Cloud, enabling seamless access to your files without taking up local storage.",
+      "upgrade_code": "{46AF5B38-D258-487A-92BD-792911248CCD}"
     },
     {
       "name": "Brave",
       "slug": "brave-browser/darwin",
       "platform": "darwin",
       "unique_identifier": "com.brave.Browser",
-      "description": "Brave is a web browser designed with privacy, blocking ads and trackers by default while maintaining fast speed."
+      "description": "Brave is a web browser designed with privacy, blocking ads and trackers by default while maintaining fast speed.",
+      "upgrade_code": ""
     },
     {
       "name": "Brave",
       "slug": "brave-browser/windows",
       "platform": "windows",
       "unique_identifier": "Brave",
-      "description": "Brave is a web browser designed with privacy, blocking ads and trackers by default while maintaining fast speed."
+      "description": "Brave is a web browser designed with privacy, blocking ads and trackers by default while maintaining fast speed.",
+      "upgrade_code": ""
     },
     {
       "name": "Bruno",
       "slug": "bruno/darwin",
       "platform": "darwin",
       "unique_identifier": "com.usebruno.app",
-      "description": "Bruno is an open source IDE for exploring and testing APIs."
+      "description": "Bruno is an open source IDE for exploring and testing APIs.",
+      "upgrade_code": ""
     },
     {
       "name": "calibre",
       "slug": "calibre/darwin",
       "platform": "darwin",
       "unique_identifier": "net.kovidgoyal.calibre",
-      "description": "calibre is e-book management software."
+      "description": "calibre is e-book management software.",
+      "upgrade_code": ""
     },
     {
       "name": "Camtasia",
       "slug": "camtasia/darwin",
       "platform": "darwin",
       "unique_identifier": "com.techsmith.camtasia",
-      "description": "Camtasia is a screen recorder and video editor."
+      "description": "Camtasia is a screen recorder and video editor.",
+      "upgrade_code": ""
     },
     {
       "name": "Camtasia",
       "slug": "camtasia/windows",
       "platform": "windows",
       "unique_identifier": "Camtasia",
-      "description": "Camtasia is a screen recorder and video editor."
+      "description": "Camtasia is a screen recorder and video editor.",
+      "upgrade_code": "{CD4AC9D7-E484-41BE-AAFA-6DE4745AE6A1}"
     },
     {
       "name": "Canva",
       "slug": "canva/darwin",
       "platform": "darwin",
       "unique_identifier": "com.canva.CanvaDesktop",
-      "description": "Canva is a popular online graphic design tool."
+      "description": "Canva is a popular online graphic design tool.",
+      "upgrade_code": ""
     },
     {
       "name": "ChatGPT Atlas",
       "slug": "chatgpt-atlas/darwin",
       "platform": "darwin",
       "unique_identifier": "com.openai.atlas",
-      "description": "ChatGPT Atlas is OpenAI's official browser with ChatGPT built in."
+      "description": "ChatGPT Atlas is OpenAI's official browser with ChatGPT built in.",
+      "upgrade_code": ""
     },
     {
       "name": "ChatGPT Desktop",
       "slug": "chatgpt/darwin",
       "platform": "darwin",
       "unique_identifier": "com.openai.chat",
-      "description": "ChatGPT Desktop is OpenAI's official ChatGPT desktop app for macOS, providing seamless access to AI-powered conversations and assistance."
+      "description": "ChatGPT Desktop is OpenAI's official ChatGPT desktop app for macOS, providing seamless access to AI-powered conversations and assistance.",
+      "upgrade_code": ""
     },
     {
       "name": "Cisco Jabber",
       "slug": "cisco-jabber/darwin",
       "platform": "darwin",
       "unique_identifier": "com.cisco.jabber",
-      "description": "Cisco Jabber is a collaboration and communication app."
+      "description": "Cisco Jabber is a collaboration and communication app.",
+      "upgrade_code": ""
     },
     {
       "name": "Cisco Jabber",
       "slug": "cisco-jabber/windows",
       "platform": "windows",
       "unique_identifier": "Cisco Jabber",
-      "description": "Cisco Jabber is a collaboration and communication app."
+      "description": "Cisco Jabber is a collaboration and communication app.",
+      "upgrade_code": "{6FA51B39-4177-411C-A3A3-5A81C464278B}"
     },
     {
       "name": "Citrix Workspace",
       "slug": "citrix-workspace/darwin",
       "platform": "darwin",
       "unique_identifier": "com.citrix.receiver.nomas",
-      "description": "Citrix Workspace is a managed desktop virtualization solution that delivers secure access to information, apps, and content."
+      "description": "Citrix Workspace is a managed desktop virtualization solution that delivers secure access to information, apps, and content.",
+      "upgrade_code": ""
     },
     {
       "name": "Claude",
       "slug": "claude/darwin",
       "platform": "darwin",
       "unique_identifier": "com.anthropic.claudefordesktop",
-      "description": "Claude is Anthropic's official Claude AI desktop app."
+      "description": "Claude is Anthropic's official Claude AI desktop app.",
+      "upgrade_code": ""
     },
     {
       "name": "CleanMyMac",
       "slug": "cleanmymac/darwin",
       "platform": "darwin",
       "unique_identifier": "com.macpaw.CleanMyMac5",
-      "description": "CleanMyMac is a tool to remove unnecessary files and folders from disk."
+      "description": "CleanMyMac is a tool to remove unnecessary files and folders from disk.",
+      "upgrade_code": ""
     },
     {
       "name": "CleanShot X",
       "slug": "cleanshot/darwin",
       "platform": "darwin",
       "unique_identifier": "com.getcleanshot.app",
-      "description": "CleanShot X is a screen capturing tool."
+      "description": "CleanShot X is a screen capturing tool.",
+      "upgrade_code": ""
     },
     {
       "name": "ClickUp",
       "slug": "clickup/darwin",
       "platform": "darwin",
       "unique_identifier": "com.clickup.desktop-app",
-      "description": "ClickUp is a productivity platform for tasks, docs, goals, and chat."
+      "description": "ClickUp is a productivity platform for tasks, docs, goals, and chat.",
+      "upgrade_code": ""
     },
     {
       "name": "ClickUp",
       "slug": "clickup/windows",
       "platform": "windows",
       "unique_identifier": "ClickUp",
-      "description": "ClickUp is a productivity platform for tasks, docs, goals, and chat."
+      "description": "ClickUp is a productivity platform for tasks, docs, goals, and chat.",
+      "upgrade_code": "{95C04A28-5736-505A-91E3-9132CDC33800}"
     },
     {
       "name": "CLion",
       "slug": "clion/darwin",
       "platform": "darwin",
       "unique_identifier": "com.jetbrains.CLion",
-      "description": "CLion is a JetBrains IDE for C and C++."
+      "description": "CLion is a JetBrains IDE for C and C++.",
+      "upgrade_code": ""
     },
     {
       "name": "Clockify Desktop",
       "slug": "clockify/darwin",
       "platform": "darwin",
       "unique_identifier": "coing.ClockifyDesktop",
-      "description": "Clockify Desktop is a time tracking tool for agencies and freelancers."
+      "description": "Clockify Desktop is a time tracking tool for agencies and freelancers.",
+      "upgrade_code": ""
     },
     {
       "name": "Cloudflare WARP",
       "slug": "cloudflare-warp/darwin",
       "platform": "darwin",
       "unique_identifier": "com.cloudflare.1dot1dot1dot1.macos",
-      "description": "Cloudflare WARP enhances internet safety and performance by encrypting your data and optimizing connections for privacy."
+      "description": "Cloudflare WARP enhances internet safety and performance by encrypting your data and optimizing connections for privacy.",
+      "upgrade_code": ""
     },
     {
       "name": "Cloudflare WARP",
       "slug": "cloudflare-warp/windows",
       "platform": "windows",
       "unique_identifier": "Cloudflare WARP",
-      "description": "Cloudflare WARP enhances internet safety and performance by encrypting your data and optimizing connections for privacy."
+      "description": "Cloudflare WARP enhances internet safety and performance by encrypting your data and optimizing connections for privacy.",
+      "upgrade_code": "{1BF42825-7B65-4CA9-AFFF-B7B5E1CE27B4}"
     },
     {
       "name": "Connect Fonts",
       "slug": "connect-fonts/darwin",
       "platform": "darwin",
       "unique_identifier": "com.extensis.SuitcaseFusion",
-      "description": "Connect Fonts is an app that manages fonts and digital assets."
+      "description": "Connect Fonts is an app that manages fonts and digital assets.",
+      "upgrade_code": ""
     },
     {
       "name": "CotEditor",
       "slug": "coteditor/darwin",
       "platform": "darwin",
       "unique_identifier": "com.coteditor.CotEditor",
-      "description": "CotEditor is a plain-text editor for web pages, program source codes, and more."
+      "description": "CotEditor is a plain-text editor for web pages, program source codes, and more.",
+      "upgrade_code": ""
     },
     {
       "name": "CrashPlan",
       "slug": "crashplan/darwin",
       "platform": "darwin",
       "unique_identifier": "com.crashplan.desktop",
-      "description": "CrashPlan is backup and recovery software."
+      "description": "CrashPlan is backup and recovery software.",
+      "upgrade_code": ""
     },
     {
       "name": "CrashPlan",
       "slug": "crashplan/windows",
       "platform": "windows",
       "unique_identifier": "CrashPlan",
-      "description": "CrashPlan is backup and recovery software."
+      "description": "CrashPlan is backup and recovery software.",
+      "upgrade_code": "{113B48D9-4965-4FAA-A583-A61ADAE58355}"
     },
     {
       "name": "Cursor",
       "slug": "cursor/darwin",
       "platform": "darwin",
       "unique_identifier": "com.todesktop.230313mzl4w4u92",
-      "description": "Cursor AI boosts your coding productivity by giving smart, context-aware code suggestions, quick explanations, and easy refactors — all inside your editor."
+      "description": "Cursor AI boosts your coding productivity by giving smart, context-aware code suggestions, quick explanations, and easy refactors — all inside your editor.",
+      "upgrade_code": ""
     },
     {
       "name": "Cursor",
       "slug": "cursor/windows",
       "platform": "windows",
       "unique_identifier": "Cursor",
-      "description": "Cursor AI boosts your coding productivity by giving smart, context-aware code suggestions, quick explanations, and easy refactors — all inside your editor."
+      "description": "Cursor AI boosts your coding productivity by giving smart, context-aware code suggestions, quick explanations, and easy refactors — all inside your editor.",
+      "upgrade_code": ""
     },
     {
       "name": "Cyberduck",
       "slug": "cyberduck/darwin",
       "platform": "darwin",
       "unique_identifier": "ch.sudo.cyberduck",
-      "description": "Cyberduck is a server and cloud storage browser."
+      "description": "Cyberduck is a server and cloud storage browser.",
+      "upgrade_code": ""
     },
     {
       "name": "Cyberduck",
       "slug": "cyberduck/windows",
       "platform": "windows",
       "unique_identifier": "Cyberduck",
-      "description": "Cyberduck is a server and cloud storage browser."
+      "description": "Cyberduck is a server and cloud storage browser.",
+      "upgrade_code": "{B9C33495-4B77-4863-9A40-4E767388647E}"
     },
     {
       "name": "Dash",
       "slug": "dash/darwin",
       "platform": "darwin",
       "unique_identifier": "com.kapeli.dashdoc",
-      "description": "Dash is an API documentation browser and code snippet manager."
+      "description": "Dash is an API documentation browser and code snippet manager.",
+      "upgrade_code": ""
     },
     {
       "name": "DataGrip",
       "slug": "datagrip/darwin",
       "platform": "darwin",
       "unique_identifier": "com.jetbrains.datagrip",
-      "description": "DataGrip is a powerful cross-platform IDE for relational and NoSQL databases."
+      "description": "DataGrip is a powerful cross-platform IDE for relational and NoSQL databases.",
+      "upgrade_code": ""
     },
     {
       "name": "DB Browser for SQLite",
       "slug": "db-browser-for-sqlite/darwin",
       "platform": "darwin",
       "unique_identifier": "com.sqlitebrowser.sqlitebrowser",
-      "description": "DB Browser for SQLite is a high quality, visual, open source tool designed for people who want to create, search, and edit SQLite or SQLCipher databases."
+      "description": "DB Browser for SQLite is a high quality, visual, open source tool designed for people who want to create, search, and edit SQLite or SQLCipher databases.",
+      "upgrade_code": ""
     },
     {
       "name": "DBeaver",
       "slug": "dbeaver-community/darwin",
       "platform": "darwin",
       "unique_identifier": "org.jkiss.dbeaver.core.product",
-      "description": "DBeaver is a universal database tool and SQL client."
+      "description": "DBeaver is a universal database tool and SQL client.",
+      "upgrade_code": ""
     },
     {
       "name": "DBeaverEE",
       "slug": "dbeaver-enterprise/darwin",
       "platform": "darwin",
       "unique_identifier": "com.dbeaver.product.enterprise",
-      "description": "DBeaver is a universal database tool and SQL client."
+      "description": "DBeaver is a universal database tool and SQL client.",
+      "upgrade_code": ""
     },
     {
       "name": "DBeaverLite",
       "slug": "dbeaverlite/darwin",
       "platform": "darwin",
       "unique_identifier": "com.dbeaver.product.lite",
-      "description": "DBeaver is a universal database tool and SQL client."
+      "description": "DBeaver is a universal database tool and SQL client.",
+      "upgrade_code": ""
     },
     {
       "name": "DBeaverUltimate",
       "slug": "dbeaverultimate/darwin",
       "platform": "darwin",
       "unique_identifier": "com.dbeaver.product.ultimate",
-      "description": "DBeaver is a universal database tool and SQL client."
+      "description": "DBeaver is a universal database tool and SQL client.",
+      "upgrade_code": ""
     },
     {
       "name": "Amazon DCV",
       "slug": "dcv-viewer/darwin",
       "platform": "darwin",
       "unique_identifier": "com.nicesoftware.dcvviewer",
-      "description": "DCV Viewer is used for connecting to the NICE DCV remote display protocol."
+      "description": "DCV Viewer is used for connecting to the NICE DCV remote display protocol.",
+      "upgrade_code": ""
     },
     {
       "name": "DeepL",
       "slug": "deepl/darwin",
       "platform": "darwin",
       "unique_identifier": "com.linguee.DeepLCopyTranslator",
-      "description": "DeepL is an AI-powered translator."
+      "description": "DeepL is an AI-powered translator.",
+      "upgrade_code": ""
     },
     {
       "name": "Dialpad",
       "slug": "dialpad/darwin",
       "platform": "darwin",
       "unique_identifier": "com.electron.dialpad",
-      "description": "Dialpad is a cloud communication platform."
+      "description": "Dialpad is a cloud communication platform.",
+      "upgrade_code": ""
     },
     {
       "name": "Discord",
       "slug": "discord/darwin",
       "platform": "darwin",
       "unique_identifier": "com.hnc.Discord",
-      "description": "Discord is voice and text chat software."
+      "description": "Discord is voice and text chat software.",
+      "upgrade_code": ""
     },
     {
       "name": "Discord",
       "slug": "discord/windows",
       "platform": "windows",
       "unique_identifier": "Discord",
-      "description": "Discord is voice and text chat software."
+      "description": "Discord is voice and text chat software.",
+      "upgrade_code": ""
     },
     {
       "name": "DisplayLink USB Graphics Software",
       "slug": "displaylink/darwin",
       "platform": "darwin",
       "unique_identifier": "com.displaylink.DisplayLinkUserAgent",
-      "description": "Drivers for DisplayLink docks, adapters and monitors."
+      "description": "Drivers for DisplayLink docks, adapters and monitors.",
+      "upgrade_code": ""
     },
     {
       "name": "Docker Desktop",
       "slug": "docker-desktop/darwin",
       "platform": "darwin",
       "unique_identifier": "com.electron.dockerdesktop",
-      "description": "Docker Desktop provides a seamless environment for building, sharing, and running containerized applications and microservices."
+      "description": "Docker Desktop provides a seamless environment for building, sharing, and running containerized applications and microservices.",
+      "upgrade_code": ""
     },
     {
       "name": "Docker Desktop",
       "slug": "docker/windows",
       "platform": "windows",
       "unique_identifier": "Docker Desktop",
-      "description": "Docker Desktop provides a seamless environment for building, sharing, and running containerized applications and microservices."
+      "description": "Docker Desktop provides a seamless environment for building, sharing, and running containerized applications and microservices.",
+      "upgrade_code": ""
     },
     {
       "name": "draw.io",
       "slug": "drawio/darwin",
       "platform": "darwin",
       "unique_identifier": "com.jgraph.drawio.desktop",
-      "description": "draw.io is a versatile diagramming or whiteboarding application."
+      "description": "draw.io is a versatile diagramming or whiteboarding application.",
+      "upgrade_code": ""
     },
     {
       "name": "Dropbox",
       "slug": "dropbox/darwin",
       "platform": "darwin",
       "unique_identifier": "com.getdropbox.dropbox",
-      "description": "Dropbox is a client for the Dropbox cloud storage service."
+      "description": "Dropbox is a client for the Dropbox cloud storage service.",
+      "upgrade_code": ""
     },
     {
       "name": "Eclipse IDE",
       "slug": "eclipse-ide/darwin",
       "platform": "darwin",
       "unique_identifier": "epp.package.committers",
-      "description": "Eclipse IDE is an Eclipse integrated development environment for Java."
+      "description": "Eclipse IDE is an Eclipse integrated development environment for Java.",
+      "upgrade_code": ""
     },
     {
       "name": "Egnyte",
       "slug": "egnyte/darwin",
       "platform": "darwin",
       "unique_identifier": "com.egnyte.DesktopApp",
-      "description": "Egnyte is a client for the Egnyte cloud storage service."
+      "description": "Egnyte is a client for the Egnyte cloud storage service.",
+      "upgrade_code": ""
     },
     {
       "name": "Elgato Control Center",
       "slug": "elgato-control-center/darwin",
       "platform": "darwin",
       "unique_identifier": "com.corsair.ControlCenter",
-      "description": "Elgate Control Center is an app to control your Elgato key lights."
+      "description": "Elgate Control Center is an app to control your Elgato key lights.",
+      "upgrade_code": ""
     },
     {
       "name": "Elgato Stream Deck",
       "slug": "elgato-stream-deck/darwin",
       "platform": "darwin",
       "unique_identifier": "com.elgato.StreamDeck",
-      "description": "Elgateo Stream Deck is an app to assign keys, and then decorate and label them, on a Stream Deck."
+      "description": "Elgateo Stream Deck is an app to assign keys, and then decorate and label them, on a Stream Deck.",
+      "upgrade_code": ""
     },
     {
       "name": "Evernote",
       "slug": "evernote/darwin",
       "platform": "darwin",
       "unique_identifier": "com.evernote.Evernote",
-      "description": "Evernote is an app for note taking, organising, task lists, and archiving."
+      "description": "Evernote is an app for note taking, organising, task lists, and archiving.",
+      "upgrade_code": ""
     },
     {
       "name": "ExpressVPN",
       "slug": "expressvpn/darwin",
       "platform": "darwin",
       "unique_identifier": "com.expressvpn.ExpressVPN",
-      "description": "ExpressVPN is a VPN client for secure internet access and private browsing."
+      "description": "ExpressVPN is a VPN client for secure internet access and private browsing.",
+      "upgrade_code": ""
     },
     {
       "name": "Figma",
       "slug": "figma/darwin",
       "platform": "darwin",
       "unique_identifier": "com.figma.Desktop",
-      "description": "Figma is a collaborative design tool for teams to create, prototype, and share designs in real time."
+      "description": "Figma is a collaborative design tool for teams to create, prototype, and share designs in real time.",
+      "upgrade_code": ""
     },
     {
       "name": "Figma",
       "slug": "figma/windows",
       "platform": "windows",
       "unique_identifier": "Figma",
-      "description": "Figma is a collaborative design tool for teams to create, prototype, and share designs in real time."
+      "description": "Figma is a collaborative design tool for teams to create, prototype, and share designs in real time.",
+      "upgrade_code": ""
     },
     {
       "name": "FileMaker Pro",
       "slug": "filemaker-pro/darwin",
       "platform": "darwin",
       "unique_identifier": "com.filemaker.client.pro12",
-      "description": "FileMaker Pro is a relational database and rapid application development platform."
+      "description": "FileMaker Pro is a relational database and rapid application development platform.",
+      "upgrade_code": ""
     },
     {
       "name": "Mozilla Firefox",
       "slug": "firefox/darwin",
       "platform": "darwin",
       "unique_identifier": "org.mozilla.firefox",
-      "description": "Firefox is a powerful, open-source web browser built for speed, privacy, and customization."
+      "description": "Firefox is a powerful, open-source web browser built for speed, privacy, and customization.",
+      "upgrade_code": ""
     },
     {
       "name": "Mozilla Firefox",
       "slug": "firefox/windows",
       "platform": "windows",
       "unique_identifier": "Mozilla Firefox (x64 en-US)",
-      "description": "Firefox is a powerful, open-source web browser built for speed, privacy, and customization."
+      "description": "Firefox is a powerful, open-source web browser built for speed, privacy, and customization.",
+      "upgrade_code": ""
     },
     {
       "name": "Fork",
       "slug": "fork/darwin",
       "platform": "darwin",
       "unique_identifier": "com.DanPristupov.Fork",
-      "description": "Fork is a git client."
+      "description": "Fork is a git client.",
+      "upgrade_code": ""
     },
     {
       "name": "Front",
       "slug": "front/darwin",
       "platform": "darwin",
       "unique_identifier": "com.frontapp.Front",
-      "description": "Front is a customer communication platform."
+      "description": "Front is a customer communication platform.",
+      "upgrade_code": ""
     },
     {
       "name": "Ghostty",
       "slug": "ghostty/darwin",
       "platform": "darwin",
       "unique_identifier": "com.mitchellh.ghostty",
-      "description": "Ghostty is a terminal emulator that uses platform-native UI and GPU acceleration."
+      "description": "Ghostty is a terminal emulator that uses platform-native UI and GPU acceleration.",
+      "upgrade_code": ""
     },
     {
       "name": "GIMP",
       "slug": "gimp/darwin",
       "platform": "darwin",
       "unique_identifier": "org.gimp.gimp-3.0",
-      "description": "GIMP is a free and open-source image editor."
+      "description": "GIMP is a free and open-source image editor.",
+      "upgrade_code": ""
     },
     {
       "name": "GitHub Desktop",
       "slug": "github-desktop/windows",
       "platform": "windows",
       "unique_identifier": "GitHub Desktop",
-      "description": "GitHub Desktop is a desktop client for GitHub repositories."
+      "description": "GitHub Desktop is a desktop client for GitHub repositories.",
+      "upgrade_code": "{00D8E2EE-13EA-5BEB-87F0-70EFC46A7D4A}"
     },
     {
       "name": "GitHub Desktop",
       "slug": "github/darwin",
       "platform": "darwin",
       "unique_identifier": "com.github.GitHubClient",
-      "description": "GitHub Desktop is a desktop client for GitHub repositories."
+      "description": "GitHub Desktop is a desktop client for GitHub repositories.",
+      "upgrade_code": ""
     },
     {
       "name": "GitKraken",
       "slug": "gitkraken/darwin",
       "platform": "darwin",
       "unique_identifier": "com.axosoft.gitkraken",
-      "description": "GitKraken is a git client focusing on productivity."
+      "description": "GitKraken is a git client focusing on productivity.",
+      "upgrade_code": ""
     },
     {
       "name": "GoLand",
       "slug": "goland/darwin",
       "platform": "darwin",
       "unique_identifier": "com.jetbrains.goland",
-      "description": "GoLand is a Go (golang) IDE by JetBrains"
+      "description": "GoLand is a Go (golang) IDE by JetBrains",
+      "upgrade_code": ""
     },
     {
       "name": "Google Chrome",
       "slug": "google-chrome/darwin",
       "platform": "darwin",
       "unique_identifier": "com.google.Chrome",
-      "description": "Google Chrome is a fast, reliable web browser built for performance and compatibility across platforms."
+      "description": "Google Chrome is a fast, reliable web browser built for performance and compatibility across platforms.",
+      "upgrade_code": ""
     },
     {
       "name": "Google Chrome",
       "slug": "google-chrome/windows",
       "platform": "windows",
       "unique_identifier": "Google Chrome",
-      "description": "Google Chrome is a fast, reliable web browser built for performance and compatibility across platforms."
+      "description": "Google Chrome is a fast, reliable web browser built for performance and compatibility across platforms.",
+      "upgrade_code": "{C1DFDF69-5945-32F2-A35E-EE94C99C7CF4}"
     },
     {
       "name": "Google Drive",
       "slug": "google-drive/darwin",
       "platform": "darwin",
       "unique_identifier": "com.google.drivefs",
-      "description": "Google Drive is a cloud storage service that allows you to store, sync, and share files across devices with seamless access to your Google Workspace content."
+      "description": "Google Drive is a cloud storage service that allows you to store, sync, and share files across devices with seamless access to your Google Workspace content.",
+      "upgrade_code": ""
     },
     {
       "name": "Google Drive",
       "slug": "google-drive/windows",
       "platform": "windows",
       "unique_identifier": "Google Drive",
-      "description": "Google Drive is a cloud storage service that allows you to store, sync, and share files across devices with seamless access to your Google Workspace content."
+      "description": "Google Drive is a cloud storage service that allows you to store, sync, and share files across devices with seamless access to your Google Workspace content.",
+      "upgrade_code": ""
     },
     {
       "name": "GPG Suite",
       "slug": "gpg-suite/darwin",
       "platform": "darwin",
       "unique_identifier": "org.gpgtools.gpgkeychain",
-      "description": "GPG Suite is a collection of tools to protect your emails and files."
+      "description": "GPG Suite is a collection of tools to protect your emails and files.",
+      "upgrade_code": ""
     },
     {
       "name": "Grammarly Desktop",
       "slug": "grammarly-desktop/darwin",
       "platform": "darwin",
       "unique_identifier": "com.grammarly.ProjectLlama",
-      "description": "Grammarly Desktop is an AI writing assistant."
+      "description": "Grammarly Desktop is an AI writing assistant.",
+      "upgrade_code": ""
     },
     {
       "name": "Granola",
       "slug": "granola/darwin",
       "platform": "darwin",
       "unique_identifier": "com.granola.app",
-      "description": "Granola is an AI-powered notepad for meetings."
+      "description": "Granola is an AI-powered notepad for meetings.",
+      "upgrade_code": ""
     },
     {
       "name": "Hyper",
       "slug": "hyper/darwin",
       "platform": "darwin",
       "unique_identifier": "co.zeit.hyper",
-      "description": "Hyper is a terminal built on web technologies."
+      "description": "Hyper is a terminal built on web technologies.",
+      "upgrade_code": ""
     },
     {
       "name": "iMazing Profile Editor",
       "slug": "imazing-profile-editor/darwin",
       "platform": "darwin",
       "unique_identifier": "com.DigiDNA.iMazingProfileEditorMac",
-      "description": "iMazing Profile Editor is an app for creating and editing Apple configuration profiles."
+      "description": "iMazing Profile Editor is an app for creating and editing Apple configuration profiles.",
+      "upgrade_code": ""
     },
     {
       "name": "Inkscape",
       "slug": "inkscape/darwin",
       "platform": "darwin",
       "unique_identifier": "org.inkscape.Inkscape",
-      "description": "Inkscape is a vector graphics editor."
+      "description": "Inkscape is a vector graphics editor.",
+      "upgrade_code": ""
     },
     {
       "name": "Inkscape",
       "slug": "inkscape/windows",
       "platform": "windows",
       "unique_identifier": "Inkscape",
-      "description": "Inkscape is a vector graphics editor."
+      "description": "Inkscape is a vector graphics editor.",
+      "upgrade_code": "{4D5FEDAA-84A0-48BE-BD2A-08246398361A}"
     },
     {
       "name": "Insomnia",
       "slug": "insomnia/darwin",
       "platform": "darwin",
       "unique_identifier": "com.insomnia.app",
-      "description": "Insomnia is an open-source, cross-platform API client primarily used for designing, testing, and debugging REST APIs"
+      "description": "Insomnia is an open-source, cross-platform API client primarily used for designing, testing, and debugging REST APIs",
+      "upgrade_code": ""
     },
     {
       "name": "IntelliJ IDEA CE",
       "slug": "intellij-idea-ce/darwin",
       "platform": "darwin",
       "unique_identifier": "com.jetbrains.intellij.ce",
-      "description": "IntelliJ IDEA CE is a community edition IDE for Java development by JetBrains."
+      "description": "IntelliJ IDEA CE is a community edition IDE for Java development by JetBrains.",
+      "upgrade_code": ""
     },
     {
       "name": "IntelliJ IDEA Ultimate",
       "slug": "intellij-idea/darwin",
       "platform": "darwin",
       "unique_identifier": "com.jetbrains.intellij",
-      "description": "IntelliJ IDEA Ultimate is a Java IDE by JetBrains."
+      "description": "IntelliJ IDEA Ultimate is a Java IDE by JetBrains.",
+      "upgrade_code": ""
     },
     {
       "name": "Company Portal",
       "slug": "intune-company-portal/darwin",
       "platform": "darwin",
       "unique_identifier": "com.microsoft.CompanyPortalMac",
-      "description": "Microsoft Intune Company Portal is the app for accessing company resources and managing devices in a secure environment."
+      "description": "Microsoft Intune Company Portal is the app for accessing company resources and managing devices in a secure environment.",
+      "upgrade_code": ""
     },
     {
       "name": "iTerm2",
       "slug": "iterm2/darwin",
       "platform": "darwin",
       "unique_identifier": "com.googlecode.iterm2",
-      "description": "iTerm2 is a terminal emulator alternative to Apple's Terminal app."
+      "description": "iTerm2 is a terminal emulator alternative to Apple's Terminal app.",
+      "upgrade_code": ""
     },
     {
       "name": "Jabra Direct",
       "slug": "jabra-direct/darwin",
       "platform": "darwin",
       "unique_identifier": "com.jabra.directonline",
-      "description": "Jabra Direct is an app to optimise and personalise your Jabra headset."
+      "description": "Jabra Direct is an app to optimise and personalise your Jabra headset.",
+      "upgrade_code": ""
     },
     {
       "name": "JetBrains Toolbox",
       "slug": "jetbrains-toolbox/darwin",
       "platform": "darwin",
       "unique_identifier": "com.jetbrains.toolbox",
-      "description": "JetBrains tools manager."
+      "description": "JetBrains tools manager.",
+      "upgrade_code": ""
     },
     {
       "name": "KeePassXC",
       "slug": "keepassxc/darwin",
       "platform": "darwin",
       "unique_identifier": "org.keepassx.keepassxc",
-      "description": "KeePassXC is a password manager app."
+      "description": "KeePassXC is a password manager app.",
+      "upgrade_code": ""
     },
     {
       "name": "KeePassXC",
       "slug": "keepassxc/windows",
       "platform": "windows",
       "unique_identifier": "KeePassXC",
-      "description": "KeePassXC is a cross-platform password manager for securely storing passwords and other sensitive data."
+      "description": "KeePassXC is a cross-platform password manager for securely storing passwords and other sensitive data.",
+      "upgrade_code": "{88785A72-3EAE-4F29-89E3-BC6B19BA9A5B}"
     },
     {
       "name": "Keeper Password Manager",
       "slug": "keeper-password-manager/darwin",
       "platform": "darwin",
       "unique_identifier": "com.keepersecurity.passwordmanager",
-      "description": "Keeper Password Manager is a password manager application and digital vault."
+      "description": "Keeper Password Manager is a password manager application and digital vault.",
+      "upgrade_code": ""
     },
     {
       "name": "Keka",
       "slug": "keka/darwin",
       "platform": "darwin",
       "unique_identifier": "com.aone.keka",
-      "description": "Keka is a file archiver."
+      "description": "Keka is a file archiver.",
+      "upgrade_code": ""
     },
     {
       "name": "LastPass",
       "slug": "lastpass/windows",
       "platform": "windows",
       "unique_identifier": "LastPass",
-      "description": "LastPass is a password manager."
+      "description": "LastPass is a password manager.",
+      "upgrade_code": "{5CD146E8-4D50-4247-AA0E-5DBFE0B2660C}"
     },
     {
       "name": "Lens",
       "slug": "lens/darwin",
       "platform": "darwin",
       "unique_identifier": "com.electron.kontena-lens",
-      "description": "Lens is a Kubernetes IDE."
+      "description": "Lens is a Kubernetes IDE.",
+      "upgrade_code": ""
     },
     {
       "name": "LibreOffice",
       "slug": "libreoffice/darwin",
       "platform": "darwin",
       "unique_identifier": "org.libreoffice.script",
-      "description": "LibreOffice is a free cross-platform office suite."
+      "description": "LibreOffice is a free cross-platform office suite.",
+      "upgrade_code": ""
     },
     {
       "name": "Linear",
       "slug": "linear-linear/darwin",
       "platform": "darwin",
       "unique_identifier": "com.linear",
-      "description": "Linear is an app to manage software development and track bugs."
+      "description": "Linear is an app to manage software development and track bugs.",
+      "upgrade_code": ""
     },
     {
       "name": "Little Snitch",
       "slug": "little-snitch/darwin",
       "platform": "darwin",
       "unique_identifier": "at.obdev.LittleSnitch",
-      "description": "Little Snitch is a network monitor and application firewall that provides real-time visibility and control over network connections for macOS."
+      "description": "Little Snitch is a network monitor and application firewall that provides real-time visibility and control over network connections for macOS.",
+      "upgrade_code": ""
     },
     {
       "name": "Logi Options+",
       "slug": "logi-options+/darwin",
       "platform": "darwin",
       "unique_identifier": "com.logi.optionsplus",
-      "description": "Logi Options+ is software for managing Logitech devices."
+      "description": "Logi Options+ is software for managing Logitech devices.",
+      "upgrade_code": ""
     },
     {
       "name": "Loom",
       "slug": "loom/darwin",
       "platform": "darwin",
       "unique_identifier": "com.loom.desktop",
-      "description": "Loom is screen and video recording software."
+      "description": "Loom is screen and video recording software.",
+      "upgrade_code": ""
     },
     {
       "name": "LuLu",
       "slug": "lulu/darwin",
       "platform": "darwin",
       "unique_identifier": "com.objective-see.lulu.app",
-      "description": "Open-source firewall to block unknown outgoing connections."
+      "description": "Open-source firewall to block unknown outgoing connections.",
+      "upgrade_code": ""
     },
     {
       "name": "Maccy",
       "slug": "maccy/darwin",
       "platform": "darwin",
       "unique_identifier": "org.p0deje.Maccy",
-      "description": "Maccy is a clipboard manager."
+      "description": "Maccy is a clipboard manager.",
+      "upgrade_code": ""
     },
     {
       "name": "Mattermost",
       "slug": "mattermost/darwin",
       "platform": "darwin",
       "unique_identifier": "Mattermost.Desktop",
-      "description": "Mattermost is an open-source, self-hosted Slack-alternative."
+      "description": "Mattermost is an open-source, self-hosted Slack-alternative.",
+      "upgrade_code": ""
     },
     {
       "name": "Messenger",
       "slug": "messenger/darwin",
       "platform": "darwin",
       "unique_identifier": "com.facebook.archon.developerID",
-      "description": "Messenger is a native desktop app for Messenger (formerly Facebook Messenger)."
+      "description": "Messenger is a native desktop app for Messenger (formerly Facebook Messenger).",
+      "upgrade_code": ""
     },
     {
       "name": "Microsoft Auto Update",
       "slug": "microsoft-auto-update/darwin",
       "platform": "darwin",
       "unique_identifier": "com.microsoft.autoupdate2",
-      "description": "Microsoft Auto Update provides updates to various Microsoft products."
+      "description": "Microsoft Auto Update provides updates to various Microsoft products.",
+      "upgrade_code": ""
     },
     {
       "name": "Microsoft Edge",
       "slug": "microsoft-edge/darwin",
       "platform": "darwin",
       "unique_identifier": "com.microsoft.edgemac",
-      "description": "Microsoft Edge is a secure, fast, and modern web browser built for productivity and compatibility."
+      "description": "Microsoft Edge is a secure, fast, and modern web browser built for productivity and compatibility.",
+      "upgrade_code": ""
     },
     {
       "name": "Microsoft Edge",
       "slug": "microsoft-edge/windows",
       "platform": "windows",
       "unique_identifier": "Microsoft Edge",
-      "description": "Microsoft Edge is a secure, fast, and modern web browser built for productivity and compatibility."
+      "description": "Microsoft Edge is a secure, fast, and modern web browser built for productivity and compatibility.",
+      "upgrade_code": "{883C2625-37F7-357F-A0F4-DFAF391B2B9C}"
     },
     {
       "name": "Microsoft Excel",
       "slug": "microsoft-excel/darwin",
       "platform": "darwin",
       "unique_identifier": "com.microsoft.Excel",
-      "description": "Microsoft Excel is the industry-standard spreadsheet software, perfect for data analysis, reporting, and visualization."
+      "description": "Microsoft Excel is the industry-standard spreadsheet software, perfect for data analysis, reporting, and visualization.",
+      "upgrade_code": ""
     },
     {
       "name": "Microsoft OneNote",
       "slug": "microsoft-onenote/darwin",
       "platform": "darwin",
       "unique_identifier": "com.microsoft.onenote.mac",
-      "description": "Microsoft OneNote is a digital note taking app."
+      "description": "Microsoft OneNote is a digital note taking app.",
+      "upgrade_code": ""
     },
     {
       "name": "Microsoft Outlook",
       "slug": "microsoft-outlook/darwin",
       "platform": "darwin",
       "unique_identifier": "com.microsoft.Outlook",
-      "description": "Microsoft Outlook is an email client."
+      "description": "Microsoft Outlook is an email client.",
+      "upgrade_code": ""
     },
     {
       "name": "Microsoft PowerPoint",
       "slug": "microsoft-powerpoint/darwin",
       "platform": "darwin",
       "unique_identifier": "com.microsoft.Powerpoint",
-      "description": "Microsoft PowerPoint empowers you to create clean slideshow presentations and intricate pitch decks."
+      "description": "Microsoft PowerPoint empowers you to create clean slideshow presentations and intricate pitch decks.",
+      "upgrade_code": ""
     },
     {
       "name": "Microsoft Teams",
       "slug": "microsoft-teams/darwin",
       "platform": "darwin",
       "unique_identifier": "com.microsoft.teams2",
-      "description": "Microsoft Teams is an all-in-one collaboration platform for meetings, chats, calls, and document sharing."
+      "description": "Microsoft Teams is an all-in-one collaboration platform for meetings, chats, calls, and document sharing.",
+      "upgrade_code": ""
     },
     {
       "name": "Microsoft Word",
       "slug": "microsoft-word/darwin",
       "platform": "darwin",
       "unique_identifier": "com.microsoft.Word",
-      "description": "Microsoft Word is the industry-standard word processor for creating, editing, and sharing professional documents."
+      "description": "Microsoft Word is the industry-standard word processor for creating, editing, and sharing professional documents.",
+      "upgrade_code": ""
     },
     {
       "name": "Miro",
       "slug": "miro/darwin",
       "platform": "darwin",
       "unique_identifier": "com.electron.realtimeboard",
-      "description": "Miro is an online collaborative whiteboard platform."
+      "description": "Miro is an online collaborative whiteboard platform.",
+      "upgrade_code": ""
     },
     {
       "name": "MongoDB Compass",
       "slug": "mongodb-compass/darwin",
       "platform": "darwin",
       "unique_identifier": "com.mongodb.compass",
-      "description": "MongoDB Compass is an interactive tool for analyzing MongoDB data."
+      "description": "MongoDB Compass is an interactive tool for analyzing MongoDB data.",
+      "upgrade_code": ""
     },
     {
       "name": "MySQL Workbench",
       "slug": "mysqlworkbench/darwin",
       "platform": "darwin",
       "unique_identifier": "com.oracle.workbench.MySQLWorkbench",
-      "description": "MySQL Workbench is a visual tool to design, develop and administer MySQL servers."
+      "description": "MySQL Workbench is a visual tool to design, develop and administer MySQL servers.",
+      "upgrade_code": ""
     },
     {
       "name": "Nextcloud",
       "slug": "nextcloud/darwin",
       "platform": "darwin",
       "unique_identifier": "com.nextcloud.desktopclient",
-      "description": "Nextcloud is a self-hosted file sync and sharing platform that provides secure access to your data across devices with collaboration features."
+      "description": "Nextcloud is a self-hosted file sync and sharing platform that provides secure access to your data across devices with collaboration features.",
+      "upgrade_code": ""
     },
     {
       "name": "NordPass",
       "slug": "nordpass/darwin",
       "platform": "darwin",
       "unique_identifier": "com.nordsec.nordpass",
-      "description": "NordPass is a password manager."
+      "description": "NordPass is a password manager.",
+      "upgrade_code": ""
     },
     {
       "name": "NordVPN",
       "slug": "nordvpn/darwin",
       "platform": "darwin",
       "unique_identifier": "com.nordvpn.macos",
-      "description": "NordVPN is a VPN client for secure internet access and private browsing."
+      "description": "NordVPN is a VPN client for secure internet access and private browsing.",
+      "upgrade_code": ""
     },
     {
       "name": "Notepad++",
       "slug": "notepad++/windows",
       "platform": "windows",
       "unique_identifier": "Notepad++",
-      "description": "Notepad++ is a text editor for Windows."
+      "description": "Notepad++ is a text editor for Windows.",
+      "upgrade_code": ""
     },
     {
       "name": "Notion Calendar",
       "slug": "notion-calendar/darwin",
       "platform": "darwin",
       "unique_identifier": "com.cron.electron",
-      "description": "Notion Calendar is an app to manage your time and work, together."
+      "description": "Notion Calendar is an app to manage your time and work, together.",
+      "upgrade_code": ""
     },
     {
       "name": "Notion",
       "slug": "notion/darwin",
       "platform": "darwin",
       "unique_identifier": "notion.id",
-      "description": "Notion is an all-in-one workspace for writing, planning, collaborating, and organizing."
+      "description": "Notion is an all-in-one workspace for writing, planning, collaborating, and organizing.",
+      "upgrade_code": ""
     },
     {
       "name": "Notion",
       "slug": "notion/windows",
       "platform": "windows",
       "unique_identifier": "Notion 6.1.0",
-      "description": "Notion is an all-in-one workspace for writing, planning, collaborating, and organizing."
+      "description": "Notion is an all-in-one workspace for writing, planning, collaborating, and organizing.",
+      "upgrade_code": ""
     },
     {
       "name": "Nova",
       "slug": "nova/darwin",
       "platform": "darwin",
       "unique_identifier": "com.panic.Nova",
-      "description": "Nova is a native code editor by Panic."
+      "description": "Nova is a native code editor by Panic.",
+      "upgrade_code": ""
     },
     {
       "name": "Nudge",
       "slug": "nudge/darwin",
       "platform": "darwin",
       "unique_identifier": "com.github.macadmins.Nudge",
-      "description": "Nudge is an application for enforcing OS updates."
+      "description": "Nudge is an application for enforcing OS updates.",
+      "upgrade_code": ""
     },
     {
       "name": "OBS",
       "slug": "obs/darwin",
       "platform": "darwin",
       "unique_identifier": "com.obsproject.obs-studio",
-      "description": "OBS is open-source software for live streaming and screen recording."
+      "description": "OBS is open-source software for live streaming and screen recording.",
+      "upgrade_code": ""
     },
     {
       "name": "OBS",
       "slug": "obs/windows",
       "platform": "windows",
       "unique_identifier": "OBS Studio",
-      "description": "OBS is open-source software for live streaming and screen recording."
+      "description": "OBS is open-source software for live streaming and screen recording.",
+      "upgrade_code": ""
     },
     {
       "name": "Obsidian",
       "slug": "obsidian/darwin",
       "platform": "darwin",
       "unique_identifier": "md.obsidian",
-      "description": "Obsidian is a knowledge base that works on top of a local folder of plain text Markdown files."
+      "description": "Obsidian is a knowledge base that works on top of a local folder of plain text Markdown files.",
+      "upgrade_code": ""
     },
     {
       "name": "Okta Verify",
       "slug": "okta-verify/darwin",
       "platform": "darwin",
       "unique_identifier": "com.okta.mobile",
-      "description": "Okta Verify is a multi-factor authentication app that provides secure identity verification and passwordless sign-in for users accessing Okta-protected applications."
+      "description": "Okta Verify is a multi-factor authentication app that provides secure identity verification and passwordless sign-in for users accessing Okta-protected applications.",
+      "upgrade_code": ""
     },
     {
       "name": "OmniGraffle",
       "slug": "omnigraffle/darwin",
       "platform": "darwin",
       "unique_identifier": "com.omnigroup.OmniGraffle7",
-      "description": "OmniGraffle is visual communication software."
+      "description": "OmniGraffle is visual communication software.",
+      "upgrade_code": ""
     },
     {
       "name": "Omnissa Horizon Client",
       "slug": "omnissa-horizon-client/darwin",
       "platform": "darwin",
       "unique_identifier": "com.omnissa.horizon.client.mac",
-      "description": "Omnissa Horizon Client is a tool end users use to access remote virtual desktops."
+      "description": "Omnissa Horizon Client is a tool end users use to access remote virtual desktops.",
+      "upgrade_code": ""
     },
     {
       "name": "OneDrive",
       "slug": "onedrive/darwin",
       "platform": "darwin",
       "unique_identifier": "com.microsoft.OneDrive",
-      "description": "OneDrive is Microsoft's cloud storage client."
+      "description": "OneDrive is Microsoft's cloud storage client.",
+      "upgrade_code": ""
     },
     {
       "name": "Opera",
       "slug": "opera/darwin",
       "platform": "darwin",
       "unique_identifier": "com.operasoftware.Opera",
-      "description": "Opera is a web browser."
+      "description": "Opera is a web browser.",
+      "upgrade_code": ""
     },
     {
       "name": "OrbStack",
       "slug": "orbstack/darwin",
       "platform": "darwin",
       "unique_identifier": "dev.kdrag0n.MacVirt",
-      "description": "OrbStack is a replacement for Docker Desktop."
+      "description": "OrbStack is a replacement for Docker Desktop.",
+      "upgrade_code": ""
     },
     {
       "name": "P4V",
       "slug": "p4v/darwin",
       "platform": "darwin",
       "unique_identifier": "com.perforce.p4v",
-      "description": "P4V is an app for accessing and managing Perforce version control repositories via a graphical interface."
+      "description": "P4V is an app for accessing and managing Perforce version control repositories via a graphical interface.",
+      "upgrade_code": ""
     },
     {
       "name": "Parallels Desktop",
       "slug": "parallels/darwin",
       "platform": "darwin",
       "unique_identifier": "com.parallels.desktop.console",
-      "description": "Parallels Desktop is virtualization software."
+      "description": "Parallels Desktop is virtualization software.",
+      "upgrade_code": ""
     },
     {
       "name": "pgAdmin4",
       "slug": "pgadmin4/darwin",
       "platform": "darwin",
       "unique_identifier": "org.pgadmin.pgadmin4",
-      "description": "pgAdmin4 is an administration and development platform for PostgreSQL."
+      "description": "pgAdmin4 is an administration and development platform for PostgreSQL.",
+      "upgrade_code": ""
     },
     {
       "name": "PhpStorm",
       "slug": "phpstorm/darwin",
       "platform": "darwin",
       "unique_identifier": "com.jetbrains.PhpStorm",
-      "description": "PhpStorm is a PHP IDE by JetBrains."
+      "description": "PhpStorm is a PHP IDE by JetBrains.",
+      "upgrade_code": ""
     },
     {
       "name": "Podman Desktop",
       "slug": "podman-desktop/darwin",
       "platform": "darwin",
       "unique_identifier": "io.podmandesktop.PodmanDesktop",
-      "description": "Open source tool for developers to work with containers and Kubernetes."
+      "description": "Open source tool for developers to work with containers and Kubernetes.",
+      "upgrade_code": ""
     },
     {
       "name": "Postman",
       "slug": "postman/darwin",
       "platform": "darwin",
       "unique_identifier": "com.postmanlabs.mac",
-      "description": "Postman is a collaboration platform for API development that simplifies building, testing, and sharing APIs."
+      "description": "Postman is a collaboration platform for API development that simplifies building, testing, and sharing APIs.",
+      "upgrade_code": ""
     },
     {
       "name": "Postman",
       "slug": "postman/windows",
       "platform": "windows",
       "unique_identifier": "Postman x64 11.75.4",
-      "description": "Postman is a collaboration platform for API development that simplifies building, testing, and sharing APIs."
+      "description": "Postman is a collaboration platform for API development that simplifies building, testing, and sharing APIs.",
+      "upgrade_code": ""
     },
     {
       "name": "Pritunl",
       "slug": "pritunl/darwin",
       "platform": "darwin",
       "unique_identifier": "com.electron.pritunl",
-      "description": "Pritunl is an OpenVPN client."
+      "description": "Pritunl is an OpenVPN client.",
+      "upgrade_code": ""
     },
     {
       "name": "Privileges",
       "slug": "privileges/darwin",
       "platform": "darwin",
       "unique_identifier": "corp.sap.privileges",
-      "description": "Privileges is an admin rights switcher for macOS."
+      "description": "Privileges is an admin rights switcher for macOS.",
+      "upgrade_code": ""
     },
     {
       "name": "Proton Mail",
       "slug": "proton-mail/darwin",
       "platform": "darwin",
       "unique_identifier": "ch.protonmail.desktop",
-      "description": "Proton Mail is a client for Proton Mail and Proton Calendar."
+      "description": "Proton Mail is a client for Proton Mail and Proton Calendar.",
+      "upgrade_code": ""
     },
     {
       "name": "ProtonVPN",
       "slug": "protonvpn/darwin",
       "platform": "darwin",
       "unique_identifier": "ch.protonvpn.mac",
-      "description": "ProtonVPN is a VPN client focusing on security."
+      "description": "ProtonVPN is a VPN client focusing on security.",
+      "upgrade_code": ""
     },
     {
       "name": "Proxifier",
       "slug": "proxifier/darwin",
       "platform": "darwin",
       "unique_identifier": "com.initex.proxifier.v3.macos",
-      "description": "Proxifier is an app that allows network applications that do not support working through proxy servers to operate through a SOCKS or HTTPS proxy and chains."
+      "description": "Proxifier is an app that allows network applications that do not support working through proxy servers to operate through a SOCKS or HTTPS proxy and chains.",
+      "upgrade_code": ""
     },
     {
       "name": "PuTTY",
       "slug": "putty/windows",
       "platform": "windows",
       "unique_identifier": "PuTTY release 0.83 (x64)",
-      "description": "PuTTY is a free, open-source SSH and Telnet client for Windows."
+      "description": "PuTTY is a free, open-source SSH and Telnet client for Windows.",
+      "upgrade_code": "{C9EAA861-2B72-4FAF-9FEE-EEB1AD5FD15E}"
     },
     {
       "name": "PyCharm Community Edition",
       "slug": "pycharm-ce/darwin",
       "platform": "darwin",
       "unique_identifier": "com.jetbrains.pycharm.ce",
-      "description": "PyCharm Community Edition is a Jetbrains IDE for Python programming - Community Edition"
+      "description": "PyCharm Community Edition is a Jetbrains IDE for Python programming - Community Edition",
+      "upgrade_code": ""
     },
     {
       "name": "PyCharm Professional",
       "slug": "pycharm/darwin",
       "platform": "darwin",
       "unique_identifier": "com.jetbrains.pycharm",
-      "description": "PyCharm Professional is a Jetbrains IDE for professional Python development. This version includes advanced features and requires a valid license."
+      "description": "PyCharm Professional is a Jetbrains IDE for professional Python development. This version includes advanced features and requires a valid license.",
+      "upgrade_code": ""
     },
     {
       "name": "Quip",
       "slug": "quip/darwin",
       "platform": "darwin",
       "unique_identifier": "com.quip.Desktop",
-      "description": "Quip is a tool for teams to create living documents."
+      "description": "Quip is a tool for teams to create living documents.",
+      "upgrade_code": ""
     },
     {
       "name": "Rancher Desktop",
       "slug": "rancher/darwin",
       "platform": "darwin",
       "unique_identifier": "io.rancherdesktop.app",
-      "description": "Rancher Desktop is an app for kubernetes and container management on the desktop."
+      "description": "Rancher Desktop is an app for kubernetes and container management on the desktop.",
+      "upgrade_code": ""
     },
     {
       "name": "RapidAPI",
       "slug": "rapidapi/darwin",
       "platform": "darwin",
       "unique_identifier": "com.luckymarmot.Paw",
-      "description": "RapidAPI is an HTTP client that helps testing and describing APIs."
+      "description": "RapidAPI is an HTTP client that helps testing and describing APIs.",
+      "upgrade_code": ""
     },
     {
       "name": "Raycast",
       "slug": "raycast/darwin",
       "platform": "darwin",
       "unique_identifier": "com.raycast.macos",
-      "description": "Raycast is an app that allows you to control your tools with a few keystrokes."
+      "description": "Raycast is an app that allows you to control your tools with a few keystrokes.",
+      "upgrade_code": ""
     },
     {
       "name": "Rectangle",
       "slug": "rectangle/darwin",
       "platform": "darwin",
       "unique_identifier": "com.knollsoft.Rectangle",
-      "description": "Rectangle is an app to move and resize windows using keyboard shortcuts or snap areas."
+      "description": "Rectangle is an app to move and resize windows using keyboard shortcuts or snap areas.",
+      "upgrade_code": ""
     },
     {
       "name": "Rider",
       "slug": "rider/darwin",
       "platform": "darwin",
       "unique_identifier": "com.jetbrains.rider",
-      "description": "Rider is a .NET IDE by JetBrains."
+      "description": "Rider is a .NET IDE by JetBrains.",
+      "upgrade_code": ""
     },
     {
       "name": "Royal TSX",
       "slug": "royal-tsx/darwin",
       "platform": "darwin",
       "unique_identifier": "com.lemonmojo.RoyalTSX.App",
-      "description": "Royal TSX is a remote management solution."
+      "description": "Royal TSX is a remote management solution.",
+      "upgrade_code": ""
     },
     {
       "name": "RubyMine",
       "slug": "rubymine/darwin",
       "platform": "darwin",
       "unique_identifier": "com.jetbrains.rubymine",
-      "description": "Ruby on Rails IDE by JetBrains."
+      "description": "Ruby on Rails IDE by JetBrains.",
+      "upgrade_code": ""
     },
     {
       "name": "RustRover",
       "slug": "rustrover/darwin",
       "platform": "darwin",
       "unique_identifier": "com.jetbrains.rustrover",
-      "description": "Rust IDE by JetBrains."
+      "description": "Rust IDE by JetBrains.",
+      "upgrade_code": ""
     },
     {
       "name": "Santa",
       "slug": "santa/darwin",
       "platform": "darwin",
       "unique_identifier": "com.northpolesec.santa",
-      "description": "Santa is a binary authorization system for macOS."
+      "description": "Santa is a binary authorization system for macOS.",
+      "upgrade_code": ""
     },
     {
       "name": "Shottr",
       "slug": "shottr/darwin",
       "platform": "darwin",
       "unique_identifier": "cc.ffitch.shottr",
-      "description": "Shottr is a screenshot measurement and annotation tool."
+      "description": "Shottr is a screenshot measurement and annotation tool.",
+      "upgrade_code": ""
     },
     {
       "name": "Signal",
       "slug": "signal/darwin",
       "platform": "darwin",
       "unique_identifier": "org.whispersystems.signal-desktop",
-      "description": "Signal is an instant messaging application focusing on security."
+      "description": "Signal is an instant messaging application focusing on security.",
+      "upgrade_code": ""
     },
     {
       "name": "Sketch",
       "slug": "sketch/darwin",
       "platform": "darwin",
       "unique_identifier": "com.bohemiancoding.sketch3",
-      "description": "Sketch is a digital design and prototyping platform."
+      "description": "Sketch is a digital design and prototyping platform.",
+      "upgrade_code": ""
     },
     {
       "name": "Slack",
       "slug": "slack/darwin",
       "platform": "darwin",
       "unique_identifier": "com.tinyspeck.slackmacgap",
-      "description": "Slack is a team communication and collaboration software for modern workplaces."
+      "description": "Slack is a team communication and collaboration software for modern workplaces.",
+      "upgrade_code": ""
     },
     {
       "name": "Slack",
       "slug": "slack/windows",
       "platform": "windows",
       "unique_identifier": "Slack",
-      "description": "Slack is a team communication and collaboration software for modern workplaces."
+      "description": "Slack is a team communication and collaboration software for modern workplaces.",
+      "upgrade_code": ""
     },
     {
       "name": "Snagit",
       "slug": "snagit/darwin",
       "platform": "darwin",
       "unique_identifier": "com.TechSmith.Snagit",
-      "description": "Snagit is screen capture software."
+      "description": "Snagit is screen capture software.",
+      "upgrade_code": ""
     },
     {
       "name": "SourceTree",
       "slug": "sourcetree/darwin",
       "platform": "darwin",
       "unique_identifier": "com.torusknot.SourceTreeNotMAS",
-      "description": "SourceTree is a graphical client for Git version control."
+      "description": "SourceTree is a graphical client for Git version control.",
+      "upgrade_code": ""
     },
     {
       "name": "Sourcetree",
       "slug": "sourcetree/windows",
       "platform": "windows",
       "unique_identifier": "Sourcetree Enterprise",
-      "description": "SourceTree is a graphical client for Git version control."
+      "description": "SourceTree is a graphical client for Git version control.",
+      "upgrade_code": "{E18DCCFE-AFC4-42A5-A020-1FF11BF12D39}"
     },
     {
       "name": "Splashtop Business",
       "slug": "splashtop-business/darwin",
       "platform": "darwin",
       "unique_identifier": "com.splashtop.stb.macosx",
-      "description": "Splashtop Business is remote access software."
+      "description": "Splashtop Business is remote access software.",
+      "upgrade_code": ""
     },
     {
       "name": "Splashtop Streamer",
       "slug": "splashtop-streamer/darwin",
       "platform": "darwin",
       "unique_identifier": "com.splashtop.Splashtop-Streamer",
-      "description": "Splashtop Streamer is used to connect to and control computers."
+      "description": "Splashtop Streamer is used to connect to and control computers.",
+      "upgrade_code": ""
     },
     {
       "name": "Spotify",
       "slug": "spotify/darwin",
       "platform": "darwin",
       "unique_identifier": "com.spotify.client",
-      "description": "Spotify is a music streaming app."
+      "description": "Spotify is a music streaming app.",
+      "upgrade_code": ""
     },
     {
       "name": "Spotify",
       "slug": "spotify/windows",
       "platform": "windows",
       "unique_identifier": "Spotify",
-      "description": "Spotify is a music streaming app."
+      "description": "Spotify is a music streaming app.",
+      "upgrade_code": ""
     },
     {
       "name": "Stats",
       "slug": "stats/darwin",
       "platform": "darwin",
       "unique_identifier": "eu.exelban.Stats",
-      "description": "Stats is a system monitor for the menu bar."
+      "description": "Stats is a system monitor for the menu bar.",
+      "upgrade_code": ""
     },
     {
       "name": "Steam",
       "slug": "steam/darwin",
       "platform": "darwin",
       "unique_identifier": "com.valvesoftware.steam",
-      "description": "Steam is a video game digital distribution service."
+      "description": "Steam is a video game digital distribution service.",
+      "upgrade_code": ""
     },
     {
       "name": "Steam",
       "slug": "steam/windows",
       "platform": "windows",
       "unique_identifier": "Steam",
-      "description": "Steam is a video game digital distribution service."
+      "description": "Steam is a video game digital distribution service.",
+      "upgrade_code": ""
     },
     {
       "name": "Sublime Merge",
       "slug": "sublime-merge/darwin",
       "platform": "darwin",
       "unique_identifier": "com.sublimemerge",
-      "description": "Sublime Merge is a git client."
+      "description": "Sublime Merge is a git client.",
+      "upgrade_code": ""
     },
     {
       "name": "Sublime Text",
       "slug": "sublime-text/darwin",
       "platform": "darwin",
       "unique_identifier": "com.sublimetext.4",
-      "description": "Sublime Text is a text editor for code, markup, and prose."
+      "description": "Sublime Text is a text editor for code, markup, and prose.",
+      "upgrade_code": ""
     },
     {
       "name": "Sublime Text",
       "slug": "sublime-text/windows",
       "platform": "windows",
       "unique_identifier": "Sublime Text",
-      "description": "Sublime Text is a text editor for code, markup, and prose."
+      "description": "Sublime Text is a text editor for code, markup, and prose.",
+      "upgrade_code": ""
     },
     {
       "name": "Surfshark",
       "slug": "surfshark/darwin",
       "platform": "darwin",
       "unique_identifier": "com.surfshark.vpnclient.macos.direct",
-      "description": "Surfshark is a VPN client for secure internet access and private browsing."
+      "description": "Surfshark is a VPN client for secure internet access and private browsing.",
+      "upgrade_code": ""
     },
     {
       "name": "Suspicious Package",
       "slug": "suspicious-package/darwin",
       "platform": "darwin",
       "unique_identifier": "com.mothersruin.SuspiciousPackage",
-      "description": "Suspicious Package is an application for inspecting installer packages."
+      "description": "Suspicious Package is an application for inspecting installer packages.",
+      "upgrade_code": ""
     },
     {
       "name": "Tableau Desktop",
       "slug": "tableau/darwin",
       "platform": "darwin",
       "unique_identifier": "com.tableausoftware.Desktop.app",
-      "description": "Tableau Desktop is a powerful data visualization and business intelligence platform for analyzing and presenting data insights."
+      "description": "Tableau Desktop is a powerful data visualization and business intelligence platform for analyzing and presenting data insights.",
+      "upgrade_code": ""
     },
     {
       "name": "TablePlus",
       "slug": "tableplus/darwin",
       "platform": "darwin",
       "unique_identifier": "com.tinyapp.TablePlus",
-      "description": "TablePlus is a native GUI tool for relational databases."
+      "description": "TablePlus is a native GUI tool for relational databases.",
+      "upgrade_code": ""
     },
     {
       "name": "Tailscale",
       "slug": "tailscale-app/darwin",
       "platform": "darwin",
       "unique_identifier": "io.tailscale.ipn.macsys",
-      "description": "Tailscale is mesh VPN based on WireGuard."
+      "description": "Tailscale is mesh VPN based on WireGuard.",
+      "upgrade_code": ""
     },
     {
       "name": "Tailscale",
       "slug": "tailscale/windows",
       "platform": "windows",
       "unique_identifier": "Tailscale",
-      "description": "Tailscale is mesh VPN based on WireGuard."
+      "description": "Tailscale is mesh VPN based on WireGuard.",
+      "upgrade_code": "{C8F0A9CE-39DE-47FE-93B4-F33AC23790B5}"
     },
     {
       "name": "TeamViewer",
       "slug": "teamviewer/darwin",
       "platform": "darwin",
       "unique_identifier": "com.teamviewer.TeamViewer",
-      "description": "TeamViewer is a versatile remote access and connectivity platform trusted for secure remote desktop control, support, and collaboration."
+      "description": "TeamViewer is a versatile remote access and connectivity platform trusted for secure remote desktop control, support, and collaboration.",
+      "upgrade_code": ""
     },
     {
       "name": "TeamViewer",
       "slug": "teamviewer/windows",
       "platform": "windows",
       "unique_identifier": "TeamViewer",
-      "description": "TeamViewer is a versatile remote access and connectivity platform trusted for secure remote desktop control, support, and collaboration."
+      "description": "TeamViewer is a versatile remote access and connectivity platform trusted for secure remote desktop control, support, and collaboration.",
+      "upgrade_code": ""
     },
     {
       "name": "Telegram",
       "slug": "telegram/darwin",
       "platform": "darwin",
       "unique_identifier": "ru.keepcoder.Telegram",
-      "description": "Telegram is a messaging app with a focus on speed and security."
+      "description": "Telegram is a messaging app with a focus on speed and security.",
+      "upgrade_code": ""
     },
     {
       "name": "Telegram",
       "slug": "telegram/windows",
       "platform": "windows",
       "unique_identifier": "Telegram Desktop",
-      "description": "Telegram is a messaging app with a focus on speed and security."
+      "description": "Telegram is a messaging app with a focus on speed and security.",
+      "upgrade_code": ""
     },
     {
       "name": "Teleport Connect",
       "slug": "teleport-connect/darwin",
       "platform": "darwin",
       "unique_identifier": "gravitational.teleport.connect",
-      "description": "Teleport Connect is a developer-friendly browser for cloud infrastructure."
+      "description": "Teleport Connect is a developer-friendly browser for cloud infrastructure.",
+      "upgrade_code": ""
     },
     {
       "name": "Teleport Suite",
       "slug": "teleport-suite/darwin",
       "platform": "darwin",
       "unique_identifier": "com.gravitational.teleport.tsh",
-      "description": "Teleport Suite is a modern SSH server for teams managing distributed infrastructure."
+      "description": "Teleport Suite is a modern SSH server for teams managing distributed infrastructure.",
+      "upgrade_code": ""
     },
     {
       "name": "TextExpander",
       "slug": "textexpander/darwin",
       "platform": "darwin",
       "unique_identifier": "com.smileonmymac.textexpander",
-      "description": "TextExpander is an application that let's you create and insert pre-made snippets of text anywhere."
+      "description": "TextExpander is an application that let's you create and insert pre-made snippets of text anywhere.",
+      "upgrade_code": ""
     },
     {
       "name": "Thunderbird",
       "slug": "thunderbird/darwin",
       "platform": "darwin",
       "unique_identifier": "org.mozilla.thunderbird",
-      "description": "Thunderbird is a free and open-source e-mail client."
+      "description": "Thunderbird is a free and open-source e-mail client.",
+      "upgrade_code": ""
     },
     {
       "name": "Todoist",
       "slug": "todoist-app/darwin",
       "platform": "darwin",
       "unique_identifier": "com.todoist.mac.Todoist",
-      "description": "Todoist is a to do list and a planning center for individuals and teams."
+      "description": "Todoist is a to do list and a planning center for individuals and teams.",
+      "upgrade_code": ""
     },
     {
       "name": "Tower",
       "slug": "tower/darwin",
       "platform": "darwin",
       "unique_identifier": "com.fournova.Tower",
-      "description": "Tower is a git client focusing on power and productivity."
+      "description": "Tower is a git client focusing on power and productivity.",
+      "upgrade_code": ""
     },
     {
       "name": "Transmit",
       "slug": "transmit/darwin",
       "platform": "darwin",
       "unique_identifier": "com.panic.Transmit",
-      "description": "Transmit is a file transfer application."
+      "description": "Transmit is a file transfer application.",
+      "upgrade_code": ""
     },
     {
       "name": "Tunnelblick",
       "slug": "tunnelblick/darwin",
       "platform": "darwin",
       "unique_identifier": "net.tunnelblick.tunnelblick",
-      "description": "Tunnelblick is a free and open-source OpenVPN client."
+      "description": "Tunnelblick is a free and open-source OpenVPN client.",
+      "upgrade_code": ""
     },
     {
       "name": "Twingate",
       "slug": "twingate/darwin",
       "platform": "darwin",
       "unique_identifier": "com.twingate.macos",
-      "description": "Twingate is a zero trust network access platform."
+      "description": "Twingate is a zero trust network access platform.",
+      "upgrade_code": ""
     },
     {
       "name": "Twingate",
       "slug": "twingate/windows",
       "platform": "windows",
       "unique_identifier": "Twingate",
-      "description": "Twingate is a zero trust network access platform."
+      "description": "Twingate is a zero trust network access platform.",
+      "upgrade_code": "{11BA3B45-D8FA-4524-A085-80FB0A7CFC8C}"
     },
     {
       "name": "UTM",
       "slug": "utm/darwin",
       "platform": "darwin",
       "unique_identifier": "com.utmapp.UTM",
-      "description": "UTM is a virtual machines UI using QEMU."
+      "description": "UTM is a virtual machines UI using QEMU.",
+      "upgrade_code": ""
     },
     {
       "name": "VirtualBox",
       "slug": "virtualbox/darwin",
       "platform": "darwin",
       "unique_identifier": "org.virtualbox.app.VirtualBox",
-      "description": "VirtualBox is a virtualiser for arm64 hardware."
+      "description": "VirtualBox is a virtualiser for arm64 hardware.",
+      "upgrade_code": ""
     },
     {
       "name": "Viscosity",
       "slug": "viscosity/darwin",
       "platform": "darwin",
       "unique_identifier": "com.viscosityvpn.Viscosity",
-      "description": "Viscosity is an OpenVPN client with AppleScript support."
+      "description": "Viscosity is an OpenVPN client with AppleScript support.",
+      "upgrade_code": ""
     },
     {
       "name": "Microsoft Visual Studio Code",
       "slug": "visual-studio-code/darwin",
       "platform": "darwin",
       "unique_identifier": "com.microsoft.VSCode",
-      "description": "Microsoft Visual Studio Code (VS Code) is an open-source, lightweight, and powerful code editor."
+      "description": "Microsoft Visual Studio Code (VS Code) is an open-source, lightweight, and powerful code editor.",
+      "upgrade_code": ""
     },
     {
       "name": "Microsoft Visual Studio Code",
       "slug": "visual-studio-code/windows",
       "platform": "windows",
       "unique_identifier": "Microsoft Visual Studio Code",
-      "description": "Microsoft Visual Studio Code (VS Code) is an open-source, lightweight, and powerful code editor."
+      "description": "Microsoft Visual Studio Code (VS Code) is an open-source, lightweight, and powerful code editor.",
+      "upgrade_code": ""
     },
     {
       "name": "VLC media player",
       "slug": "vlc/darwin",
       "platform": "darwin",
       "unique_identifier": "org.videolan.vlc",
-      "description": "VLC media player is a free and open-source media player software."
+      "description": "VLC media player is a free and open-source media player software.",
+      "upgrade_code": ""
     },
     {
       "name": "VLC media player",
       "slug": "vlc/windows",
       "platform": "windows",
       "unique_identifier": "VLC media player",
-      "description": "VLC media player is a free and open-source media player software."
+      "description": "VLC media player is a free and open-source media player software.",
+      "upgrade_code": "{D2E0205B-0D3A-46E2-ADF7-0504FF48CF04}"
     },
     {
       "name": "VNC Viewer",
       "slug": "vnc-viewer/darwin",
       "platform": "darwin",
       "unique_identifier": "com.realvnc.vncviewer",
-      "description": "VNC Viewer is a remote desktop application focusing on security."
+      "description": "VNC Viewer is a remote desktop application focusing on security.",
+      "upgrade_code": ""
     },
     {
       "name": "Wacom Tablet",
       "slug": "wacom-tablet/darwin",
       "platform": "darwin",
       "unique_identifier": "com.wacom.WacomCenter",
-      "description": "Wacom Tablet is a collection of resources for configuring Wacom tablets."
+      "description": "Wacom Tablet is a collection of resources for configuring Wacom tablets.",
+      "upgrade_code": ""
     },
     {
       "name": "Webex",
       "slug": "webex/darwin",
       "platform": "darwin",
       "unique_identifier": "Cisco-Systems.Spark",
-      "description": "Webex is a video communication and virtual meeting platform."
+      "description": "Webex is a video communication and virtual meeting platform.",
+      "upgrade_code": ""
     },
     {
       "name": "Webex",
       "slug": "webex/windows",
       "platform": "windows",
       "unique_identifier": "Cisco Webex",
-      "description": "Webex is a video communication and virtual meeting platform."
+      "description": "Webex is a video communication and virtual meeting platform.",
+      "upgrade_code": "{B9DCA8E9-B3A9-419A-9D6F-9BC3557EE72C}"
     },
     {
       "name": "WebStorm",
       "slug": "webstorm/darwin",
       "platform": "darwin",
       "unique_identifier": "com.jetbrains.WebStorm",
-      "description": "JavaScript IDE by JetBrains."
+      "description": "JavaScript IDE by JetBrains.",
+      "upgrade_code": ""
     },
     {
       "name": "WhatsApp",
       "slug": "whatsapp/darwin",
       "platform": "darwin",
       "unique_identifier": "net.whatsapp.WhatsApp",
-      "description": "WhatsApp is WhatsApp's native desktop client for seamless messaging and calling on macOS."
+      "description": "WhatsApp is WhatsApp's native desktop client for seamless messaging and calling on macOS.",
+      "upgrade_code": ""
     },
     {
       "name": "Windows App",
       "slug": "windows-app/darwin",
       "platform": "darwin",
       "unique_identifier": "com.microsoft.rdc.macos",
-      "description": "Windows App helps you connect to Windows from your Mac."
+      "description": "Windows App helps you connect to Windows from your Mac.",
+      "upgrade_code": ""
     },
     {
       "name": "Windsurf",
       "slug": "windsurf/darwin",
       "platform": "darwin",
       "unique_identifier": "com.exafunction.windsurf",
-      "description": "Windsurf is an agentic IDE powered by AI Flow paradigm."
+      "description": "Windsurf is an agentic IDE powered by AI Flow paradigm.",
+      "upgrade_code": ""
     },
     {
       "name": "Wireshark",
       "slug": "wireshark-app/darwin",
       "platform": "darwin",
       "unique_identifier": "org.wireshark.Wireshark",
-      "description": "Wireshark is a network protocol analyzer."
+      "description": "Wireshark is a network protocol analyzer.",
+      "upgrade_code": ""
     },
     {
       "name": "Wireshark",
       "slug": "wireshark/windows",
       "platform": "windows",
       "unique_identifier": "Wireshark",
-      "description": "Wireshark is a network protocol analyzer."
+      "description": "Wireshark is a network protocol analyzer.",
+      "upgrade_code": "{0D67AACE-269A-4264-81A3-DA8055C1C79C}"
     },
     {
       "name": "Wrike",
       "slug": "wrike/darwin",
       "platform": "darwin",
       "unique_identifier": "com.wrike.Wrike",
-      "description": "Wrike is a project management app."
+      "description": "Wrike is a project management app.",
+      "upgrade_code": ""
     },
     {
       "name": "Yubico Authenticator",
       "slug": "yubico-authenticator/darwin",
       "platform": "darwin",
       "unique_identifier": "com.yubico.yubioath",
-      "description": "Yubico Authenticator is an application for generating TOTP and HOTP codes."
+      "description": "Yubico Authenticator is an application for generating TOTP and HOTP codes.",
+      "upgrade_code": ""
     },
     {
       "name": "Yubico Authenticator",
       "slug": "yubico-authenticator/windows",
       "platform": "windows",
       "unique_identifier": "Yubico Authenticator",
-      "description": "Yubico Authenticator is an application for generating TOTP and HOTP codes."
+      "description": "Yubico Authenticator is an application for generating TOTP and HOTP codes.",
+      "upgrade_code": "{FCBAFC57-AAAA-47B8-B861-20BDA48CD4F6}"
     },
     {
       "name": "Yubikey Manager",
       "slug": "yubico-yubikey-manager/darwin",
       "platform": "darwin",
       "unique_identifier": "com.yubico.ykman",
-      "description": "YubiKey Manager is an application for configuring any YubiKey. Requires Rosetta 2. YubiKey Manager won't get security updates or bug fixes. It's End of Life: <a target=\"_blank\" href=\"https://www.yubico.com/support/download/yubikey-manager/\">https://www.yubico.com/support/download/yubikey-manager</a>"
+      "description": "YubiKey Manager is an application for configuring any YubiKey. Requires Rosetta 2. YubiKey Manager won't get security updates or bug fixes. It's End of Life: <a target=\"_blank\" href=\"https://www.yubico.com/support/download/yubikey-manager/\">https://www.yubico.com/support/download/yubikey-manager</a>",
+      "upgrade_code": ""
     },
     {
       "name": "Zed",
       "slug": "zed/darwin",
       "platform": "darwin",
       "unique_identifier": "dev.zed.Zed",
-      "description": "Zed is a multiplayer code editor."
+      "description": "Zed is a multiplayer code editor.",
+      "upgrade_code": ""
     },
     {
       "name": "Zeplin",
       "slug": "zeplin/darwin",
       "platform": "darwin",
       "unique_identifier": "io.zeplin.osx",
-      "description": "Zeplin is an app to share, organize, and collaborate on designs."
+      "description": "Zeplin is an app to share, organize, and collaborate on designs.",
+      "upgrade_code": ""
     },
     {
       "name": "Zoom",
       "slug": "zoom/darwin",
       "platform": "darwin",
       "unique_identifier": "us.zoom.xos",
-      "description": "Zoom is a leading video communication platform for meetings, webinars, and collaboration."
+      "description": "Zoom is a leading video communication platform for meetings, webinars, and collaboration.",
+      "upgrade_code": ""
     },
     {
       "name": "Zoom",
       "slug": "zoom/windows",
       "platform": "windows",
       "unique_identifier": "Zoom Workplace (X64)",
-      "description": "Zoom is a leading video communication platform for meetings, webinars, and collaboration."
+      "description": "Zoom is a leading video communication platform for meetings, webinars, and collaboration.",
+      "upgrade_code": "{C819B794-A45C-4F27-9860-0C86492A52CC}"
     }
   ]
 }
