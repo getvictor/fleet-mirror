@@ -113,10 +113,6 @@ func (svc *Service) AddFleetMaintainedApp(
 		maintainedAppID = nil // don't set app as maintained if scripts have been modified
 	}
 
-	// For macOS, we use bundle identifier to link the installer with the software title.
-	// For Windows, the unique identifier is upgrade code or name. Since upgrade code isn't surfaced in
-	// the fleet_maintained_apps table we use name to match the installer to the software title.
-
 	version := app.Version
 	if version == "latest" { // download URL isn't version-pinned; extract version from installer
 		meta, err := file.ExtractInstallerMetadata(installerTFR)
@@ -132,6 +128,9 @@ func (svc *Service) AddFleetMaintainedApp(
 		version = meta.Version
 	}
 
+	// For macOS, we use bundle identifier to link the installer with the software title.
+	// For Windows, the unique identifier is upgrade code or name. Since upgrade code isn't surfaced in
+	// the fleet_maintained_apps table we use name to match the installer to the software title.
 	payload := &fleet.UploadSoftwareInstallerPayload{
 		InstallerFile:         installerTFR,
 		Title:                 app.Name,

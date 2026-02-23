@@ -65,7 +65,9 @@ const teamFMATitlesJoin = `
 				WHERE si.id IS NOT NULL OR vat.id IS NOT NULL
 			) team_titles 
 				ON team_titles.unique_identifier = fma.unique_identifier 
-				OR (team_titles.platform = fma.platform AND team_titles.name = fma.name)`
+				OR (team_titles.platform = fma.platform
+					AND (team_titles.name = fma.name OR team_titles.name = fma.unique_identifier) -- fma unique identifier (name extracted from installer) can be different than name
+				)`
 
 func (ds *Datastore) GetMaintainedAppByID(ctx context.Context, appID uint, teamID *uint) (*fleet.MaintainedApp, error) {
 	stmt := `SELECT fma.id, fma.name, fma.platform, fma.unique_identifier, fma.slug, `

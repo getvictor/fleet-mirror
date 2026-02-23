@@ -24,6 +24,7 @@ func TestMaintainedApps(t *testing.T) {
 		{"ListAndGetAvailableApps", testListAndGetAvailableApps},
 		{"SyncAndRemoveApps", testSyncAndRemoveApps},
 		{"GetMaintainedAppBySlug", testGetMaintainedAppBySlug},
+		{"ListAvailableAppsWindows", testListAvailableAppsWindows},
 	}
 
 	for _, c := range cases {
@@ -541,4 +542,59 @@ func testGetMaintainedAppBySlug(t *testing.T, ds *Datastore) {
 		UniqueIdentifier: "fleet.maintained1",
 		TitleID:          nil,
 	}, gotApp)
+}
+
+func testListAvailableAppsWindows(t *testing.T, ds *Datastore) {
+	ctx := context.Background()
+
+	team1, err := ds.NewTeam(ctx, &fleet.Team{Name: "Team 1"})
+	require.NoError(t, err)
+	user := test.NewUser(t, ds, "Alice", "alice@example.com", true)
+
+	maintained1, err := ds.UpsertMaintainedApp(ctx, &fleet.MaintainedApp{
+		Name:             "Maintained Name",
+		Slug:             "maintained1",
+		Platform:         "windows",
+		UniqueIdentifier: "Maintained1 (MSI)",
+	})
+	require.NoError(t, err)
+
+	expectedApps := []fleet.MaintainedApp{
+		{
+			ID:       maintained1.ID,
+			Name:     maintained1.Name,
+			Platform: maintained1.Platform,
+			Slug:     "maintained1",
+		},
+	}
+	apps, _, err := ds.ListAvailableFleetMaintainedApps(ctx, &team1.ID, fleet.ListOptions{IncludeMetadata: true})
+	require.NoError(t, err)
+	require.Len(t, apps, 1)
+	require.Nil(t, apps[0].TitleID)
+	require.Equal(t, expectedApps, apps)
+
+	// now actually add the maintained app, so the title name gets updated and upgrade code is added
+	// assumes fma.name is used as the title, and not the name extracted from the installer
+	_, titleID, err := ds.MatchOrCreateSoftwareInstaller(ctx, &fleet.UploadSoftwareInstallerPayload{
+		Title:                "Maintained Name",
+		UpgradeCode:          "{UPGRADE-CODE}",
+		Source:               "programs",
+		StorageID:            "storageid1",
+		Filename:             "maintained1.msi",
+		Extension:            "msi",
+		Platform:             "windows",
+		Version:              "1.0",
+		UserID:               user.ID,
+		TeamID:               &team1.ID,
+		ValidatedLabels:      &fleet.LabelIdentsWithScope{},
+		FleetMaintainedAppID: ptr.Uint(maintained1.ID),
+	})
+	require.NoError(t, err)
+
+	// List should use name to match, in case unique identifier didn't work because the software title has an upgrade code
+	apps, _, err = ds.ListAvailableFleetMaintainedApps(ctx, &team1.ID, fleet.ListOptions{IncludeMetadata: true})
+	require.NoError(t, err)
+	require.Len(t, apps, 1)
+	require.NotNil(t, apps[0].TitleID)
+	require.Equal(t, titleID, *apps[0].TitleID)
 }
