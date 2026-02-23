@@ -77,6 +77,7 @@ type FMAListFileApp struct {
 	Platform         string `json:"platform"`
 	UniqueIdentifier string `json:"unique_identifier"`
 	Description      string `json:"description"`
+	UpgradeCode      string `json:"upgrade_code"`
 }
 
 type FMAListFile struct {
