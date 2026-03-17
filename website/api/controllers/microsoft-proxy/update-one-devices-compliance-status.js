@@ -92,6 +92,10 @@ module.exports = {
           'Authorization': `Bearer ${graphAccessToken}`
         },
         body: {
+	  operatingSystem: os,
+	  operatingSystemVersion: osVersion,
+          displayName: deviceName,
+
           isManaged: deviceManagementState,
           isCompliant: compliant
         }
@@ -100,7 +104,9 @@ module.exports = {
       });
 
       // Return a 200 response to the Fleet server.
-      return;
+      return {
+        message_id: "",// eslint-disable-line camelcase
+      };
 
     } else {
       // If this is a compliance update for a macOS device, we'll need to use the getAccessTokenAndApiUrls helper to get an API URL and token for this request.
