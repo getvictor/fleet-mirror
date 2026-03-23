@@ -194,6 +194,7 @@ export interface IHostMdmProfile {
   detail: string;
   scope: ProfileScope | null;
   managed_local_account: string | null;
+  certificate_template_id?: number;
 }
 
 // TODO - move disk encryption related types to dedicated file

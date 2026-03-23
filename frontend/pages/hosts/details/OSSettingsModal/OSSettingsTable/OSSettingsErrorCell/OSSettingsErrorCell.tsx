@@ -6,7 +6,10 @@ import { REC_LOCK_SYNTHETIC_PROFILE_UUID } from "pages/hosts/details/helpers";
 
 import { DEFAULT_EMPTY_CELL_VALUE } from "utilities/constants";
 import { NotificationContext } from "context/notification";
-import { IHostMdmProfile } from "interfaces/mdm";
+import {
+  FLEET_ANDROID_CERTIFICATE_TEMPLATE_PROFILE_ID,
+  IHostMdmProfile,
+} from "interfaces/mdm";
 import { getErrorReason } from "interfaces/errors";
 
 import TooltipTruncatedTextCell from "components/TableContainer/DataTable/TooltipTruncatedTextCell";
@@ -266,6 +269,7 @@ interface IOSSettingsErrorCellProps {
   canRotateRecoveryLockPassword?: boolean;
   profile: IHostMdmProfileWithAddedStatus;
   resendRequest: (profileUUID: string) => Promise<void>;
+  resendCertificateRequest?: (certificateTemplateId: number) => Promise<void>;
   rotateRecoveryLockPassword?: () => Promise<void>;
   onProfileResent?: () => void;
 }
@@ -275,6 +279,7 @@ const OSSettingsErrorCell = ({
   canRotateRecoveryLockPassword = false,
   profile,
   resendRequest,
+  resendCertificateRequest,
   rotateRecoveryLockPassword,
   onProfileResent = noop,
 }: IOSSettingsErrorCellProps) => {
@@ -282,10 +287,21 @@ const OSSettingsErrorCell = ({
   const [isLoading, setIsLoading] = useState(false);
   const [isRotating, setIsRotating] = useState(false);
 
+  const isAndroidCertificate =
+    profile.profile_uuid === FLEET_ANDROID_CERTIFICATE_TEMPLATE_PROFILE_ID;
+
   const onResendProfile = async () => {
     setIsLoading(true);
     try {
-      await resendRequest(profile.profile_uuid);
+      if (
+        isAndroidCertificate &&
+        resendCertificateRequest &&
+        profile.certificate_template_id
+      ) {
+        await resendCertificateRequest(profile.certificate_template_id);
+      } else {
+        await resendRequest(profile.profile_uuid);
+      }
       onProfileResent();
     } catch (e) {
       renderFlash("error", "Couldn't resend. Please try again.");

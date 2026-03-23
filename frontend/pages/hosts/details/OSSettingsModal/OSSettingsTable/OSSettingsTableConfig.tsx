@@ -12,6 +12,9 @@ import {
   MdmProfileStatus,
 } from "interfaces/mdm";
 import { isDDMProfile } from "services/entities/mdm";
+import {
+  FLEET_ANDROID_CERTIFICATE_TEMPLATE_PROFILE_ID,
+} from "interfaces/mdm";
 import { isAppleDevice, isIPadOrIPhone } from "interfaces/platform";
 
 import OSSettingsNameCell from "./OSSettingsNameCell";
@@ -48,7 +51,8 @@ const generateTableConfig = (
   resendRequest: (profileUUID: string) => Promise<void>,
   onProfileResent: () => void,
   canRotateRecoveryLockPassword?: boolean,
-  rotateRecoveryLockPassword?: () => Promise<void>
+  rotateRecoveryLockPassword?: () => Promise<void>,
+  resendCertificateRequest?: (certificateTemplateId: number) => Promise<void>
 ): ITableColumnConfig[] => {
   return [
     {
@@ -97,6 +101,10 @@ const generateTableConfig = (
         const isAppleMobileConfigProfile =
           isAppleDevice(platform) && !isDDMProfile(cellProps.row.original);
         const isWindowsProfile = platform === "windows";
+        const isAndroidCertificate =
+          platform === "android" &&
+          cellProps.row.original.profile_uuid ===
+            FLEET_ANDROID_CERTIFICATE_TEMPLATE_PROFILE_ID;
 
         const isRecoveryLockRow =
           cellProps.row.original.profile_uuid ===
@@ -106,13 +114,16 @@ const generateTableConfig = (
           <OSSettingsErrorCell
             canResendProfiles={
               canResendProfiles &&
-              (isWindowsProfile || isAppleMobileConfigProfile)
+              (isWindowsProfile ||
+                isAppleMobileConfigProfile ||
+                isAndroidCertificate)
             }
             canRotateRecoveryLockPassword={
               isRecoveryLockRow && canRotateRecoveryLockPassword
             }
             profile={cellProps.row.original}
             resendRequest={resendRequest}
+            resendCertificateRequest={resendCertificateRequest}
             rotateRecoveryLockPassword={rotateRecoveryLockPassword}
             onProfileResent={onProfileResent}
           />
