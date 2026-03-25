@@ -993,6 +993,8 @@ type ListMDMAppleDEPSerialsInHostIDsFunc func(ctx context.Context, hostIDs []uin
 
 type GetHostDEPAssignmentFunc func(ctx context.Context, hostID uint) (*fleet.HostDEPAssignment, error)
 
+type GetHostDEPAssignmentsBySerialFunc func(ctx context.Context, serial string) ([]*fleet.HostDEPAssignment, error)
+
 type GetNanoMDMEnrollmentFunc func(ctx context.Context, id string) (*fleet.NanoEnrollment, error)
 
 type GetNanoMDMUserEnrollmentFunc func(ctx context.Context, id string) (*fleet.NanoEnrollment, error)
@@ -3306,6 +3308,9 @@ type DataStore struct {
 
 	GetHostDEPAssignmentFunc        GetHostDEPAssignmentFunc
 	GetHostDEPAssignmentFuncInvoked bool
+
+	GetHostDEPAssignmentsBySerialFunc        GetHostDEPAssignmentsBySerialFunc
+	GetHostDEPAssignmentsBySerialFuncInvoked bool
 
 	GetNanoMDMEnrollmentFunc        GetNanoMDMEnrollmentFunc
 	GetNanoMDMEnrollmentFuncInvoked bool
@@ -7990,6 +7995,13 @@ func (s *DataStore) GetHostDEPAssignment(ctx context.Context, hostID uint) (*fle
 	s.GetHostDEPAssignmentFuncInvoked = true
 	s.mu.Unlock()
 	return s.GetHostDEPAssignmentFunc(ctx, hostID)
+}
+
+func (s *DataStore) GetHostDEPAssignmentsBySerial(ctx context.Context, serial string) ([]*fleet.HostDEPAssignment, error) {
+	s.mu.Lock()
+	s.GetHostDEPAssignmentsBySerialFuncInvoked = true
+	s.mu.Unlock()
+	return s.GetHostDEPAssignmentsBySerialFunc(ctx, serial)
 }
 
 func (s *DataStore) GetNanoMDMEnrollment(ctx context.Context, id string) (*fleet.NanoEnrollment, error) {
