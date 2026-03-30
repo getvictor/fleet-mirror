@@ -59,6 +59,8 @@ import (
 	"github.com/fleetdm/fleet/v4/server/live_query"
 	"github.com/fleetdm/fleet/v4/server/logging"
 	"github.com/fleetdm/fleet/v4/server/mail"
+	acme_api "github.com/fleetdm/fleet/v4/server/mdm/acme/api"
+	acme_bootstrap "github.com/fleetdm/fleet/v4/server/mdm/acme/bootstrap"
 	android_service "github.com/fleetdm/fleet/v4/server/mdm/android/service"
 	apple_mdm "github.com/fleetdm/fleet/v4/server/mdm/apple"
 	"github.com/fleetdm/fleet/v4/server/mdm/apple/apple_apps"
@@ -1098,6 +1100,11 @@ func runServeCmd(cmd *cobra.Command, configManager configpkg.Manager, debug, dev
 	// Inject the activity bounded context into the main service
 	svc.SetActivityService(activitySvc)
 
+	// Bootstrap ACME service module
+	acmeSvc, acmeRoutes := createACMEServiceModule(ds, dbConns, redisPool, logger)
+	// Inject the ACME service module into the main service
+	svc.SetACMEService(acmeSvc)
+
 	// Perform a cleanup of cron_stats outside of the cronSchedules because the
 	// schedule package uses cron_stats entries to decide whether a schedule will
 	// run or not (see https://github.com/fleetdm/fleet/issues/9486).
@@ -1468,7 +1475,7 @@ func runServeCmd(cmd *cobra.Command, configManager configpkg.Manager, debug, dev
 		extra = append(extra, service.WithHTTPSigVerifier(httpSigVerifier))
 
 		apiHandler = service.MakeHandler(svc, config, httpLogger, limiterStore, redisPool, carveStore,
-			[]endpointer.HandlerRoutesFunc{android_service.GetRoutes(svc, androidSvc), activityRoutes}, extra...)
+			[]endpointer.HandlerRoutesFunc{android_service.GetRoutes(svc, androidSvc), activityRoutes, acmeRoutes}, extra...)
 
 		if serveCSP {
 			// Only injecting this if CSP is turned on since the default security headers add some overhead to each request
@@ -1869,6 +1876,12 @@ func runServeCmd(cmd *cobra.Command, configManager configpkg.Manager, debug, dev
 
 	// block on errs signal
 	logger.InfoContext(ctx, "terminated", "err", <-errs)
+}
+
+func createACMEServiceModule(ds fleet.Datastore, dbConns *common_mysql.DBConnections, redisPool fleet.RedisPool, logger *slog.Logger) (acme_api.Service, endpointer.HandlerRoutesFunc) {
+	acmeSvc, acmeRoutesFn := acme_bootstrap.New(dbConns, redisPool, ds, logger)
+	acmeRoutes := acmeRoutesFn()
+	return acmeSvc, acmeRoutes
 }
 
 func createActivityBoundedContext(svc fleet.Service, dbConns *common_mysql.DBConnections, logger *slog.Logger) (activity_api.Service, endpointer.HandlerRoutesFunc) {
