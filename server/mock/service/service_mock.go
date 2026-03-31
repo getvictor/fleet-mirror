@@ -400,6 +400,8 @@ type SetActivityServiceFunc func(activitySvc fleet.ActivityWriteService)
 
 type SetACMEServiceFunc func(acmeSvc fleet.ACMEWriteService)
 
+type NewACMEEnrollmentFunc func(ctx context.Context, hostIdentifier string) (string, error)
+
 type NewActivityFunc func(ctx context.Context, user *fleet.User, activity fleet.ActivityDetails) error
 
 type ListHostUpcomingActivitiesFunc func(ctx context.Context, hostID uint, opt fleet.ListOptions) ([]*fleet.UpcomingActivity, *fleet.PaginationMetadata, error)
@@ -1474,6 +1476,9 @@ type Service struct {
 
 	SetACMEServiceFunc        SetACMEServiceFunc
 	SetACMEServiceFuncInvoked bool
+
+	NewACMEEnrollmentFunc        NewACMEEnrollmentFunc
+	NewACMEEnrollmentFuncInvoked bool
 
 	NewActivityFunc        NewActivityFunc
 	NewActivityFuncInvoked bool
@@ -3562,6 +3567,13 @@ func (s *Service) SetACMEService(acmeSvc fleet.ACMEWriteService) {
 	s.SetACMEServiceFuncInvoked = true
 	s.mu.Unlock()
 	s.SetACMEServiceFunc(acmeSvc)
+}
+
+func (s *Service) NewACMEEnrollment(ctx context.Context, hostIdentifier string) (string, error) {
+	s.mu.Lock()
+	s.NewACMEEnrollmentFuncInvoked = true
+	s.mu.Unlock()
+	return s.NewACMEEnrollmentFunc(ctx, hostIdentifier)
 }
 
 func (s *Service) NewActivity(ctx context.Context, user *fleet.User, activity fleet.ActivityDetails) error {
