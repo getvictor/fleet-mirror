@@ -1483,7 +1483,7 @@ func runServeCmd(cmd *cobra.Command, configManager configpkg.Manager, debug, dev
 		// By performing the same check inside main, we can make server startups
 		// more efficient after the first startup.
 		if setupRequired {
-			apiHandler = service.WithSetup(svc, logger, apiHandler)
+			apiHandler = service.WithSetup(svc, logger, apiHandler, config.Partnerships.EnablePrimo)
 			frontendHandler = service.RedirectLoginToSetup(svc, logger, frontendHandler, config.Server.URLPrefix)
 		} else {
 			frontendHandler = service.RedirectSetupToLogin(svc, logger, frontendHandler, config.Server.URLPrefix)

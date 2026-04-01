@@ -45,7 +45,7 @@ type applyGroupFunc func(context.Context, *spec.Group) error
 
 func (r setupResponse) Error() error { return r.Err }
 
-func makeSetupEndpoint(svc fleet.Service, logger *slog.Logger) endpoint.Endpoint {
+func makeSetupEndpoint(svc fleet.Service, logger *slog.Logger, enablePrimo bool) endpoint.Endpoint {
 	return func(ctx context.Context, request any) (any, error) {
 		req := request.(setupRequest)
 		config := &fleet.AppConfig{}
@@ -92,8 +92,11 @@ func makeSetupEndpoint(svc fleet.Service, logger *slog.Logger) endpoint.Endpoint
 		} else {
 			token = &session.Key
 
-			// Apply starter library using the admin token we just created
-			if req.ServerURL != nil {
+			// Apply starter library using the admin token we just created.
+			// Skip if Primo is enabled, as Primo has its own setup flow.
+			if enablePrimo {
+				logger.DebugContext(ctx, "Skipping starter library application due to Primo being enabled", "endpoint", "setup")
+			} else if req.ServerURL != nil {
 				if err := ApplyStarterLibrary(
 					ctx,
 					*req.ServerURL,
