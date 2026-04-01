@@ -6,6 +6,7 @@ import (
 	"crypto/sha256"
 	"crypto/subtle"
 	"crypto/tls"
+	"crypto/x509"
 	"database/sql/driver"
 	"errors"
 	"fmt"
@@ -59,6 +60,7 @@ import (
 	"github.com/fleetdm/fleet/v4/server/live_query"
 	"github.com/fleetdm/fleet/v4/server/logging"
 	"github.com/fleetdm/fleet/v4/server/mail"
+	"github.com/fleetdm/fleet/v4/server/mdm/acme"
 	acme_api "github.com/fleetdm/fleet/v4/server/mdm/acme/api"
 	acme_bootstrap "github.com/fleetdm/fleet/v4/server/mdm/acme/bootstrap"
 	android_service "github.com/fleetdm/fleet/v4/server/mdm/android/service"
@@ -69,6 +71,7 @@ import (
 	"github.com/fleetdm/fleet/v4/server/mdm/nanomdm/push"
 	"github.com/fleetdm/fleet/v4/server/mdm/nanomdm/push/buford"
 	nanomdm_pushsvc "github.com/fleetdm/fleet/v4/server/mdm/nanomdm/push/service"
+	scepdepot "github.com/fleetdm/fleet/v4/server/mdm/scep/depot"
 	"github.com/fleetdm/fleet/v4/server/platform/endpointer"
 	platform_http "github.com/fleetdm/fleet/v4/server/platform/http"
 	platform_logging "github.com/fleetdm/fleet/v4/server/platform/logging"
@@ -1101,7 +1104,8 @@ func runServeCmd(cmd *cobra.Command, configManager configpkg.Manager, debug, dev
 	svc.SetActivityService(activitySvc)
 
 	// Bootstrap ACME service module
-	acmeSvc, acmeRoutes := createACMEServiceModule(ds, dbConns, redisPool, logger)
+	acmeSigner := &acmeCSRSigner{signer: scepdepot.NewSigner(scepStorage, scepdepot.WithValidityDays(config.MDM.AppleSCEPSignerValidityDays), scepdepot.WithAllowRenewalDays(14))}
+	acmeSvc, acmeRoutes := createACMEServiceModule(ds, dbConns, redisPool, logger, acmeSigner)
 	// Inject the ACME service module into the main service
 	svc.SetACMEService(acmeSvc)
 
@@ -1878,8 +1882,29 @@ func runServeCmd(cmd *cobra.Command, configManager configpkg.Manager, debug, dev
 	logger.InfoContext(ctx, "terminated", "err", <-errs)
 }
 
-func createACMEServiceModule(ds fleet.Datastore, dbConns *common_mysql.DBConnections, redisPool fleet.RedisPool, logger *slog.Logger) (acme_api.Service, endpointer.HandlerRoutesFunc) {
-	acmeSvc, acmeRoutesFn := acme_bootstrap.New(dbConns, redisPool, ds, logger)
+// acmeDataProviders composes fleet.Datastore (which provides AppConfig) with
+// an ACME-specific CSR signer backed by the SCEP depot.
+type acmeDataProviders struct {
+	fleet.Datastore
+	signer acme.CSRSigner
+}
+
+func (a *acmeDataProviders) CSRSigner(_ context.Context) (acme.CSRSigner, error) {
+	return a.signer, nil
+}
+
+// acmeCSRSigner adapts a depot.Signer to the acme.CSRSigner interface.
+type acmeCSRSigner struct {
+	signer *scepdepot.Signer
+}
+
+func (a *acmeCSRSigner) SignCSR(_ context.Context, csr *x509.CertificateRequest) (*x509.Certificate, error) {
+	return a.signer.Signx509CSR(csr)
+}
+
+func createACMEServiceModule(ds fleet.Datastore, dbConns *common_mysql.DBConnections, redisPool fleet.RedisPool, logger *slog.Logger, csrSigner acme.CSRSigner) (acme_api.Service, endpointer.HandlerRoutesFunc) {
+	providers := &acmeDataProviders{Datastore: ds, signer: csrSigner}
+	acmeSvc, acmeRoutesFn := acme_bootstrap.New(dbConns, redisPool, providers, logger)
 	acmeRoutes := acmeRoutesFn()
 	return acmeSvc, acmeRoutes
 }
