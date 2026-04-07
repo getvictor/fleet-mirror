@@ -172,19 +172,6 @@ func MakeHandler(
 		r.Use(eopts.httpSigVerifier)
 	}
 
-	// Strip trailing slashes so that requests like "/api/v1/fleet/hosts/" don't 404.
-	r.Use(func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
-			if req.URL.Path != "/" && strings.HasSuffix(req.URL.Path, "/") {
-				req.URL.Path = strings.TrimRight(req.URL.Path, "/")
-				if req.URL.RawPath != "" {
-					req.URL.RawPath = strings.TrimRight(req.URL.RawPath, "/")
-				}
-			}
-			next.ServeHTTP(w, req)
-		})
-	})
-
 	attachFleetAPIRoutes(r, svc, config, logger, limitStore, redisPool, fleetAPIOptions, eopts)
 	for _, featureRoute := range featureRoutes {
 		featureRoute(r, fleetAPIOptions)
@@ -192,6 +179,21 @@ func MakeHandler(
 	addMetrics(r)
 
 	return r
+}
+
+// StripTrailingSlash wraps the given handler to remove trailing slashes from
+// request paths before routing. This prevents 404s when clients send requests
+// like "/api/v1/fleet/hosts/" instead of "/api/v1/fleet/hosts".
+func StripTrailingSlash(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/" && strings.HasSuffix(r.URL.Path, "/") {
+			r.URL.Path = strings.TrimRight(r.URL.Path, "/")
+			if r.URL.RawPath != "" {
+				r.URL.RawPath = strings.TrimRight(r.URL.RawPath, "/")
+			}
+		}
+		next.ServeHTTP(w, r)
+	})
 }
 
 // PrometheusMetricsHandler wraps the provided handler with prometheus metrics

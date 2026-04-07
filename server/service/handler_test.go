@@ -295,6 +295,45 @@ func TestAPIRoutesMetrics(t *testing.T) {
 	}
 }
 
+func TestTrailingSlashStripped(t *testing.T) {
+	ds := new(mock.Store)
+	svc, _ := newTestService(t, ds, nil, nil)
+	limitStore, _ := memstore.New(0)
+	cfg := config.TestConfig()
+
+	// Register a test route via featureRoutes so we have a known endpoint.
+	testRoute := func(r *mux.Router, opts []kithttp.ServerOption) {
+		r.Handle("/api/test-trailing-slash", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+		})).Methods("GET", "POST", "DELETE")
+	}
+
+	h := StripTrailingSlash(MakeHandler(svc, cfg, slog.New(slog.DiscardHandler), limitStore, nil, nil,
+		[]endpointer.HandlerRoutesFunc{testRoute}))
+
+	tests := []struct {
+		name   string
+		method string
+		path   string
+		want   int
+	}{
+		{"GET without trailing slash", "GET", "/api/test-trailing-slash", http.StatusOK},
+		{"GET with trailing slash", "GET", "/api/test-trailing-slash/", http.StatusOK},
+		{"POST with trailing slash", "POST", "/api/test-trailing-slash/", http.StatusOK},
+		{"DELETE with trailing slash", "DELETE", "/api/test-trailing-slash/", http.StatusOK},
+		{"GET with multiple trailing slashes", "GET", "/api/test-trailing-slash///", http.StatusOK},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			req := httptest.NewRequest(tt.method, tt.path, nil)
+			rr := httptest.NewRecorder()
+			h.ServeHTTP(rr, req)
+			require.Equal(t, tt.want, rr.Code)
+		})
+	}
+}
+
 var reSimpleVar, reNumVar = regexp.MustCompile(`\{(\w+)\}`), regexp.MustCompile(`\{\w+:[^\}]+\}`)
 
 // replaces the handler of route with one that simply responds with the status
