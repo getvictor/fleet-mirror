@@ -103,38 +103,21 @@ const SoftwareTable = ({
     ? PATHS.SOFTWARE_VERSIONS
     : PATHS.SOFTWARE_TITLES;
 
-  const determineQueryParamChange = useCallback(
+  // NOTE: this is called once on initial render and every time the query changes.
+  // Mimics the ManageHostsPage pattern: pass pageIndex through directly and let
+  // TableContainer's prevPageIndex logic handle resets when filters change.
+  const onQueryChange = useCallback(
     (newTableQuery: ITableQueryData) => {
-      const changedEntry = Object.entries(newTableQuery).find(([key, val]) => {
-        switch (key) {
-          case "searchQuery":
-            return val !== query;
-          case "sortDirection":
-            return val !== orderDirection;
-          case "sortHeader":
-            return val !== orderKey;
-          case "pageIndex":
-            return val !== currentPage;
-          default:
-            return false;
-        }
-      });
-      return changedEntry?.[0] ?? "";
-    },
-    [currentPage, orderDirection, orderKey, query]
-  );
-
-  const generateNewQueryParams = useCallback(
-    (newTableQuery: ITableQueryData, changedParam: string) => {
       const newQueryParam: Record<string, string | number | undefined> = {
         query: newTableQuery.searchQuery,
         fleet_id: teamId,
         order_direction: newTableQuery.sortDirection,
         order_key: newTableQuery.sortHeader,
-        page: changedParam === "pageIndex" ? newTableQuery.pageIndex : 0,
+        page: newTableQuery.pageIndex,
         ...buildSoftwareVulnFiltersQueryParams(vulnFilters),
       };
-      // Only include these filters when not on “All teams”
+
+      // Only include these filters when not on "All teams"
       if (teamId !== undefined) {
         if (softwareFilter === "installableSoftware") {
           newQueryParam.available_for_install = "true";
@@ -144,30 +127,15 @@ const SoftwareTable = ({
         }
       }
 
-      return newQueryParam;
+      router.replace(
+        getNextLocationPath({
+          pathPrefix: currentPath,
+          routeTemplate: "",
+          queryParams: newQueryParam,
+        })
+      );
     },
-    [softwareFilter, teamId, vulnFilters]
-  );
-
-  // NOTE: this is called once on initial render and every time the query changes
-  const onQueryChange = useCallback(
-    (newTableQuery: ITableQueryData) => {
-      // we want to determine which query param has changed in order to
-      // reset the page index to 0 if any other param has changed.
-      const changedParam = determineQueryParamChange(newTableQuery);
-
-      // Note: There may be no changedParam on initial render, but we still may need
-      // to strip unwanted params with generateNewQueryParams so do NOT early return
-
-      const newRoute = getNextLocationPath({
-        pathPrefix: currentPath,
-        routeTemplate: "",
-        queryParams: generateNewQueryParams(newTableQuery, changedParam),
-      });
-
-      router.replace(newRoute);
-    },
-    [determineQueryParamChange, generateNewQueryParams, router, currentPath]
+    [currentPath, router, softwareFilter, teamId, vulnFilters]
   );
 
   let tableData: ISoftwareTitle[] | ISoftwareVersion[] | undefined;
