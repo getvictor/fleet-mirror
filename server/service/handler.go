@@ -172,6 +172,19 @@ func MakeHandler(
 		r.Use(eopts.httpSigVerifier)
 	}
 
+	// Strip trailing slashes so that requests like "/api/v1/fleet/hosts/" don't 404.
+	r.Use(func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+			if req.URL.Path != "/" && strings.HasSuffix(req.URL.Path, "/") {
+				req.URL.Path = strings.TrimRight(req.URL.Path, "/")
+				if req.URL.RawPath != "" {
+					req.URL.RawPath = strings.TrimRight(req.URL.RawPath, "/")
+				}
+			}
+			next.ServeHTTP(w, req)
+		})
+	})
+
 	attachFleetAPIRoutes(r, svc, config, logger, limitStore, redisPool, fleetAPIOptions, eopts)
 	for _, featureRoute := range featureRoutes {
 		featureRoute(r, fleetAPIOptions)
