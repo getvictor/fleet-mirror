@@ -28331,3 +28331,104 @@ func (s *integrationEnterpriseTestSuite) TestListAPIEndpoints() {
 	require.NotEmpty(t, resp.APIEndpoints[0].Path)
 	require.NotEmpty(t, resp.APIEndpoints[0].DisplayName)
 }
+
+func (s *integrationEnterpriseTestSuite) TestCreateAPIOnlyUserPremium() {
+	t := s.T()
+
+	// Create a team to use for fleet-scoped assignments.
+	team, err := s.ds.NewTeam(context.Background(), &fleet.Team{Name: t.Name() + "_team"})
+	require.NoError(t, err)
+
+	// --- Validation still enforced under premium ---
+
+	// missing name → 422 (same as free tier)
+	s.Do("POST", "/api/latest/fleet/users/api_only", map[string]any{
+		"fleets": []map[string]any{{"id": team.ID, "role": "observer"}},
+	}, http.StatusUnprocessableEntity)
+
+	// neither global_role nor fleets → 422
+	s.Do("POST", "/api/latest/fleet/users/api_only", map[string]any{
+		"name": "Premium User",
+	}, http.StatusUnprocessableEntity)
+
+	// global_role AND fleets together → 422 (mutual exclusivity)
+	s.Do("POST", "/api/latest/fleet/users/api_only", map[string]any{
+		"name":        "Premium User",
+		"global_role": "observer",
+		"fleets":      []map[string]any{{"id": team.ID, "role": "observer"}},
+	}, http.StatusUnprocessableEntity)
+
+	// invalid api_endpoint (not in catalog) → 422
+	s.Do("POST", "/api/latest/fleet/users/api_only", map[string]any{
+		"name":        "Premium User",
+		"global_role": "observer",
+		"api_endpoints": []map[string]any{
+			{"method": "GET", "path": "/api/v1/fleet/nonexistent/endpoint"},
+		},
+	}, http.StatusUnprocessableEntity)
+
+	// --- Premium features work under premium ---
+
+	// Create with global_role and api_endpoints → 200
+	var createRespGlobal struct {
+		User struct {
+			ID           uint    `json:"id"`
+			Name         string  `json:"name"`
+			Email        string  `json:"email"`
+			APIOnly      bool    `json:"api_only"`
+			GlobalRole   *string `json:"global_role"`
+			APIEndpoints []struct {
+				Method string `json:"method"`
+				Path   string `json:"path"`
+			} `json:"api_endpoints"`
+		} `json:"user"`
+		Token string `json:"token"`
+		Err   string `json:"error,omitempty"`
+	}
+	s.DoJSON("POST", "/api/latest/fleet/users/api_only", map[string]any{
+		"name":        "Global API User",
+		"global_role": "observer",
+		"api_endpoints": []map[string]any{
+			{"method": "GET", "path": "/api/v1/fleet/config"},
+			{"method": "GET", "path": "/api/v1/fleet/version"},
+		},
+	}, http.StatusOK, &createRespGlobal)
+
+	require.NotEmpty(t, createRespGlobal.Token)
+	require.NotZero(t, createRespGlobal.User.ID)
+	require.Equal(t, "Global API User", createRespGlobal.User.Name)
+	require.NotEmpty(t, createRespGlobal.User.Email)
+	require.True(t, createRespGlobal.User.APIOnly)
+	require.NotNil(t, createRespGlobal.User.GlobalRole)
+	require.Equal(t, "observer", *createRespGlobal.User.GlobalRole)
+	require.Len(t, createRespGlobal.User.APIEndpoints, 2)
+
+	// Create with fleets (team assignment) → 200
+	var createRespTeam struct {
+		User struct {
+			ID      uint   `json:"id"`
+			Name    string `json:"name"`
+			Email   string `json:"email"`
+			APIOnly bool   `json:"api_only"`
+			Teams   []struct {
+				ID   uint   `json:"id"`
+				Role string `json:"role"`
+			} `json:"teams"`
+		} `json:"user"`
+		Token string `json:"token"`
+		Err   string `json:"error,omitempty"`
+	}
+	s.DoJSON("POST", "/api/latest/fleet/users/api_only", map[string]any{
+		"name":   "Team API User",
+		"fleets": []map[string]any{{"id": team.ID, "role": "observer"}},
+	}, http.StatusOK, &createRespTeam)
+
+	require.NotEmpty(t, createRespTeam.Token)
+	require.NotZero(t, createRespTeam.User.ID)
+	require.Equal(t, "Team API User", createRespTeam.User.Name)
+	require.NotEmpty(t, createRespTeam.User.Email)
+	require.True(t, createRespTeam.User.APIOnly)
+	require.Len(t, createRespTeam.User.Teams, 1)
+	require.Equal(t, team.ID, createRespTeam.User.Teams[0].ID)
+	require.Equal(t, "observer", createRespTeam.User.Teams[0].Role)
+}

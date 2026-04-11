@@ -333,6 +333,68 @@ func (s *integrationTestSuite) TestUserCreationWrongTeamErrors() {
 	assertBodyContains(t, resp, `fleet with id 9999 does not exist`)
 }
 
+func (s *integrationTestSuite) TestCreateAPIOnlyUser() {
+	t := s.T()
+
+	// missing name → 422
+	s.Do("POST", "/api/latest/fleet/users/api_only", map[string]any{
+		"global_role": "observer",
+	}, http.StatusUnprocessableEntity)
+
+	// neither global_role nor fleets → 422
+	s.Do("POST", "/api/latest/fleet/users/api_only", map[string]any{
+		"name": "Jane Doe",
+	}, http.StatusUnprocessableEntity)
+
+	// fleets without premium → 402
+	s.Do("POST", "/api/latest/fleet/users/api_only", map[string]any{
+		"name":   "Jane Doe",
+		"fleets": []map[string]any{{"id": 9999, "role": "observer"}},
+	}, http.StatusPaymentRequired)
+
+	// api_endpoints without premium → 402
+	s.Do("POST", "/api/latest/fleet/users/api_only", map[string]any{
+		"name":        "Jane Doe",
+		"global_role": "observer",
+		"api_endpoints": []map[string]any{
+			{"method": "GET", "path": "/api/v1/fleet/hosts/:id"},
+		},
+	}, http.StatusPaymentRequired)
+
+	// both global_role and fleets without premium → 402 (premium check fires first)
+	s.Do("POST", "/api/latest/fleet/users/api_only", map[string]any{
+		"name":        "Jane Doe",
+		"global_role": "observer",
+		"fleets":      []map[string]any{{"id": 9999, "role": "observer"}},
+	}, http.StatusPaymentRequired)
+
+	// successful creation with global_role only (no premium features) → 200
+	var createResp struct {
+		User struct {
+			ID         uint    `json:"id"`
+			Name       string  `json:"name"`
+			Email      string  `json:"email"`
+			APIOnly    bool    `json:"api_only"`
+			GlobalRole *string `json:"global_role"`
+		} `json:"user"`
+		Token string `json:"token"`
+		Err   string `json:"error,omitempty"`
+	}
+
+	s.DoJSON("POST", "/api/latest/fleet/users/api_only", map[string]any{
+		"name":        "Jane Doe",
+		"global_role": "observer",
+	}, http.StatusOK, &createResp)
+
+	require.NotEmpty(t, createResp.Token, "token must be set")
+	require.NotZero(t, createResp.User.ID, "user ID must be set")
+	require.Equal(t, "Jane Doe", createResp.User.Name)
+	require.NotEmpty(t, createResp.User.Email)
+	require.True(t, createResp.User.APIOnly, "user must be api_only")
+	require.NotNil(t, createResp.User.GlobalRole)
+	require.Equal(t, "observer", *createResp.User.GlobalRole)
+}
+
 func (s *integrationTestSuite) TestQueryCreationLogsActivity() {
 	t := s.T()
 

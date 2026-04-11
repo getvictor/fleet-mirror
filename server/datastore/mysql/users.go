@@ -82,6 +82,11 @@ func (ds *Datastore) NewUser(ctx context.Context, user *fleet.User) (*fleet.User
 		if err := saveTeamsForUserDB(ctx, tx, user); err != nil {
 			return err
 		}
+
+		if err := replaceUserAPIEndpoints(ctx, tx, id, 1, user.APIEndpoints); err != nil {
+			return err
+		}
+
 		return nil
 	})
 	if err != nil {
@@ -506,4 +511,44 @@ func (ds *Datastore) UserSettings(ctx context.Context, userID uint) (*fleet.User
 		return nil, ctxerr.Wrap(ctx, err, "unmarshaling user settings")
 	}
 	return settings, nil
+}
+
+// replaceUserAPIEndpoints replaces all API endpoint permissions for the given user
+func replaceUserAPIEndpoints(ctx context.Context, tx sqlx.ExtContext, userID int64, authorID int64, endpoints []fleet.APIEndpointRef) error {
+	if _, err := tx.ExecContext(ctx, `DELETE FROM user_api_endpoints WHERE user_id = ?`, userID); err != nil {
+		return ctxerr.Wrap(ctx, err, "delete user api endpoints")
+	}
+	if len(endpoints) == 0 {
+		return nil
+	}
+	placeholders := strings.Repeat("(?, ?, ?, ?),", len(endpoints))
+	placeholders = placeholders[:len(placeholders)-1] // trim trailing comma
+	args := make([]any, 0, len(endpoints)*4)
+	for _, ep := range endpoints {
+		args = append(args, userID, ep.Path, ep.Method, authorID)
+	}
+	_, err := tx.ExecContext(ctx,
+		`INSERT INTO user_api_endpoints (user_id, path, method, author_id) VALUES `+placeholders,
+		args...,
+	)
+	return ctxerr.Wrap(ctx, err, "insert user api endpoints")
+}
+
+// ListUserAPIEndpoints returns all API endpoint permissions assigned to the given user.
+func (ds *Datastore) ListUserAPIEndpoints(ctx context.Context, userID uint) ([]fleet.APIEndpoint, error) {
+	var rows []struct {
+		Method string `db:"method"`
+		Path   string `db:"path"`
+	}
+	if err := sqlx.SelectContext(ctx, ds.reader(ctx), &rows,
+		`SELECT method, path FROM user_api_endpoints WHERE user_id = ? ORDER BY method, path`,
+		userID,
+	); err != nil {
+		return nil, ctxerr.Wrap(ctx, err, "list user api endpoints")
+	}
+	endpoints := make([]fleet.APIEndpoint, 0, len(rows))
+	for _, row := range rows {
+		endpoints = append(endpoints, fleet.NewAPIEndpointFromTpl(row.Method, row.Path))
+	}
+	return endpoints, nil
 }

@@ -24,6 +24,13 @@ type UserSummary struct {
 	APIOnly     bool   `db:"api_only"`
 }
 
+// ApiEndpointRef is this user is an API only user, this represents
+// which ApiEndpoints the user has access to
+type APIEndpointRef struct {
+	Method string `json:"method"`
+	Path   string `json:"path"`
+}
+
 // User is the model struct that represents a Fleet user.
 type User struct {
 	UpdateCreateTimestamps
@@ -50,6 +57,9 @@ type User struct {
 
 	Settings *UserSettings `json:"settings,omitempty"`
 	Deleted  bool          `json:"-" db:"deleted"`
+
+	// APIEndpoints is only returned when creating an APIOnly user
+	APIEndpoints []APIEndpointRef `json:"api_endpoints,omitempty"`
 }
 
 type UserSettings struct {
@@ -200,6 +210,10 @@ type UserPayload struct {
 	NewPassword              *string       `json:"new_password,omitempty"`
 	Settings                 *UserSettings `json:"settings,omitempty"`
 	InviteID                 *uint         `json:"-"`
+
+	// If this is an API-only user, then this can be used to specify which
+	// API endpoints the user has access to
+	APIEndpoints *[]APIEndpointRef `json:"api_endpoints,omitempty"`
 }
 
 func (p *UserPayload) VerifyInviteCreate() error {

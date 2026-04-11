@@ -97,6 +97,9 @@ type Datastore interface {
 
 	UserSettings(ctx context.Context, userID uint) (*UserSettings, error)
 
+	// ListUserAPIEndpoints returns the API endpoint permissions assigned to the given user.
+	ListUserAPIEndpoints(ctx context.Context, userID uint) ([]APIEndpoint, error)
+
 	///////////////////////////////////////////////////////////////////////////////
 	// QueryStore
 

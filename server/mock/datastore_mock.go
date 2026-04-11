@@ -91,6 +91,8 @@ type ConfirmPendingEmailChangeFunc func(ctx context.Context, userID uint, token 
 
 type UserSettingsFunc func(ctx context.Context, userID uint) (*fleet.UserSettings, error)
 
+type ListUserAPIEndpointsFunc func(ctx context.Context, userID uint) ([]fleet.APIEndpoint, error)
+
 type ApplyQueriesFunc func(ctx context.Context, authorID uint, queries []*fleet.Query, queriesToDiscardResults map[uint]struct{}) error
 
 type NewQueryFunc func(ctx context.Context, query *fleet.Query, opts ...fleet.OptionalArg) (*fleet.Query, error)
@@ -1961,6 +1963,9 @@ type DataStore struct {
 
 	UserSettingsFunc        UserSettingsFunc
 	UserSettingsFuncInvoked bool
+
+	ListUserAPIEndpointsFunc        ListUserAPIEndpointsFunc
+	ListUserAPIEndpointsFuncInvoked bool
 
 	ApplyQueriesFunc        ApplyQueriesFunc
 	ApplyQueriesFuncInvoked bool
@@ -4853,6 +4858,13 @@ func (s *DataStore) UserSettings(ctx context.Context, userID uint) (*fleet.UserS
 	s.UserSettingsFuncInvoked = true
 	s.mu.Unlock()
 	return s.UserSettingsFunc(ctx, userID)
+}
+
+func (s *DataStore) ListUserAPIEndpoints(ctx context.Context, userID uint) ([]fleet.APIEndpoint, error) {
+	s.mu.Lock()
+	s.ListUserAPIEndpointsFuncInvoked = true
+	s.mu.Unlock()
+	return s.ListUserAPIEndpointsFunc(ctx, userID)
 }
 
 func (s *DataStore) ApplyQueries(ctx context.Context, authorID uint, queries []*fleet.Query, queriesToDiscardResults map[uint]struct{}) error {

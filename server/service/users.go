@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/fleetdm/fleet/v4/server"
+	apiendpoints "github.com/fleetdm/fleet/v4/server/api_endpoints"
 	"github.com/fleetdm/fleet/v4/server/authz"
 	authz_ctx "github.com/fleetdm/fleet/v4/server/contexts/authz"
 	"github.com/fleetdm/fleet/v4/server/contexts/ctxdb"
@@ -121,6 +122,29 @@ func (svc *Service) CreateUser(ctx context.Context, p fleet.UserPayload) (*fleet
 		if fleet.PremiumRolesPresent(p.GlobalRole, teamRoles) {
 			return nil, nil, fleet.ErrMissingLicense
 		}
+		if p.APIEndpoints != nil {
+			return nil, nil, fleet.ErrMissingLicense
+		}
+	}
+
+	// Validate that all APIEndpoints are correct
+	if p.APIOnly != nil && *p.APIOnly && p.APIEndpoints != nil && len(*p.APIEndpoints) > 0 {
+		allEndpoints := apiendpoints.GetAPIEndpoints()
+		fpMap := make(map[string]fleet.APIEndpoint, len(allEndpoints))
+
+		for _, ep := range allEndpoints {
+			fpMap[ep.Fingerprint()] = ep
+		}
+
+		invalid := &fleet.InvalidArgumentError{}
+		for _, ref := range *p.APIEndpoints {
+			if _, ok := fpMap[fleet.NewAPIEndpointFromTpl(ref.Method, ref.Path).Fingerprint()]; !ok {
+				invalid.Append("api_endpoints", fmt.Sprintf("endpoint %s %s not found in catalog", ref.Method, ref.Path))
+			}
+		}
+		if invalid.HasErrors() {
+			return nil, nil, ctxerr.Wrap(ctx, invalid, "validate api_endpoints")
+		}
 	}
 
 	user, err := svc.NewUser(ctx, p)
@@ -145,6 +169,36 @@ func (svc *Service) CreateUser(ctx context.Context, p fleet.UserPayload) (*fleet
 	}
 
 	return user, sessionKey, nil
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Create API-Only User
+////////////////////////////////////////////////////////////////////////////////
+
+func createAPIOnlyUserEndpoint(ctx context.Context, request any, svc fleet.Service) (fleet.Errorer, error) {
+	req := request.(*createUserRequest)
+
+	pwd, err := server.GenerateRandomPwd()
+	if err != nil {
+		return createUserResponse{
+			Err: fmt.Errorf("failed to create user pwd: %w", err),
+		}, nil
+	}
+
+	emailPrefix, err := server.GenerateRandomURLSafeText(10)
+	if err != nil {
+		return createUserResponse{
+			Err: fmt.Errorf("failed to create user email: %w", err),
+		}, nil
+	}
+	// TODO: We probably shouldn't be using example.com here
+	email := fmt.Sprintf("%s@example.com", emailPrefix)
+
+	req.APIOnly = new(true)
+	req.Password = new(pwd)
+	req.Email = new(email)
+
+	return createUserEndpoint(ctx, req, svc)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
