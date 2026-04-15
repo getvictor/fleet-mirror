@@ -33,11 +33,29 @@ package_path: package_name.yml
 package_path: ../software/package_name.yml
 ```
 
+### `path:` vs `paths:` (glob patterns)
+
+Several sections support both `path:` (singular) and `paths:` (plural), including `configuration_profiles`, `labels`, `policies`, and `reports`:
+
+- **`path:`** references a single, literal file path. Must not contain glob metacharacters (`*`, `?`, `[`, `{`).
+- **`paths:`** accepts a glob pattern to match multiple files at once, powered by the [doublestar](https://github.com/bmatcuk/doublestar) package. Supported patterns:
+  - `*` — match any sequence of characters within a directory
+  - `**` — match across directory boundaries (recursive)
+  - `?` — match any single character
+  - `[...]` — match a character class (e.g. `[abc]`, `[a-z]`)
+  - `{...}` — match any of the comma-separated alternatives (e.g. `{*.xml,*.json}`)
+
+You cannot specify both `path:` and `paths:` on the same entry.
+
+> **Important:** Filenames containing any of the glob metacharacters (`*`, `?`, `[`, `{`) cannot be referenced using `path:`. If your filenames contain these characters (e.g. Windows profiles named `[AllowSpotlightCollection].xml`), either rename the files to remove the metacharacters, or use `paths:` with a wildcard pattern like `*.xml`.
+
 For the GitOps API token, create a dedicated API-only user with `fleetctl user create --api-only`. These users can modify configurations via GitOps but can’t access the Fleet UI. Assign the GitOps role and set the appropriate global or fleet scope in the UI.
 
 ## labels
 
 Labels can be specified in your `default.yml` and `fleets/fleet-name.yml` files using inline configuration or references to separate files in your `lib/` folder. Labels cannot be specified in `fleets/unassigned.yml`.
+
+Labels support `path:` (single file) and `paths:` (glob pattern) references. See [`path:` vs `paths:`](#path-vs-paths-glob-patterns) for details on glob support and metacharacters (`*`, `?`, `[...]`, `{...}`) to avoid in filenames.
 
 - `name` specifies the label's name. Must be unique across all global and fleet labels.
     + Changing a label's `name` in GitOps will delete and re-create the label, temporarily clearing its membership. To avoid this, update the label name in the UI before making the change in YAML. 
@@ -117,6 +135,8 @@ labels:
 ## policies
 
 Policies can be specified inline in your `default.yml`, `fleets/fleet-name.yml`, or `fleets/unassigned.yml` files. They can also be specified in separate files in your `lib/` folder.
+
+Policies support `path:` (single file) and `paths:` (glob pattern) references. See [`path:` vs `paths:`](#path-vs-paths-glob-patterns) for details on glob support and metacharacters (`*`, `?`, `[...]`, `{...}`) to avoid in filenames.
 
 ### Options
 
@@ -233,6 +253,8 @@ policies:
 ## reports
 
 Reports can be specified inline in your `default.yml` file or `fleets/fleet-name.yml` files. They can also be specified in separate files in your `lib/` folder.
+
+Reports support `path:` (single file) and `paths:` (glob pattern) references. See [`path:` vs `paths:`](#path-vs-paths-glob-patterns) for details on glob support and metacharacters (`*`, `?`, `[...]`, `{...}`) to avoid in filenames.
 
 ### Options
 
@@ -396,13 +418,16 @@ controls:
       - path: ../lib/macos-profile2.json
         labels_include_all: # Available in Fleet Premium
           - Macs on Sonoma
-      - path: ../lib/macos-profile3.mobileconfig
+      - paths: ../lib/macos/profiles/*.mobileconfig  # Glob pattern to include all .mobileconfig files
         labels_include_any: # Available in Fleet Premium
           - Engineering
           - Product
   windows_settings:
     configuration_profiles:
       - path: ../lib/windows-profile.xml
+      - paths: ../lib/windows/profiles/*.xml  # Glob pattern to include all .xml files in directory
+        labels_include_any:
+          - Engineering
   android_settings:
     configuration_profiles:
       - path: ../lib/android-profile.json
@@ -445,14 +470,23 @@ controls:
 
 ### apple_settings and windows_settings
 
-- `apple_settings.configuration_profiles` is a list of paths to macOS, iOS, and iPadOS configuration profiles (.mobileconfig) or declaration profiles (.json).
-- `windows_settings.configuration_profiles` is a list of paths to Windows configuration profiles (.xml).
+- `apple_settings.configuration_profiles` is a list of macOS, iOS, and iPadOS configuration profiles (.mobileconfig) or declaration profiles (.json).
+- `windows_settings.configuration_profiles` is a list of Windows configuration profiles (.xml).
+
+Each entry can use either `path:` or `paths:`:
+
+- **`path:`** references a single file. Must not contain glob metacharacters (`*`, `?`, `[`, `{`).
+- **`paths:`** accepts a [glob pattern](#path-vs-paths-glob-patterns) to match multiple files (e.g. `../lib/windows/profiles/*.xml`). Labels and other options specified on a `paths:` entry apply to all matched files.
+
+> Filenames containing glob metacharacters (`*`, `?`, `[`, `{`) cannot be used with `path:`. See [`path:` vs `paths:`](#path-vs-paths-glob-patterns) for details and workarounds.
 
 Use `labels_include_all` to target hosts that have all labels, `labels_include_any` to target hosts that have any label, or `labels_exclude_any` to target hosts that don't have any of the labels. Only one of `labels_include_all`, `labels_include_any`, or `labels_exclude_any` can be specified. If none are specified, all hosts are targeted.
 
 ### android_settings
 
-- `android_settings.configuration_profiles` is a list of paths to Android configuration profiles (.json).
+- `android_settings.configuration_profiles` is a list of Android configuration profiles (.json).
+
+Each entry can use either `path:` or `paths:` (see [`path:` vs `paths:`](#path-vs-paths-glob-patterns) for glob pattern support).
 
 Use `labels_include_all` to target hosts that have all labels, `labels_include_any` to target hosts that have any label, or `labels_exclude_any` to target hosts that don't have any of the labels. Only one of `labels_include_all`, `labels_include_any`, or `labels_exclude_any` can be specified. If none are specified, all hosts are targeted.
 
