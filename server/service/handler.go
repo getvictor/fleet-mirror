@@ -1397,6 +1397,22 @@ func WithMDMEnrollmentMiddleware(svc fleet.Service, logger *slog.Logger, next ht
 			return
 		}
 
+		// When a custom apple_server_url is configured that differs from the
+		// request host, redirect to it so the SSO session cookie is set on
+		// the same host as the SAML ACS callback (issue #41592). The
+		// __Host- cookie prefix pins the cookie to the host that set it, so
+		// a mismatch between the initial /mdm/sso host and the ACS host
+		// results in a "session not found" failure when the IdP posts the
+		// SAML response back.
+		redirectURL, err := svc.GetMDMAppleSSORedirectURL(r.Context(), r.Host, r.URL.Path, r.URL.RawQuery)
+		if err != nil {
+			logger.ErrorContext(r.Context(), "getting mdm sso redirect url", "err", err)
+		} else if redirectURL != "" {
+			logger.InfoContext(r.Context(), "redirecting mdm sso to apple_server_url host", "target", redirectURL)
+			http.Redirect(w, r, redirectURL, http.StatusTemporaryRedirect)
+			return
+		}
+
 		// if x-apple-aspen-deviceinfo custom header is present, we need to check for minimum os version
 		di := r.Header.Get("x-apple-aspen-deviceinfo")
 		if di != "" {

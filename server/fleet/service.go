@@ -1129,6 +1129,15 @@ type Service interface {
 	// CheckMDMAppleEnrollmentWithMinimumOSVersion checks if the minimum OS version is met for a MDM enrollment
 	CheckMDMAppleEnrollmentWithMinimumOSVersion(ctx context.Context, m *MDMAppleMachineInfo) (*MDMAppleSoftwareUpdateRequired, error)
 
+	// GetMDMAppleSSORedirectURL returns a redirect URL to use when the incoming
+	// MDM SSO request lands on a different host than the one configured via
+	// apple_server_url. Returns an empty string when no redirect is required
+	// (no custom apple_server_url configured, or the request host already
+	// matches). This keeps the session cookie set on the same host as the SAML
+	// ACS callback so the enrollment flow works end to end. See
+	// https://github.com/fleetdm/fleet/issues/41592.
+	GetMDMAppleSSORedirectURL(ctx context.Context, requestHost, requestPath, requestRawQuery string) (string, error)
+
 	// GetOTAProfile gets the OTA (over-the-air) profile for a given team based on the enroll secret provided.
 	GetOTAProfile(ctx context.Context, enrollSecret, idpUUID string) ([]byte, error)
 

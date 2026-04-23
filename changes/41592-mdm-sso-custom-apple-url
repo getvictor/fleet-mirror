@@ -1,0 +1,1 @@
+* Fixed macOS Setup end-user authentication failing with a "session not found" error when a custom Apple MDM URL was configured. The `/mdm/sso` flow now redirects to the Apple MDM URL so the SSO session cookie is set on the same host as the SAML ACS callback.

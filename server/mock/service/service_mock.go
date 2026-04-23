@@ -700,6 +700,8 @@ type TriggerLinuxDiskEncryptionEscrowFunc func(ctx context.Context, host *fleet.
 
 type CheckMDMAppleEnrollmentWithMinimumOSVersionFunc func(ctx context.Context, m *fleet.MDMAppleMachineInfo) (*fleet.MDMAppleSoftwareUpdateRequired, error)
 
+type GetMDMAppleSSORedirectURLFunc func(ctx context.Context, requestHost string, requestPath string, requestRawQuery string) (string, error)
+
 type GetOTAProfileFunc func(ctx context.Context, enrollSecret string, idpUUID string) ([]byte, error)
 
 type TriggerCronScheduleFunc func(ctx context.Context, name string) error
@@ -1934,6 +1936,9 @@ type Service struct {
 
 	CheckMDMAppleEnrollmentWithMinimumOSVersionFunc        CheckMDMAppleEnrollmentWithMinimumOSVersionFunc
 	CheckMDMAppleEnrollmentWithMinimumOSVersionFuncInvoked bool
+
+	GetMDMAppleSSORedirectURLFunc        GetMDMAppleSSORedirectURLFunc
+	GetMDMAppleSSORedirectURLFuncInvoked bool
 
 	GetOTAProfileFunc        GetOTAProfileFunc
 	GetOTAProfileFuncInvoked bool
@@ -4637,6 +4642,13 @@ func (s *Service) CheckMDMAppleEnrollmentWithMinimumOSVersion(ctx context.Contex
 	s.CheckMDMAppleEnrollmentWithMinimumOSVersionFuncInvoked = true
 	s.mu.Unlock()
 	return s.CheckMDMAppleEnrollmentWithMinimumOSVersionFunc(ctx, m)
+}
+
+func (s *Service) GetMDMAppleSSORedirectURL(ctx context.Context, requestHost string, requestPath string, requestRawQuery string) (string, error) {
+	s.mu.Lock()
+	s.GetMDMAppleSSORedirectURLFuncInvoked = true
+	s.mu.Unlock()
+	return s.GetMDMAppleSSORedirectURLFunc(ctx, requestHost, requestPath, requestRawQuery)
 }
 
 func (s *Service) GetOTAProfile(ctx context.Context, enrollSecret string, idpUUID string) ([]byte, error) {

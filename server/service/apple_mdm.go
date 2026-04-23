@@ -14,9 +14,11 @@ import (
 	"io"
 	"log/slog"
 	"mime/multipart"
+	"net"
 	"net/http"
 	"net/url"
 	"os"
+	"path"
 	"regexp"
 	"slices"
 	"sort"
@@ -2359,6 +2361,49 @@ func (svc *Service) generateMDMAppleSCEPEnrollProfile(ctx context.Context, orgNa
 	}
 
 	return enrollProf, nil
+}
+
+// GetMDMAppleSSORedirectURL returns a redirect target so the /mdm/sso flow
+// always runs on the apple_server_url host when one is configured. The SSO
+// session cookie uses the __Host- prefix, so it is only sent on requests to
+// the exact host that set it. If the SSO flow started on one host and the
+// SAML IdP posts the callback to a different host, the callback sees no
+// cookie and the session lookup fails (see issue #41592).
+func (svc *Service) GetMDMAppleSSORedirectURL(ctx context.Context, requestHost, requestPath, requestRawQuery string) (string, error) {
+	// skipauth: this is called from the unauthenticated /mdm/sso middleware
+	// before any user context exists.
+	svc.authz.SkipAuthorization(ctx)
+
+	appCfg, err := svc.ds.AppConfig(ctx)
+	if err != nil {
+		return "", ctxerr.Wrap(ctx, err, "get app config for mdm sso redirect")
+	}
+
+	if appCfg.MDM.AppleServerURL == "" {
+		// No custom apple_server_url; the request host is the only Fleet host
+		// so no redirect is needed.
+		return "", nil
+	}
+
+	mdmURL, err := url.Parse(appCfg.MDM.AppleServerURL)
+	if err != nil || mdmURL.Host == "" {
+		// Invalid URL configured — don't redirect (and let the rest of the
+		// flow surface its own errors).
+		return "", nil
+	}
+
+	reqHostname := requestHost
+	if h, _, splitErr := net.SplitHostPort(requestHost); splitErr == nil {
+		reqHostname = h
+	}
+	if strings.EqualFold(reqHostname, mdmURL.Hostname()) {
+		return "", nil
+	}
+
+	target := *mdmURL
+	target.Path = path.Join(mdmURL.Path, requestPath)
+	target.RawQuery = requestRawQuery
+	return target.String(), nil
 }
 
 func (svc *Service) CheckMDMAppleEnrollmentWithMinimumOSVersion(ctx context.Context, m *fleet.MDMAppleMachineInfo) (*fleet.MDMAppleSoftwareUpdateRequired, error) {

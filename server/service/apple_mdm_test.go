@@ -7144,3 +7144,93 @@ func TestGetMDMAppleEnrollmentProfileByToken(t *testing.T) {
 		}
 	})
 }
+
+func TestGetMDMAppleSSORedirectURL(t *testing.T) {
+	svc, ctx, ds, _ := setupAppleMDMService(t, &fleet.LicenseInfo{Tier: fleet.TierPremium})
+
+	const (
+		serverURL      = "https://fleet.example.com"
+		appleServerURL = "https://mdm.example.com"
+	)
+
+	cases := []struct {
+		name            string
+		appleServerURL  string
+		requestHost     string
+		requestPath     string
+		requestRawQuery string
+		want            string
+	}{
+		{
+			name:           "no custom apple server url",
+			appleServerURL: "",
+			requestHost:    "fleet.example.com",
+			requestPath:    "/mdm/sso",
+			want:           "",
+		},
+		{
+			name:           "custom apple server url, request already on mdm host",
+			appleServerURL: appleServerURL,
+			requestHost:    "mdm.example.com",
+			requestPath:    "/mdm/sso",
+			want:           "",
+		},
+		{
+			name:           "custom apple server url, request on fleet host",
+			appleServerURL: appleServerURL,
+			requestHost:    "fleet.example.com",
+			requestPath:    "/mdm/sso",
+			want:           "https://mdm.example.com/mdm/sso",
+		},
+		{
+			name:            "custom apple server url, preserves query string",
+			appleServerURL:  appleServerURL,
+			requestHost:     "fleet.example.com",
+			requestPath:     "/mdm/sso",
+			requestRawQuery: "initiator=account_driven_enroll",
+			want:            "https://mdm.example.com/mdm/sso?initiator=account_driven_enroll",
+		},
+		{
+			name:           "request host includes port, matching mdm host",
+			appleServerURL: appleServerURL,
+			requestHost:    "mdm.example.com:443",
+			requestPath:    "/mdm/sso",
+			want:           "",
+		},
+		{
+			name:           "host comparison is case insensitive",
+			appleServerURL: appleServerURL,
+			requestHost:    "MDM.EXAMPLE.COM",
+			requestPath:    "/mdm/sso",
+			want:           "",
+		},
+		{
+			name:           "account driven enroll path",
+			appleServerURL: appleServerURL,
+			requestHost:    "fleet.example.com",
+			requestPath:    "/account_driven_enroll/sso",
+			want:           "https://mdm.example.com/account_driven_enroll/sso",
+		},
+		{
+			name:           "invalid apple server url does not redirect",
+			appleServerURL: "://bad-url",
+			requestHost:    "fleet.example.com",
+			requestPath:    "/mdm/sso",
+			want:           "",
+		},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			ds.AppConfigFunc = func(context.Context) (*fleet.AppConfig, error) {
+				return &fleet.AppConfig{
+					ServerSettings: fleet.ServerSettings{ServerURL: serverURL},
+					MDM:            fleet.MDM{AppleServerURL: tt.appleServerURL},
+				}, nil
+			}
+			got, err := svc.GetMDMAppleSSORedirectURL(ctx, tt.requestHost, tt.requestPath, tt.requestRawQuery)
+			require.NoError(t, err)
+			require.Equal(t, tt.want, got)
+		})
+	}
+}
