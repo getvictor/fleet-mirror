@@ -1,0 +1,466 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		FA00000000000000000070AA /* FleetAgentApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA00000000000000000060AA /* FleetAgentApp.swift */; };
+		FA00000000000000000071AA /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA00000000000000000061AA /* ContentView.swift */; };
+		FA00000000000000000072AA /* DebugConfigView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA00000000000000000062AA /* DebugConfigView.swift */; };
+		FA00000000000000000073AA /* ConfigurationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA00000000000000000063AA /* ConfigurationManager.swift */; };
+		FA00000000000000000074AA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FA00000000000000000064AA /* Assets.xcassets */; };
+		FA00000000000000000075AA /* KeychainManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA00000000000000000065AA /* KeychainManager.swift */; };
+		FA00000000000000000076AA /* ApiClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA00000000000000000066AA /* ApiClient.swift */; };
+		FA000000000000000000C2AA /* KeychainManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA000000000000000000C1AA /* KeychainManagerTests.swift */; };
+		FA000000000000000000C4AA /* ApiClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA000000000000000000C3AA /* ApiClientTests.swift */; };
+		FA000000000000000000C6AA /* ConfigurationManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA000000000000000000C5AA /* ConfigurationManagerTests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		FA000000000000000000B0AA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FA00000000000000000001AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = FA00000000000000000030AA;
+			remoteInfo = FleetAgent;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		FA00000000000000000020AA /* FleetAgent.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FleetAgent.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		FA00000000000000000060AA /* FleetAgentApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FleetAgentApp.swift; sourceTree = "<group>"; };
+		FA00000000000000000061AA /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		FA00000000000000000062AA /* DebugConfigView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugConfigView.swift; sourceTree = "<group>"; };
+		FA00000000000000000063AA /* ConfigurationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigurationManager.swift; sourceTree = "<group>"; };
+		FA00000000000000000064AA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		FA00000000000000000065AA /* KeychainManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainManager.swift; sourceTree = "<group>"; };
+		FA00000000000000000066AA /* ApiClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiClient.swift; sourceTree = "<group>"; };
+		FA000000000000000000A2AA /* FleetAgentTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FleetAgentTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		FA000000000000000000C1AA /* KeychainManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainManagerTests.swift; sourceTree = "<group>"; };
+		FA000000000000000000C3AA /* ApiClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiClientTests.swift; sourceTree = "<group>"; };
+		FA000000000000000000C5AA /* ConfigurationManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigurationManagerTests.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		FA00000000000000000081AA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FA000000000000000000A5AA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		FA00000000000000000010AA = {
+			isa = PBXGroup;
+			children = (
+				FA00000000000000000011AA /* FleetAgent */,
+				FA000000000000000000A3AA /* FleetAgentTests */,
+				FA00000000000000000012AA /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		FA00000000000000000011AA /* FleetAgent */ = {
+			isa = PBXGroup;
+			children = (
+				FA00000000000000000060AA /* FleetAgentApp.swift */,
+				FA00000000000000000061AA /* ContentView.swift */,
+				FA00000000000000000062AA /* DebugConfigView.swift */,
+				FA00000000000000000063AA /* ConfigurationManager.swift */,
+				FA00000000000000000066AA /* ApiClient.swift */,
+				FA00000000000000000065AA /* KeychainManager.swift */,
+				FA00000000000000000064AA /* Assets.xcassets */,
+			);
+			path = FleetAgent;
+			sourceTree = "<group>";
+		};
+		FA00000000000000000012AA /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FA00000000000000000020AA /* FleetAgent.app */,
+				FA000000000000000000A2AA /* FleetAgentTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		FA000000000000000000A3AA /* FleetAgentTests */ = {
+			isa = PBXGroup;
+			children = (
+				FA000000000000000000C1AA /* KeychainManagerTests.swift */,
+				FA000000000000000000C3AA /* ApiClientTests.swift */,
+				FA000000000000000000C5AA /* ConfigurationManagerTests.swift */,
+			);
+			path = FleetAgentTests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		FA00000000000000000030AA /* FleetAgent */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FA00000000000000000041AA /* Build configuration list for PBXNativeTarget "FleetAgent" */;
+			buildPhases = (
+				FA00000000000000000080AA /* Sources */,
+				FA00000000000000000081AA /* Frameworks */,
+				FA00000000000000000082AA /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = FleetAgent;
+			productName = FleetAgent;
+			productReference = FA00000000000000000020AA /* FleetAgent.app */;
+			productType = "com.apple.product-type.application";
+		};
+		FA000000000000000000A1AA /* FleetAgentTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FA000000000000000000A7AA /* Build configuration list for PBXNativeTarget "FleetAgentTests" */;
+			buildPhases = (
+				FA000000000000000000A4AA /* Sources */,
+				FA000000000000000000A5AA /* Frameworks */,
+				FA000000000000000000A6AA /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				FA000000000000000000B1AA /* PBXTargetDependency */,
+			);
+			name = FleetAgentTests;
+			productName = FleetAgentTests;
+			productReference = FA000000000000000000A2AA /* FleetAgentTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		FA00000000000000000001AA /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1540;
+				LastUpgradeCheck = 1540;
+				TargetAttributes = {
+					FA000000000000000000A1AA = {
+						TestTargetID = FA00000000000000000030AA;
+					};
+				};
+			};
+			buildConfigurationList = FA00000000000000000040AA /* Build configuration list for PBXProject "FleetAgent" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = FA00000000000000000010AA;
+			productRefGroup = FA00000000000000000012AA /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				FA00000000000000000030AA /* FleetAgent */,
+				FA000000000000000000A1AA /* FleetAgentTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		FA00000000000000000082AA /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FA00000000000000000074AA /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FA000000000000000000A6AA /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		FA00000000000000000080AA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FA00000000000000000070AA /* FleetAgentApp.swift in Sources */,
+				FA00000000000000000071AA /* ContentView.swift in Sources */,
+				FA00000000000000000072AA /* DebugConfigView.swift in Sources */,
+				FA00000000000000000073AA /* ConfigurationManager.swift in Sources */,
+				FA00000000000000000076AA /* ApiClient.swift in Sources */,
+				FA00000000000000000075AA /* KeychainManager.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FA000000000000000000A4AA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FA000000000000000000C2AA /* KeychainManagerTests.swift in Sources */,
+				FA000000000000000000C4AA /* ApiClientTests.swift in Sources */,
+				FA000000000000000000C6AA /* ConfigurationManagerTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		FA000000000000000000B1AA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = FA00000000000000000030AA /* FleetAgent */;
+			targetProxy = FA000000000000000000B0AA /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		FA00000000000000000050AA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		FA00000000000000000051AA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		FA00000000000000000052AA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.fleetdm.agent;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		FA00000000000000000053AA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.fleetdm.agent;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		FA000000000000000000A8AA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.fleetdm.agent.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FleetAgent.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/FleetAgent";
+			};
+			name = Debug;
+		};
+		FA000000000000000000A9AA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.fleetdm.agent.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FleetAgent.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/FleetAgent";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		FA00000000000000000040AA /* Build configuration list for PBXProject "FleetAgent" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FA00000000000000000050AA /* Debug */,
+				FA00000000000000000051AA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FA00000000000000000041AA /* Build configuration list for PBXNativeTarget "FleetAgent" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FA00000000000000000052AA /* Debug */,
+				FA00000000000000000053AA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FA000000000000000000A7AA /* Build configuration list for PBXNativeTarget "FleetAgentTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FA000000000000000000A8AA /* Debug */,
+				FA000000000000000000A9AA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+	};
+	rootObject = FA00000000000000000001AA /* Project object */;
+}
