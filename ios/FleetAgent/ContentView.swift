@@ -3,12 +3,9 @@ import SwiftUI
 struct ContentView: View {
     @EnvironmentObject var configManager: ConfigurationManager
     @EnvironmentObject var apiClient: ApiClient
-    @State private var helloCount = 0
+    @EnvironmentObject var pollingManager: PollingManager
     @State private var showDebugConfig = false
-    @State private var lastHelloTime = ""
-
-    /// Polling interval in seconds (will be configurable in later steps)
-    private let pollingInterval: TimeInterval = 15
+    @State private var showDebugTables = false
 
     var body: some View {
         NavigationStack {
@@ -21,14 +18,9 @@ struct ContentView: View {
                     .font(.largeTitle)
                     .fontWeight(.bold)
 
-                // Config status
                 configCard
-
-                // Enrollment status
                 enrollmentCard
-
-                // Hello counter
-                counterCard
+                pollingCard
 
                 Spacer()
             }
@@ -36,8 +28,13 @@ struct ContentView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button {
-                        showDebugConfig = true
+                    Menu {
+                        Button { showDebugConfig = true } label: {
+                            Label("Server Config", systemImage: "gear")
+                        }
+                        Button { showDebugTables = true } label: {
+                            Label("Query Tables", systemImage: "tablecells")
+                        }
                     } label: {
                         Image(systemName: "gear")
                     }
@@ -46,11 +43,25 @@ struct ContentView: View {
             .sheet(isPresented: $showDebugConfig) {
                 DebugConfigView()
             }
-            .onAppear { startTimer() }
+            .sheet(isPresented: $showDebugTables) {
+                DebugTablesView()
+            }
+            .onChange(of: apiClient.enrollmentState) { newState in
+                if case .enrolled = newState {
+                    pollingManager.startForegroundPolling()
+                } else {
+                    pollingManager.stopForegroundPolling()
+                }
+            }
+            .onAppear {
+                if case .enrolled = apiClient.enrollmentState {
+                    pollingManager.startForegroundPolling()
+                }
+            }
         }
     }
 
-    // MARK: - Cards
+    // MARK: - Config Card
 
     private var configCard: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -73,6 +84,8 @@ struct ContentView: View {
         .background(.ultraThinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 12))
     }
+
+    // MARK: - Enrollment Card
 
     private var enrollmentCard: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -144,41 +157,65 @@ struct ContentView: View {
         }
     }
 
-    private var counterCard: some View {
-        VStack(spacing: 8) {
-            Text("Hello #\(helloCount)")
-                .font(.title2)
-                .monospacedDigit()
-            if !lastHelloTime.isEmpty {
-                Text("Last: \(lastHelloTime)")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+    // MARK: - Polling Card
+
+    private var pollingCard: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                if pollingManager.isPolling {
+                    Label("Polling...", systemImage: "arrow.triangle.2.circlepath")
+                        .foregroundStyle(.blue)
+                        .font(.headline)
+                } else if pollingManager.pollCount > 0 {
+                    Label("Poll #\(pollingManager.pollCount)", systemImage: "arrow.clockwise.circle.fill")
+                        .foregroundStyle(.green)
+                        .font(.headline)
+                } else {
+                    Label("Waiting", systemImage: "clock")
+                        .foregroundStyle(.secondary)
+                        .font(.headline)
+                }
+                Spacer()
+                if case .enrolled = apiClient.enrollmentState {
+                    Button {
+                        Task { await pollingManager.performPollCycle() }
+                    } label: {
+                        Image(systemName: "arrow.clockwise")
+                    }
+                    .disabled(pollingManager.isPolling)
+                }
             }
-            Text("Every \(Int(pollingInterval))s")
+
+            if let time = pollingManager.lastPollTime {
+                LabeledContent("Last Poll", value: formatTime(time))
+                    .font(.caption)
+            }
+
+            if !pollingManager.lastQueryResults.isEmpty {
+                let succeeded = pollingManager.lastQueryResults.values.filter { $0.status == 0 }.count
+                LabeledContent("Last Queries", value: "\(succeeded)/\(pollingManager.lastQueryResults.count) ok")
+                    .font(.caption)
+            }
+
+            LabeledContent("Interval", value: "\(Int(pollingManager.foregroundInterval))s (fg)")
                 .font(.caption)
-                .foregroundStyle(.secondary)
+
+            if let error = pollingManager.lastError {
+                Text(error)
+                    .font(.caption)
+                    .foregroundStyle(.red)
+                    .lineLimit(2)
+            }
         }
         .padding()
-        .frame(maxWidth: .infinity)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .background(.ultraThinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 
-    // MARK: - Timer
-
-    private func startTimer() {
-        Timer.scheduledTimer(withTimeInterval: pollingInterval, repeats: true) { _ in
-            DispatchQueue.main.async {
-                helloCount += 1
-                lastHelloTime = formattedTime()
-                print("[\(lastHelloTime)] Hello #\(helloCount)")
-            }
-        }
-    }
-
-    private func formattedTime() -> String {
+    private func formatTime(_ date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm:ss"
-        return formatter.string(from: Date())
+        return formatter.string(from: date)
     }
 }

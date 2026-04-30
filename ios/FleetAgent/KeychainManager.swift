@@ -7,21 +7,39 @@ class KeychainManager {
     static let shared = KeychainManager()
 
     private let service = "com.fleetdm.agent"
-    private let nodeKeyAccount = "orbit_node_key"
+    private let orbitKeyAccount = "orbit_node_key"
+    private let osqueryKeyAccount = "osquery_node_key"
 
     private init() {}
 
+    // MARK: - Orbit Node Key (for orbit/* endpoints)
+
     func saveOrbitNodeKey(_ key: String) -> Bool {
-        save(account: nodeKeyAccount, data: Data(key.utf8))
+        save(account: orbitKeyAccount, data: Data(key.utf8))
     }
 
     func loadOrbitNodeKey() -> String? {
-        guard let data = load(account: nodeKeyAccount) else { return nil }
+        guard let data = load(account: orbitKeyAccount) else { return nil }
         return String(data: data, encoding: .utf8)
     }
 
     func deleteOrbitNodeKey() {
-        delete(account: nodeKeyAccount)
+        delete(account: orbitKeyAccount)
+    }
+
+    // MARK: - Osquery Node Key (for osquery/* distributed endpoints)
+
+    func saveOsqueryNodeKey(_ key: String) -> Bool {
+        save(account: osqueryKeyAccount, data: Data(key.utf8))
+    }
+
+    func loadOsqueryNodeKey() -> String? {
+        guard let data = load(account: osqueryKeyAccount) else { return nil }
+        return String(data: data, encoding: .utf8)
+    }
+
+    func deleteOsqueryNodeKey() {
+        delete(account: osqueryKeyAccount)
     }
 
     // MARK: - Keychain Operations

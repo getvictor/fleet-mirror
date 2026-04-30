@@ -89,9 +89,10 @@ class ApiClient: ObservableObject {
         }
     }
 
-    /// Clear stored node key and mark as unenrolled.
+    /// Clear stored node keys and mark as unenrolled.
     func clearEnrollment() {
         keychain.deleteOrbitNodeKey()
+        keychain.deleteOsqueryNodeKey()
         enrollmentState = .unenrolled
         print("[Fleet] Enrollment cleared")
     }
@@ -125,6 +126,64 @@ class ApiClient: ObservableObject {
         guard let key = keychain.loadOrbitNodeKey() else { return nil }
         if key.count <= 8 { return key }
         return String(key.prefix(8)) + "..."
+    }
+
+    // MARK: - Orbit Config
+
+    /// Fetch orbit configuration from Fleet server.
+    func getOrbitConfig(config: ConfigurationManager) async throws -> OrbitConfigResponse {
+        guard let nodeKey = keychain.loadOrbitNodeKey() else {
+            throw ApiError(statusCode: 0, message: "Not enrolled")
+        }
+        return try await post(
+            baseURL: config.serverURL,
+            path: "/api/fleet/orbit/config",
+            body: OrbitConfigRequest(orbitNodeKey: nodeKey)
+        )
+    }
+
+    // MARK: - Distributed Queries
+
+    /// Returns the osquery node_key (from Keychain if set, otherwise orbit_node_key).
+    /// In production (Step 8), the server will return this during enrollment.
+    /// For now, it can be set via debug config.
+    private func osqueryNodeKey() -> String? {
+        keychain.loadOsqueryNodeKey() ?? keychain.loadOrbitNodeKey()
+    }
+
+    /// Fetch pending distributed queries from Fleet server.
+    func getDistributedQueries(config: ConfigurationManager) async throws -> [String: String] {
+        guard let nodeKey = osqueryNodeKey() else {
+            throw ApiError(statusCode: 0, message: "Not enrolled")
+        }
+        let response: DistributedReadResponse = try await post(
+            baseURL: config.serverURL,
+            path: "/api/osquery/distributed/read",
+            body: DistributedReadRequest(nodeKey: nodeKey)
+        )
+        return response.queries
+    }
+
+    /// Submit distributed query results to Fleet server.
+    func submitDistributedResults(
+        config: ConfigurationManager,
+        results: [String: [TableRow]],
+        statuses: [String: Int],
+        messages: [String: String]
+    ) async throws {
+        guard let nodeKey = osqueryNodeKey() else {
+            throw ApiError(statusCode: 0, message: "Not enrolled")
+        }
+        let _: DistributedWriteResponse = try await post(
+            baseURL: config.serverURL,
+            path: "/api/osquery/distributed/write",
+            body: DistributedWriteRequest(
+                nodeKey: nodeKey,
+                queries: results,
+                statuses: statuses,
+                messages: messages
+            )
+        )
     }
 
     // MARK: - HTTP
@@ -184,6 +243,66 @@ struct EnrollResponse: Decodable {
         case orbitNodeKey = "orbit_node_key"
     }
 }
+
+struct OrbitConfigRequest: Encodable {
+    let orbitNodeKey: String
+
+    enum CodingKeys: String, CodingKey {
+        case orbitNodeKey = "orbit_node_key"
+    }
+}
+
+struct OrbitConfigResponse: Decodable {
+    let notifications: OrbitNotifications?
+    let scriptExecutionTimeout: Int?
+
+    enum CodingKeys: String, CodingKey {
+        case notifications
+        case scriptExecutionTimeout = "script_execution_timeout"
+    }
+}
+
+struct OrbitNotifications: Decodable {
+    let renewEnrollmentProfile: Bool?
+    let pendingScriptExecutionIDs: [String]?
+    let pendingSoftwareInstallerIDs: [String]?
+
+    enum CodingKeys: String, CodingKey {
+        case renewEnrollmentProfile = "renew_enrollment_profile"
+        case pendingScriptExecutionIDs = "pending_script_execution_ids"
+        case pendingSoftwareInstallerIDs = "pending_software_installer_ids"
+    }
+}
+
+struct DistributedReadRequest: Encodable {
+    let nodeKey: String
+
+    enum CodingKeys: String, CodingKey {
+        case nodeKey = "node_key"
+    }
+}
+
+struct DistributedReadResponse: Decodable {
+    let queries: [String: String]
+    let discovery: [String: String]?
+    let accelerate: Int?
+}
+
+struct DistributedWriteRequest: Encodable {
+    let nodeKey: String
+    let queries: [String: [TableRow]]
+    let statuses: [String: Int]
+    let messages: [String: String]
+
+    enum CodingKeys: String, CodingKey {
+        case nodeKey = "node_key"
+        case queries
+        case statuses
+        case messages
+    }
+}
+
+struct DistributedWriteResponse: Decodable {}
 
 struct ApiError: Error, LocalizedError {
     let statusCode: Int

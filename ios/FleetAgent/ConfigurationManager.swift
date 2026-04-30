@@ -15,6 +15,7 @@ class ConfigurationManager: ObservableObject {
         static let serverURL = "debug_server_url"
         static let enrollSecret = "debug_enroll_secret"
         static let hostUUID = "debug_host_uuid"
+        static let osqueryNodeKey = "debug_osquery_node_key"
     }
 
     init(defaults: UserDefaults = .standard) {
@@ -44,6 +45,13 @@ class ConfigurationManager: ObservableObject {
         defaults.set(enrollSecret, forKey: Keys.enrollSecret)
         defaults.set(hostUUID, forKey: Keys.hostUUID)
         loadConfiguration()
+    }
+
+    /// If set via debug config, this osquery node_key is saved to Keychain
+    /// and used for distributed query endpoints. Temporary until Step 8 server changes.
+    func loadDebugOsqueryNodeKey() -> String? {
+        let key = defaults.string(forKey: Keys.osqueryNodeKey) ?? ""
+        return key.isEmpty ? nil : key
     }
 
     var isConfigured: Bool {

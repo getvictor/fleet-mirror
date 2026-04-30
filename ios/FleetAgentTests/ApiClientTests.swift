@@ -1,33 +1,6 @@
 import XCTest
 @testable import FleetAgent
 
-// MARK: - Mock URL Protocol
-
-private class MockURLProtocol: URLProtocol {
-    static var requestHandler: ((URLRequest) throws -> (HTTPURLResponse, Data))?
-
-    override class func canInit(with request: URLRequest) -> Bool { true }
-    override class func canonicalRequest(for request: URLRequest) -> URLRequest { request }
-
-    override func startLoading() {
-        guard let handler = MockURLProtocol.requestHandler else {
-            client?.urlProtocolDidFinishLoading(self)
-            return
-        }
-
-        do {
-            let (response, data) = try handler(request)
-            client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
-            client?.urlProtocol(self, didLoad: data)
-            client?.urlProtocolDidFinishLoading(self)
-        } catch {
-            client?.urlProtocol(self, didFailWithError: error)
-        }
-    }
-
-    override func stopLoading() {}
-}
-
 // MARK: - JSON Model Tests
 
 final class EnrollRequestJSONTests: XCTestCase {
@@ -138,16 +111,26 @@ final class ApiClientTests: XCTestCase {
         )
 
         MockURLProtocol.requestHandler = { request in
-            // Verify request
+            // Verify request URL and method
             XCTAssertEqual(request.url?.path, "/api/fleet/orbit/enroll")
             XCTAssertEqual(request.httpMethod, "POST")
             XCTAssertEqual(request.value(forHTTPHeaderField: "Content-Type"), "application/json")
 
-            // Verify JSON body
-            let body = try JSONSerialization.jsonObject(with: request.httpBody!) as! [String: Any]
-            XCTAssertEqual(body["enroll_secret"] as? String, "secret")
-            XCTAssertEqual(body["hardware_uuid"] as? String, "test-uuid")
-            XCTAssertEqual(body["platform"] as? String, "ios")
+            // Read body from stream (httpBody is nil inside URLProtocol)
+            if let stream = request.httpBodyStream {
+                stream.open()
+                var bodyData = Data()
+                let buffer = UnsafeMutablePointer<UInt8>.allocate(capacity: 1024)
+                defer { buffer.deallocate(); stream.close() }
+                while stream.hasBytesAvailable {
+                    let read = stream.read(buffer, maxLength: 1024)
+                    if read > 0 { bodyData.append(buffer, count: read) }
+                }
+                let body = try JSONSerialization.jsonObject(with: bodyData) as! [String: Any]
+                XCTAssertEqual(body["enroll_secret"] as? String, "secret")
+                XCTAssertEqual(body["hardware_uuid"] as? String, "test-uuid")
+                XCTAssertEqual(body["platform"] as? String, "ios")
+            }
 
             let responseData = #"{"orbit_node_key": "test-node-key-success"}"#.data(using: .utf8)!
             let response = HTTPURLResponse(

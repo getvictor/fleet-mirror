@@ -14,9 +14,17 @@
 		FA00000000000000000074AA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FA00000000000000000064AA /* Assets.xcassets */; };
 		FA00000000000000000075AA /* KeychainManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA00000000000000000065AA /* KeychainManager.swift */; };
 		FA00000000000000000076AA /* ApiClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA00000000000000000066AA /* ApiClient.swift */; };
+		FA00000000000000000077AA /* PollingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA00000000000000000067AA /* PollingManager.swift */; };
+		FA00000000000000000078AA /* QueryEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA000000000000000000D1AA /* QueryEngine.swift */; };
+		FA00000000000000000079AA /* DeviceInfoTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA000000000000000000D2AA /* DeviceInfoTable.swift */; };
+		FA0000000000000000007AAA /* OSVersionTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA000000000000000000D3AA /* OSVersionTable.swift */; };
+		FA0000000000000000007BAA /* BatteryTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA000000000000000000D4AA /* BatteryTable.swift */; };
+		FA0000000000000000007CAA /* DebugTablesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA000000000000000000D5AA /* DebugTablesView.swift */; };
 		FA000000000000000000C2AA /* KeychainManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA000000000000000000C1AA /* KeychainManagerTests.swift */; };
 		FA000000000000000000C4AA /* ApiClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA000000000000000000C3AA /* ApiClientTests.swift */; };
 		FA000000000000000000C6AA /* ConfigurationManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA000000000000000000C5AA /* ConfigurationManagerTests.swift */; };
+		FA000000000000000000C8AA /* QueryEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA000000000000000000C7AA /* QueryEngineTests.swift */; };
+		FA000000000000000000CAAA /* PollingManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA000000000000000000C9AA /* PollingManagerTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,6 +46,15 @@
 		FA00000000000000000064AA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		FA00000000000000000065AA /* KeychainManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainManager.swift; sourceTree = "<group>"; };
 		FA00000000000000000066AA /* ApiClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiClient.swift; sourceTree = "<group>"; };
+		FA00000000000000000067AA /* PollingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollingManager.swift; sourceTree = "<group>"; };
+		FA00000000000000000068AA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		FA000000000000000000D1AA /* QueryEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueryEngine.swift; sourceTree = "<group>"; };
+		FA000000000000000000D2AA /* DeviceInfoTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceInfoTable.swift; sourceTree = "<group>"; };
+		FA000000000000000000D3AA /* OSVersionTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OSVersionTable.swift; sourceTree = "<group>"; };
+		FA000000000000000000D4AA /* BatteryTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatteryTable.swift; sourceTree = "<group>"; };
+		FA000000000000000000C7AA /* QueryEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueryEngineTests.swift; sourceTree = "<group>"; };
+		FA000000000000000000D5AA /* DebugTablesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugTablesView.swift; sourceTree = "<group>"; };
+		FA000000000000000000C9AA /* PollingManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollingManagerTests.swift; sourceTree = "<group>"; };
 		FA000000000000000000A2AA /* FleetAgentTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FleetAgentTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA000000000000000000C1AA /* KeychainManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainManagerTests.swift; sourceTree = "<group>"; };
 		FA000000000000000000C3AA /* ApiClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiClientTests.swift; sourceTree = "<group>"; };
@@ -80,6 +97,10 @@
 				FA00000000000000000063AA /* ConfigurationManager.swift */,
 				FA00000000000000000066AA /* ApiClient.swift */,
 				FA00000000000000000065AA /* KeychainManager.swift */,
+				FA00000000000000000067AA /* PollingManager.swift */,
+				FA000000000000000000D5AA /* DebugTablesView.swift */,
+				FA000000000000000000D0AA /* Tables */,
+				FA00000000000000000068AA /* Info.plist */,
 				FA00000000000000000064AA /* Assets.xcassets */,
 			);
 			path = FleetAgent;
@@ -94,12 +115,25 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		FA000000000000000000D0AA /* Tables */ = {
+			isa = PBXGroup;
+			children = (
+				FA000000000000000000D1AA /* QueryEngine.swift */,
+				FA000000000000000000D2AA /* DeviceInfoTable.swift */,
+				FA000000000000000000D3AA /* OSVersionTable.swift */,
+				FA000000000000000000D4AA /* BatteryTable.swift */,
+			);
+			path = Tables;
+			sourceTree = "<group>";
+		};
 		FA000000000000000000A3AA /* FleetAgentTests */ = {
 			isa = PBXGroup;
 			children = (
 				FA000000000000000000C1AA /* KeychainManagerTests.swift */,
 				FA000000000000000000C3AA /* ApiClientTests.swift */,
 				FA000000000000000000C5AA /* ConfigurationManagerTests.swift */,
+				FA000000000000000000C7AA /* QueryEngineTests.swift */,
+				FA000000000000000000C9AA /* PollingManagerTests.swift */,
 			);
 			path = FleetAgentTests;
 			sourceTree = "<group>";
@@ -205,6 +239,12 @@
 				FA00000000000000000073AA /* ConfigurationManager.swift in Sources */,
 				FA00000000000000000076AA /* ApiClient.swift in Sources */,
 				FA00000000000000000075AA /* KeychainManager.swift in Sources */,
+				FA00000000000000000077AA /* PollingManager.swift in Sources */,
+				FA00000000000000000078AA /* QueryEngine.swift in Sources */,
+				FA00000000000000000079AA /* DeviceInfoTable.swift in Sources */,
+				FA0000000000000000007AAA /* OSVersionTable.swift in Sources */,
+				FA0000000000000000007BAA /* BatteryTable.swift in Sources */,
+				FA0000000000000000007CAA /* DebugTablesView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -215,6 +255,8 @@
 				FA000000000000000000C2AA /* KeychainManagerTests.swift in Sources */,
 				FA000000000000000000C4AA /* ApiClientTests.swift in Sources */,
 				FA000000000000000000C6AA /* ConfigurationManagerTests.swift in Sources */,
+				FA000000000000000000C8AA /* QueryEngineTests.swift in Sources */,
+				FA000000000000000000CAAA /* PollingManagerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -349,6 +391,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = FleetAgent/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -375,6 +418,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = FleetAgent/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
