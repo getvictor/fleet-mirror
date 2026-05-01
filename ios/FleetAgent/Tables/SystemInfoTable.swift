@@ -1,7 +1,7 @@
 import UIKit
 
 /// Reports hardware and kernel information.
-/// Columns: model, cpu_arch, physical_memory, kernel_version, hostname
+/// Column names match osquery's system_info table for Fleet detail query compatibility.
 struct SystemInfoTable: FleetTable {
     static let tableName = "system_info"
 
@@ -30,14 +30,26 @@ struct SystemInfoTable: FleetTable {
             }
         }
 
+        let vendorID = device.identifierForVendor?.uuidString ?? ""
+
         return [[
-            "model": device.model,
-            "hardware_model": machine,
-            "cpu_arch": machine,
+            // Columns the server reads from fleet_detail_query_system_info
             "physical_memory": String(processInfo.physicalMemory),
-            "kernel_version": release,
             "hostname": nodename,
+            "uuid": vendorID,
+            "cpu_type": machine,
+            "cpu_subtype": "",
+            "cpu_brand": machine,
+            "cpu_physical_cores": String(processInfo.processorCount),
+            "cpu_logical_cores": String(processInfo.activeProcessorCount),
+            "hardware_vendor": "Apple",
+            "hardware_model": machine,
+            "hardware_version": "",
+            "hardware_serial": "",
             "computer_name": device.name,
+            // Extra columns for our tables view
+            "kernel_version": release,
+            "model": device.model,
         ]]
     }
 }

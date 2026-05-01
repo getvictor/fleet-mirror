@@ -28,7 +28,13 @@
 		FA00000000000000000081BB /* LocaleInfoTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA000000000000000000E5AA /* LocaleInfoTable.swift */; };
 		FA00000000000000000082BB /* ThermalStateTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA000000000000000000E6AA /* ThermalStateTable.swift */; };
 		FA00000000000000000083BB /* ManagedConfigTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA000000000000000000E7AA /* ManagedConfigTable.swift */; };
+		FA00000000000000000087BB /* OsqueryInfoTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA000000000000000000E9AA /* OsqueryInfoTable.swift */; };
+		FA00000000000000000088BB /* UptimeTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA000000000000000000EAAA /* UptimeTable.swift */; };
+		FA00000000000000000089BB /* ICloudInfoTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA000000000000000000EBAA /* ICloudInfoTable.swift */; };
+		FA0000000000000000008ABB /* AccessibilityTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA000000000000000000ECAA /* AccessibilityTable.swift */; };
+		FA0000000000000000008BBB /* WifiNetworkTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA000000000000000000EDAA /* WifiNetworkTable.swift */; };
 		FA00000000000000000084BB /* PasscodeInfoTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA000000000000000000E8AA /* PasscodeInfoTable.swift */; };
+		FA00000000000000000086BB /* OsqueryInfoTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA000000000000000000E9AA /* OsqueryInfoTable.swift */; };
 		FA000000000000000000C2AA /* KeychainManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA000000000000000000C1AA /* KeychainManagerTests.swift */; };
 		FA000000000000000000C4AA /* ApiClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA000000000000000000C3AA /* ApiClientTests.swift */; };
 		FA000000000000000000C6AA /* ConfigurationManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA000000000000000000C5AA /* ConfigurationManagerTests.swift */; };
@@ -72,7 +78,12 @@
 		FA000000000000000000E5AA /* LocaleInfoTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocaleInfoTable.swift; sourceTree = "<group>"; };
 		FA000000000000000000E6AA /* ThermalStateTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThermalStateTable.swift; sourceTree = "<group>"; };
 		FA000000000000000000E7AA /* ManagedConfigTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagedConfigTable.swift; sourceTree = "<group>"; };
+		FA000000000000000000E9AA /* OsqueryInfoTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OsqueryInfoTable.swift; sourceTree = "<group>"; };
 		FA000000000000000000E8AA /* PasscodeInfoTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasscodeInfoTable.swift; sourceTree = "<group>"; };
+		FA000000000000000000EAAA /* UptimeTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UptimeTable.swift; sourceTree = "<group>"; };
+		FA000000000000000000EBAA /* ICloudInfoTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICloudInfoTable.swift; sourceTree = "<group>"; };
+		FA000000000000000000ECAA /* AccessibilityTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibilityTable.swift; sourceTree = "<group>"; };
+		FA000000000000000000EDAA /* WifiNetworkTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WifiNetworkTable.swift; sourceTree = "<group>"; };
 		FA000000000000000000A2AA /* FleetAgentTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FleetAgentTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA000000000000000000C1AA /* KeychainManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainManagerTests.swift; sourceTree = "<group>"; };
 		FA000000000000000000C3AA /* ApiClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiClientTests.swift; sourceTree = "<group>"; };
@@ -149,6 +160,11 @@
 				FA000000000000000000E6AA /* ThermalStateTable.swift */,
 				FA000000000000000000E7AA /* ManagedConfigTable.swift */,
 				FA000000000000000000E8AA /* PasscodeInfoTable.swift */,
+				FA000000000000000000E9AA /* OsqueryInfoTable.swift */,
+				FA000000000000000000EAAA /* UptimeTable.swift */,
+				FA000000000000000000EBAA /* ICloudInfoTable.swift */,
+				FA000000000000000000ECAA /* AccessibilityTable.swift */,
+				FA000000000000000000EDAA /* WifiNetworkTable.swift */,
 			);
 			path = Tables;
 			sourceTree = "<group>";
@@ -281,6 +297,11 @@
 				FA00000000000000000082BB /* ThermalStateTable.swift in Sources */,
 				FA00000000000000000083BB /* ManagedConfigTable.swift in Sources */,
 				FA00000000000000000084BB /* PasscodeInfoTable.swift in Sources */,
+				FA00000000000000000087BB /* OsqueryInfoTable.swift in Sources */,
+				FA00000000000000000088BB /* UptimeTable.swift in Sources */,
+				FA00000000000000000089BB /* ICloudInfoTable.swift in Sources */,
+				FA0000000000000000008ABB /* AccessibilityTable.swift in Sources */,
+				FA0000000000000000008BBB /* WifiNetworkTable.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

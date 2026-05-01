@@ -50,7 +50,7 @@ final class QueryEngineTests: XCTestCase {
         XCTAssertTrue(names.contains("thermal_state"))
         XCTAssertTrue(names.contains("managed_config"))
         XCTAssertTrue(names.contains("passcode_info"))
-        XCTAssertEqual(names.count, 11)
+        XCTAssertEqual(names.count, 16)
     }
 
     // MARK: - Query Execution

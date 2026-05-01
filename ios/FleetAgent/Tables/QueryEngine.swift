@@ -31,6 +31,11 @@ class QueryEngine {
         register(ThermalStateTable.self)
         register(ManagedConfigTable.self)
         register(PasscodeInfoTable.self)
+        register(OsqueryInfoTable.self)
+        register(UptimeTable.self)
+        register(ICloudInfoTable.self)
+        register(AccessibilityTable.self)
+        register(WifiNetworkTable.self)
     }
 
     func register(_ table: FleetTable.Type) {
@@ -85,8 +90,10 @@ class QueryEngine {
     /// Extract the table name from a SQL query.
     /// Handles: SELECT ... FROM table_name ...
     func parseTableName(_ query: String) -> String? {
-        guard let fromRange = query.range(of: "from ", options: .caseInsensitive) else { return nil }
-        let afterFrom = query[fromRange.upperBound...]
+        // Strip LIMIT clause before parsing (our tables return all rows anyway)
+        let cleaned = query.replacingOccurrences(of: "LIMIT \\d+", with: "", options: .regularExpression, range: nil)
+        guard let fromRange = cleaned.range(of: "from ", options: .caseInsensitive) else { return nil }
+        let afterFrom = cleaned[fromRange.upperBound...]
             .trimmingCharacters(in: .whitespaces)
             .lowercased()
         // Table name is the next word (stop at space, semicolon, or end)
