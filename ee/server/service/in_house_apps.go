@@ -3,6 +3,7 @@ package service
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"strings"
 	"text/template"
@@ -121,6 +122,23 @@ func (svc *Service) updateInHouseAppInstaller(ctx context.Context, payload *flee
 		return nil, ctxerr.Wrap(ctx, err, "saving installer updates")
 	}
 
+	// nil = leave configuration unchanged; non-nil empty = clear; non-nil non-empty = set.
+	if payload.Configuration != nil {
+		switch {
+		case len(payload.Configuration) == 0:
+			if err := svc.ds.DeleteInHouseAppConfiguration(ctx, existingInstaller.InstallerID); err != nil && !fleet.IsNotFound(err) {
+				return nil, ctxerr.Wrap(ctx, err, "deleting in-house app configuration")
+			}
+		default:
+			if err := fleet.ValidateAppleAppConfiguration(payload.Configuration); err != nil {
+				return nil, err
+			}
+			if err := svc.ds.SetInHouseAppConfiguration(ctx, existingInstaller.InstallerID, payload.Configuration); err != nil {
+				return nil, ctxerr.Wrap(ctx, err, "setting in-house app configuration")
+			}
+		}
+	}
+
 	if err := svc.ds.RemovePendingInHouseAppInstalls(ctx, existingInstaller.InstallerID); err != nil {
 		return nil, err
 	}
@@ -154,6 +172,15 @@ func (svc *Service) updateInHouseAppInstaller(ctx context.Context, payload *flee
 		return nil, ctxerr.Wrap(ctx, err, "getting updated installer statuses")
 	}
 	updatedInstaller.Status = &fleet.SoftwareInstallerStatusSummary{Installed: st.Installed, PendingInstall: st.Pending, FailedInstall: st.Failed}
+
+	// Wrap iOS / iPadOS plist as a JSON string for the response.
+	if len(updatedInstaller.Configuration) > 0 {
+		wrapped, err := json.Marshal(string(updatedInstaller.Configuration))
+		if err != nil {
+			return nil, ctxerr.Wrap(ctx, err, "wrapping configuration for response")
+		}
+		updatedInstaller.Configuration = wrapped
+	}
 
 	return updatedInstaller, nil
 }

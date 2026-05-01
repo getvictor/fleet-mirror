@@ -2770,6 +2770,7 @@ type Datastore interface {
 	GetInHouseAppConfiguration(ctx context.Context, inHouseAppID uint) ([]byte, error)
 	HasInHouseAppConfigurationChanged(ctx context.Context, inHouseAppID uint, newConfig []byte) (bool, error)
 	BulkGetInHouseAppConfigurations(ctx context.Context, inHouseAppIDs []uint) (map[uint][]byte, error)
+	SetInHouseAppConfiguration(ctx context.Context, inHouseAppID uint, config []byte) error
 	DeleteInHouseAppConfiguration(ctx context.Context, inHouseAppID uint) error
 
 	// /////////////////////////////////////////////////////////////////////////////

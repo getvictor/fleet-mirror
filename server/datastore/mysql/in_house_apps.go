@@ -264,6 +264,14 @@ WHERE
 		}
 	}
 
+	cfg, err := ds.GetInHouseAppConfiguration(ctx, dest.InstallerID)
+	if err != nil && !fleet.IsNotFound(err) {
+		return nil, ctxerr.Wrap(ctx, err, "get in-house app configuration")
+	}
+	if cfg != nil {
+		dest.Configuration = cfg
+	}
+
 	return &dest, nil
 }
 
@@ -1689,6 +1697,12 @@ func (ds *Datastore) DeleteInHouseAppConfiguration(ctx context.Context, inHouseA
 	}
 
 	return nil
+}
+
+// SetInHouseAppConfiguration is the public entry point for upserting an in-house app's
+// managed app configuration outside an existing transaction.
+func (ds *Datastore) SetInHouseAppConfiguration(ctx context.Context, inHouseAppID uint, config []byte) error {
+	return ds.updateInHouseAppConfigurationTx(ctx, ds.writer(ctx), inHouseAppID, config)
 }
 
 func (ds *Datastore) updateInHouseAppConfigurationTx(ctx context.Context, tx sqlx.ExtContext, inHouseAppID uint, config []byte) error {

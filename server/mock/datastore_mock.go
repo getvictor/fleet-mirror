@@ -1755,6 +1755,8 @@ type HasInHouseAppConfigurationChangedFunc func(ctx context.Context, inHouseAppI
 
 type BulkGetInHouseAppConfigurationsFunc func(ctx context.Context, inHouseAppIDs []uint) (map[uint][]byte, error)
 
+type SetInHouseAppConfigurationFunc func(ctx context.Context, inHouseAppID uint, config []byte) error
+
 type DeleteInHouseAppConfigurationFunc func(ctx context.Context, inHouseAppID uint) error
 
 type CreateScimUserFunc func(ctx context.Context, user *fleet.ScimUser) (uint, error)
@@ -4517,6 +4519,9 @@ type DataStore struct {
 
 	BulkGetInHouseAppConfigurationsFunc        BulkGetInHouseAppConfigurationsFunc
 	BulkGetInHouseAppConfigurationsFuncInvoked bool
+
+	SetInHouseAppConfigurationFunc        SetInHouseAppConfigurationFunc
+	SetInHouseAppConfigurationFuncInvoked bool
 
 	DeleteInHouseAppConfigurationFunc        DeleteInHouseAppConfigurationFunc
 	DeleteInHouseAppConfigurationFuncInvoked bool
@@ -10827,6 +10832,13 @@ func (s *DataStore) BulkGetInHouseAppConfigurations(ctx context.Context, inHouse
 	s.BulkGetInHouseAppConfigurationsFuncInvoked = true
 	s.mu.Unlock()
 	return s.BulkGetInHouseAppConfigurationsFunc(ctx, inHouseAppIDs)
+}
+
+func (s *DataStore) SetInHouseAppConfiguration(ctx context.Context, inHouseAppID uint, config []byte) error {
+	s.mu.Lock()
+	s.SetInHouseAppConfigurationFuncInvoked = true
+	s.mu.Unlock()
+	return s.SetInHouseAppConfigurationFunc(ctx, inHouseAppID, config)
 }
 
 func (s *DataStore) DeleteInHouseAppConfiguration(ctx context.Context, inHouseAppID uint) error {

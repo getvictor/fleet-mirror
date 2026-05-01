@@ -89,6 +89,17 @@ func (svc *Service) UploadSoftwareInstaller(ctx context.Context, payload *fleet.
 		return nil, ctxerr.Wrap(ctx, err, "adding metadata to payload")
 	}
 
+	// Validate iOS/iPadOS managed app configuration up-front. For non-.ipa extensions, silently drop.
+	if payload.Extension == "ipa" {
+		if len(payload.Configuration) > 0 {
+			if err := fleet.ValidateAppleAppConfiguration(payload.Configuration); err != nil {
+				return nil, err
+			}
+		}
+	} else {
+		payload.Configuration = nil
+	}
+
 	// Validate install/post-install/uninstall script contents for non-script
 	// packages. Script packages (.sh/.ps1) are already validated in
 	// addScriptPackageMetadata.
@@ -190,9 +201,22 @@ func (svc *Service) UploadSoftwareInstaller(ctx context.Context, payload *fleet.
 	}
 
 	if payload.Extension == "ipa" {
+		if len(payload.Configuration) > 0 {
+			if err := svc.ds.SetInHouseAppConfiguration(ctx, installerID, payload.Configuration); err != nil {
+				return nil, ctxerr.Wrap(ctx, err, "setting in-house app configuration")
+			}
+		}
 		addedInstaller, err := svc.ds.GetInHouseAppMetadataByTeamAndTitleID(ctx, &tmID, titleID)
 		if err != nil {
 			return nil, err
+		}
+		// Wrap iOS / iPadOS plist as a JSON string for the response.
+		if len(addedInstaller.Configuration) > 0 {
+			wrapped, err := json.Marshal(string(addedInstaller.Configuration))
+			if err != nil {
+				return nil, ctxerr.Wrap(ctx, err, "wrapping configuration for response")
+			}
+			addedInstaller.Configuration = wrapped
 		}
 		return addedInstaller, nil
 	}
