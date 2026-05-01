@@ -142,6 +142,25 @@ class ApiClient: ObservableObject {
         )
     }
 
+    // MARK: - Push Token
+
+    /// Register the APNs push token with Fleet server.
+    /// The server uses this to send silent pushes for on-demand queries.
+    func submitPushToken(config: ConfigurationManager, pushToken: String) async {
+        guard let nodeKey = keychain.loadOrbitNodeKey() else { return }
+        do {
+            let _: PushTokenResponse = try await post(
+                baseURL: config.serverURL,
+                path: "/api/fleet/orbit/push_token",
+                body: PushTokenRequest(orbitNodeKey: nodeKey, pushToken: pushToken)
+            )
+            print("[Fleet] Push token submitted")
+        } catch {
+            // Expected to fail until server-side Step 8 adds the endpoint
+            print("[Fleet] Push token submission failed (expected until server support): \(error)")
+        }
+    }
+
     // MARK: - Distributed Queries
 
     /// Returns the osquery node_key (from Keychain if set, otherwise orbit_node_key).
@@ -273,6 +292,18 @@ struct OrbitNotifications: Decodable {
         case pendingSoftwareInstallerIDs = "pending_software_installer_ids"
     }
 }
+
+struct PushTokenRequest: Encodable {
+    let orbitNodeKey: String
+    let pushToken: String
+
+    enum CodingKeys: String, CodingKey {
+        case orbitNodeKey = "orbit_node_key"
+        case pushToken = "push_token"
+    }
+}
+
+struct PushTokenResponse: Decodable {}
 
 struct DistributedReadRequest: Encodable {
     let nodeKey: String

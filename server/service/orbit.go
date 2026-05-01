@@ -876,6 +876,37 @@ func (svc *Service) SetOrUpdateDeviceAuthToken(ctx context.Context, deviceAuthTo
 }
 
 /////////////////////////////////////////////////////////////////////////////////
+// Set or update host push token (iOS agent APNs)
+/////////////////////////////////////////////////////////////////////////////////
+
+func setOrUpdateHostPushTokenEndpoint(ctx context.Context, request interface{}, svc fleet.Service) (fleet.Errorer, error) {
+	req := request.(*fleet.SetOrUpdateHostPushTokenRequest)
+	if err := svc.SetOrUpdateHostPushToken(ctx, req.PushToken); err != nil {
+		return fleet.SetOrUpdateHostPushTokenResponse{Err: err}, nil
+	}
+	return fleet.SetOrUpdateHostPushTokenResponse{}, nil
+}
+
+func (svc *Service) SetOrUpdateHostPushToken(ctx context.Context, pushToken string) error {
+	svc.authz.SkipAuthorization(ctx)
+
+	if len(pushToken) == 0 {
+		return badRequest("push token cannot be empty")
+	}
+
+	host, ok := hostctx.FromContext(ctx)
+	if !ok {
+		return newOsqueryError("internal error: missing host from request context")
+	}
+
+	if err := svc.ds.SetOrUpdateHostPushToken(ctx, host.ID, pushToken); err != nil {
+		return newOsqueryError(fmt.Sprintf("internal error: failed to set or update push token: %s", err))
+	}
+
+	return nil
+}
+
+/////////////////////////////////////////////////////////////////////////////////
 // Get Orbit pending script execution request
 /////////////////////////////////////////////////////////////////////////////////
 

@@ -2372,27 +2372,39 @@ func (ds *Datastore) EnrollOrbit(ctx context.Context, opts ...fleet.DatastoreEnr
 
 			refetchRequested := fleet.PlatformSupportsOsquery(enrolledHostInfo.Platform)
 
-			sqlUpdate := `
+			// For mobile platforms (ios/ipados/android), also sync node_key with orbit_node_key
+			// since these platforms never run osquery separately.
+			nodeKeyUpdate := ""
+			if !fleet.PlatformSupportsOsquery(enrolledHostInfo.Platform) {
+				nodeKeyUpdate = "node_key = ?,"
+			}
+			sqlUpdate := fmt.Sprintf(`
       UPDATE
         hosts
       SET
         orbit_node_key = ?,
+        %s
         uuid = COALESCE(NULLIF(uuid, ''), ?),
         osquery_host_id = COALESCE(NULLIF(osquery_host_id, ''), ?),
         hardware_serial = COALESCE(NULLIF(hardware_serial, ''), ?),
         computer_name = COALESCE(NULLIF(computer_name, ''), ?),
         hardware_model = COALESCE(NULLIF(hardware_model, ''), ?),
-        refetch_requested = ?%s
-      WHERE id = ?`
+        refetch_requested = ?%%s
+      WHERE id = ?`, nodeKeyUpdate)
 			args := []any{
 				orbitNodeKey,
+			}
+			if !fleet.PlatformSupportsOsquery(enrolledHostInfo.Platform) {
+				args = append(args, orbitNodeKey) // node_key = orbit_node_key for mobile
+			}
+			args = append(args,
 				hostInfo.HardwareUUID,
 				osqueryIdentifier,
 				hostInfo.HardwareSerial,
 				hostInfo.ComputerName,
 				hostInfo.HardwareModel,
 				refetchRequested,
-			}
+			)
 
 			if !enrollConfig.IgnoreTeamUpdate {
 				args = append(args, teamID)
@@ -2818,10 +2830,10 @@ func (ds *Datastore) LoadHostByNodeKey(ctx context.Context, nodeKey string) (*fl
       hosts h
     LEFT OUTER JOIN
       host_disks hd ON hd.host_id = h.id
-    WHERE node_key = ?`
+    WHERE h.node_key = ? OR h.orbit_node_key = ?`
 
 	var host fleet.Host
-	switch err := ds.getContextTryStmt(ctx, &host, query, nodeKey); {
+	switch err := ds.getContextTryStmt(ctx, &host, query, nodeKey, nodeKey); {
 	case err == nil:
 		return &host, nil
 	case errors.Is(err, sql.ErrNoRows):
@@ -4809,6 +4821,15 @@ func (ds *Datastore) SetOrUpdateHostOrbitInfo(
 		`UPDATE host_orbit_info SET version = ?, desktop_version = ?, scripts_enabled = ? WHERE host_id = ?`,
 		`INSERT INTO host_orbit_info (version, desktop_version, scripts_enabled, host_id) VALUES (?, ?, ?, ?)`,
 		version, desktopVersion, scriptsEnabled, hostID,
+	)
+}
+
+func (ds *Datastore) SetOrUpdateHostPushToken(ctx context.Context, hostID uint, pushToken string) error {
+	return ds.updateOrInsert(
+		ctx,
+		`UPDATE host_orbit_info SET push_token = ? WHERE host_id = ?`,
+		`INSERT INTO host_orbit_info (push_token, version, host_id) VALUES (?, '', ?)`,
+		pushToken, hostID,
 	)
 }
 

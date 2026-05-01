@@ -299,6 +299,8 @@ type LoadHostByDeviceAuthTokenFunc func(ctx context.Context, authToken string, t
 
 type SetOrUpdateDeviceAuthTokenFunc func(ctx context.Context, hostID uint, authToken string) error
 
+type SetOrUpdateHostPushTokenFunc func(ctx context.Context, hostID uint, pushToken string) error
+
 type GetDeviceAuthTokenFunc func(ctx context.Context, hostID uint) (string, error)
 
 type FailingPoliciesCountFunc func(ctx context.Context, host *fleet.Host) (uint, error)
@@ -2313,6 +2315,9 @@ type DataStore struct {
 
 	SetOrUpdateDeviceAuthTokenFunc        SetOrUpdateDeviceAuthTokenFunc
 	SetOrUpdateDeviceAuthTokenFuncInvoked bool
+
+	SetOrUpdateHostPushTokenFunc        SetOrUpdateHostPushTokenFunc
+	SetOrUpdateHostPushTokenFuncInvoked bool
 
 	GetDeviceAuthTokenFunc        GetDeviceAuthTokenFunc
 	GetDeviceAuthTokenFuncInvoked bool
@@ -5681,6 +5686,13 @@ func (s *DataStore) SetOrUpdateDeviceAuthToken(ctx context.Context, hostID uint,
 	s.SetOrUpdateDeviceAuthTokenFuncInvoked = true
 	s.mu.Unlock()
 	return s.SetOrUpdateDeviceAuthTokenFunc(ctx, hostID, authToken)
+}
+
+func (s *DataStore) SetOrUpdateHostPushToken(ctx context.Context, hostID uint, pushToken string) error {
+	s.mu.Lock()
+	s.SetOrUpdateHostPushTokenFuncInvoked = true
+	s.mu.Unlock()
+	return s.SetOrUpdateHostPushTokenFunc(ctx, hostID, pushToken)
 }
 
 func (s *DataStore) GetDeviceAuthToken(ctx context.Context, hostID uint) (string, error) {

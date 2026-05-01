@@ -20,6 +20,14 @@
 		FA0000000000000000007AAA /* OSVersionTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA000000000000000000D3AA /* OSVersionTable.swift */; };
 		FA0000000000000000007BAA /* BatteryTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA000000000000000000D4AA /* BatteryTable.swift */; };
 		FA0000000000000000007CAA /* DebugTablesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA000000000000000000D5AA /* DebugTablesView.swift */; };
+		FA0000000000000000007DAA /* DiskSpaceTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA000000000000000000E1AA /* DiskSpaceTable.swift */; };
+		FA0000000000000000007EAA /* NetworkInfoTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA000000000000000000E2AA /* NetworkInfoTable.swift */; };
+		FA0000000000000000007FAA /* SystemInfoTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA000000000000000000E3AA /* SystemInfoTable.swift */; };
+		FA00000000000000000080BB /* ScreenTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA000000000000000000E4AA /* ScreenTable.swift */; };
+		FA00000000000000000081BB /* LocaleInfoTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA000000000000000000E5AA /* LocaleInfoTable.swift */; };
+		FA00000000000000000082BB /* ThermalStateTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA000000000000000000E6AA /* ThermalStateTable.swift */; };
+		FA00000000000000000083BB /* ManagedConfigTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA000000000000000000E7AA /* ManagedConfigTable.swift */; };
+		FA00000000000000000084BB /* PasscodeInfoTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA000000000000000000E8AA /* PasscodeInfoTable.swift */; };
 		FA000000000000000000C2AA /* KeychainManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA000000000000000000C1AA /* KeychainManagerTests.swift */; };
 		FA000000000000000000C4AA /* ApiClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA000000000000000000C3AA /* ApiClientTests.swift */; };
 		FA000000000000000000C6AA /* ConfigurationManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA000000000000000000C5AA /* ConfigurationManagerTests.swift */; };
@@ -55,6 +63,14 @@
 		FA000000000000000000C7AA /* QueryEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueryEngineTests.swift; sourceTree = "<group>"; };
 		FA000000000000000000D5AA /* DebugTablesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugTablesView.swift; sourceTree = "<group>"; };
 		FA000000000000000000C9AA /* PollingManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollingManagerTests.swift; sourceTree = "<group>"; };
+		FA000000000000000000E1AA /* DiskSpaceTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiskSpaceTable.swift; sourceTree = "<group>"; };
+		FA000000000000000000E2AA /* NetworkInfoTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkInfoTable.swift; sourceTree = "<group>"; };
+		FA000000000000000000E3AA /* SystemInfoTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemInfoTable.swift; sourceTree = "<group>"; };
+		FA000000000000000000E4AA /* ScreenTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenTable.swift; sourceTree = "<group>"; };
+		FA000000000000000000E5AA /* LocaleInfoTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocaleInfoTable.swift; sourceTree = "<group>"; };
+		FA000000000000000000E6AA /* ThermalStateTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThermalStateTable.swift; sourceTree = "<group>"; };
+		FA000000000000000000E7AA /* ManagedConfigTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagedConfigTable.swift; sourceTree = "<group>"; };
+		FA000000000000000000E8AA /* PasscodeInfoTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasscodeInfoTable.swift; sourceTree = "<group>"; };
 		FA000000000000000000A2AA /* FleetAgentTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FleetAgentTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA000000000000000000C1AA /* KeychainManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainManagerTests.swift; sourceTree = "<group>"; };
 		FA000000000000000000C3AA /* ApiClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiClientTests.swift; sourceTree = "<group>"; };
@@ -122,6 +138,14 @@
 				FA000000000000000000D2AA /* DeviceInfoTable.swift */,
 				FA000000000000000000D3AA /* OSVersionTable.swift */,
 				FA000000000000000000D4AA /* BatteryTable.swift */,
+				FA000000000000000000E1AA /* DiskSpaceTable.swift */,
+				FA000000000000000000E2AA /* NetworkInfoTable.swift */,
+				FA000000000000000000E3AA /* SystemInfoTable.swift */,
+				FA000000000000000000E4AA /* ScreenTable.swift */,
+				FA000000000000000000E5AA /* LocaleInfoTable.swift */,
+				FA000000000000000000E6AA /* ThermalStateTable.swift */,
+				FA000000000000000000E7AA /* ManagedConfigTable.swift */,
+				FA000000000000000000E8AA /* PasscodeInfoTable.swift */,
 			);
 			path = Tables;
 			sourceTree = "<group>";
@@ -245,6 +269,14 @@
 				FA0000000000000000007AAA /* OSVersionTable.swift in Sources */,
 				FA0000000000000000007BAA /* BatteryTable.swift in Sources */,
 				FA0000000000000000007CAA /* DebugTablesView.swift in Sources */,
+				FA0000000000000000007DAA /* DiskSpaceTable.swift in Sources */,
+				FA0000000000000000007EAA /* NetworkInfoTable.swift in Sources */,
+				FA0000000000000000007FAA /* SystemInfoTable.swift in Sources */,
+				FA00000000000000000080BB /* ScreenTable.swift in Sources */,
+				FA00000000000000000081BB /* LocaleInfoTable.swift in Sources */,
+				FA00000000000000000082BB /* ThermalStateTable.swift in Sources */,
+				FA00000000000000000083BB /* ManagedConfigTable.swift in Sources */,
+				FA00000000000000000084BB /* PasscodeInfoTable.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

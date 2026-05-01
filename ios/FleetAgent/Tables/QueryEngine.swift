@@ -22,6 +22,14 @@ class QueryEngine {
         register(DeviceInfoTable.self)
         register(OSVersionTable.self)
         register(BatteryTable.self)
+        register(DiskSpaceTable.self)
+        register(NetworkInfoTable.self)
+        register(SystemInfoTable.self)
+        register(ScreenTable.self)
+        register(LocaleInfoTable.self)
+        register(ThermalStateTable.self)
+        register(ManagedConfigTable.self)
+        register(PasscodeInfoTable.self)
     }
 
     func register(_ table: FleetTable.Type) {

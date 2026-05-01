@@ -58,6 +58,8 @@ type LogFleetdErrorFunc func(ctx context.Context, errData fleet.FleetdError) err
 
 type SetOrUpdateDeviceAuthTokenFunc func(ctx context.Context, authToken string) error
 
+type SetOrUpdateHostPushTokenFunc func(ctx context.Context, pushToken string) error
+
 type GetFleetDesktopSummaryFunc func(ctx context.Context) (fleet.DesktopSummary, error)
 
 type SetEnterpriseOverridesFunc func(overrides fleet.EnterpriseOverrides)
@@ -975,6 +977,9 @@ type Service struct {
 
 	SetOrUpdateDeviceAuthTokenFunc        SetOrUpdateDeviceAuthTokenFunc
 	SetOrUpdateDeviceAuthTokenFuncInvoked bool
+
+	SetOrUpdateHostPushTokenFunc        SetOrUpdateHostPushTokenFunc
+	SetOrUpdateHostPushTokenFuncInvoked bool
 
 	GetFleetDesktopSummaryFunc        GetFleetDesktopSummaryFunc
 	GetFleetDesktopSummaryFuncInvoked bool
@@ -2400,6 +2405,13 @@ func (s *Service) SetOrUpdateDeviceAuthToken(ctx context.Context, authToken stri
 	s.SetOrUpdateDeviceAuthTokenFuncInvoked = true
 	s.mu.Unlock()
 	return s.SetOrUpdateDeviceAuthTokenFunc(ctx, authToken)
+}
+
+func (s *Service) SetOrUpdateHostPushToken(ctx context.Context, pushToken string) error {
+	s.mu.Lock()
+	s.SetOrUpdateHostPushTokenFuncInvoked = true
+	s.mu.Unlock()
+	return s.SetOrUpdateHostPushTokenFunc(ctx, pushToken)
 }
 
 func (s *Service) GetFleetDesktopSummary(ctx context.Context) (fleet.DesktopSummary, error) {

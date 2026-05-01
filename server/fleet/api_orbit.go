@@ -126,6 +126,29 @@ type SetOrUpdateDeviceTokenResponse struct {
 func (r SetOrUpdateDeviceTokenResponse) Error() error { return r.Err }
 
 /////////////////////////////////////////////////////////////////////////////////
+// SetOrUpdateHostPushToken endpoint
+/////////////////////////////////////////////////////////////////////////////////
+
+type SetOrUpdateHostPushTokenRequest struct {
+	OrbitNodeKey string `json:"orbit_node_key"`
+	PushToken    string `json:"push_token"`
+}
+
+func (r *SetOrUpdateHostPushTokenRequest) SetOrbitNodeKey(nodeKey string) {
+	r.OrbitNodeKey = nodeKey
+}
+
+func (r *SetOrUpdateHostPushTokenRequest) OrbitHostNodeKey() string {
+	return r.OrbitNodeKey
+}
+
+type SetOrUpdateHostPushTokenResponse struct {
+	Err error `json:"error,omitempty"`
+}
+
+func (r SetOrUpdateHostPushTokenResponse) Error() error { return r.Err }
+
+/////////////////////////////////////////////////////////////////////////////////
 // Get Orbit pending script execution request
 /////////////////////////////////////////////////////////////////////////////////
 

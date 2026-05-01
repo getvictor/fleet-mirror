@@ -965,6 +965,7 @@ func attachFleetAPIRoutes(r *mux.Router, svc fleet.Service, config config.FleetC
 	// orbit authenticated endpoints
 	oe := newOrbitAuthenticatedEndpointer(svc, logger, opts, r, apiVersions...)
 	oe.POST("/api/fleet/orbit/device_token", setOrUpdateDeviceTokenEndpoint, fleet.SetOrUpdateDeviceTokenRequest{})
+	oe.POST("/api/fleet/orbit/push_token", setOrUpdateHostPushTokenEndpoint, fleet.SetOrUpdateHostPushTokenRequest{})
 	oe.POST("/api/fleet/orbit/config", getOrbitConfigEndpoint, fleet.OrbitGetConfigRequest{})
 	// using POST to get a script execution request since all authenticated orbit
 	// endpoints are POST due to passing the device token in the JSON body.

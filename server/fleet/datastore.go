@@ -389,6 +389,8 @@ type Datastore interface {
 	LoadHostByDeviceAuthToken(ctx context.Context, authToken string, tokenTTL time.Duration) (*Host, error)
 	// SetOrUpdateDeviceAuthToken inserts or updates the auth token for a host.
 	SetOrUpdateDeviceAuthToken(ctx context.Context, hostID uint, authToken string) error
+	// SetOrUpdateHostPushToken stores the APNs push token for a host in host_orbit_info.
+	SetOrUpdateHostPushToken(ctx context.Context, hostID uint, pushToken string) error
 	// GetDeviceAuthToken returns the current auth token for a given host
 	GetDeviceAuthToken(ctx context.Context, hostID uint) (string, error)
 

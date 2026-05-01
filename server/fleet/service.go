@@ -135,6 +135,9 @@ type Service interface {
 	// SetOrUpdateDeviceAuthToken creates or updates a device auth token for the given host.
 	SetOrUpdateDeviceAuthToken(ctx context.Context, authToken string) error
 
+	// SetOrUpdateHostPushToken stores the APNs push token for the host (iOS agent).
+	SetOrUpdateHostPushToken(ctx context.Context, pushToken string) error
+
 	// GetFleetDesktopSummary returns a summary of the host used by Fleet Desktop to operate.
 	GetFleetDesktopSummary(ctx context.Context) (DesktopSummary, error)
 

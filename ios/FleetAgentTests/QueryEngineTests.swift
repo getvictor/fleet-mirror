@@ -42,7 +42,15 @@ final class QueryEngineTests: XCTestCase {
         XCTAssertTrue(names.contains("device_info"))
         XCTAssertTrue(names.contains("os_version"))
         XCTAssertTrue(names.contains("battery"))
-        XCTAssertEqual(names.count, 3)
+        XCTAssertTrue(names.contains("disk_space"))
+        XCTAssertTrue(names.contains("network_info"))
+        XCTAssertTrue(names.contains("system_info"))
+        XCTAssertTrue(names.contains("screen"))
+        XCTAssertTrue(names.contains("locale_info"))
+        XCTAssertTrue(names.contains("thermal_state"))
+        XCTAssertTrue(names.contains("managed_config"))
+        XCTAssertTrue(names.contains("passcode_info"))
+        XCTAssertEqual(names.count, 11)
     }
 
     // MARK: - Query Execution
@@ -81,6 +89,74 @@ final class QueryEngineTests: XCTestCase {
         XCTAssertNotNil(row["is_charging"])
         // On simulator, battery state is unknown
         XCTAssertEqual(row["state"], "unknown")
+    }
+
+    func testExecuteDiskSpace() {
+        let rows = engine.execute("SELECT * FROM disk_space")
+        XCTAssertEqual(rows.count, 1)
+        let row = rows[0]
+        XCTAssertNotNil(row["total_bytes"])
+        XCTAssertNotNil(row["available_bytes"])
+        // Total should be a positive number
+        let total = Int(row["total_bytes"] ?? "0") ?? 0
+        XCTAssertGreaterThan(total, 0)
+    }
+
+    func testExecuteNetworkInfo() {
+        let rows = engine.execute("SELECT * FROM network_info")
+        XCTAssertEqual(rows.count, 1)
+        let row = rows[0]
+        XCTAssertNotNil(row["interface_type"])
+        XCTAssertNotNil(row["status"])
+        XCTAssertNotNil(row["is_expensive"])
+    }
+
+    func testExecuteSystemInfo() {
+        let rows = engine.execute("SELECT * FROM system_info")
+        XCTAssertEqual(rows.count, 1)
+        let row = rows[0]
+        XCTAssertNotNil(row["model"])
+        XCTAssertNotNil(row["hardware_model"])
+        XCTAssertNotNil(row["physical_memory"])
+        let memory = UInt64(row["physical_memory"] ?? "0") ?? 0
+        XCTAssertGreaterThan(memory, 0)
+    }
+
+    func testExecuteScreen() {
+        let rows = engine.execute("SELECT * FROM screen")
+        XCTAssertEqual(rows.count, 1)
+        let row = rows[0]
+        XCTAssertNotNil(row["width"])
+        XCTAssertNotNil(row["height"])
+        XCTAssertNotNil(row["scale"])
+    }
+
+    func testExecuteLocaleInfo() {
+        let rows = engine.execute("SELECT * FROM locale_info")
+        XCTAssertEqual(rows.count, 1)
+        let row = rows[0]
+        XCTAssertNotNil(row["language"])
+        XCTAssertNotNil(row["timezone"])
+    }
+
+    func testExecuteThermalState() {
+        let rows = engine.execute("SELECT * FROM thermal_state")
+        XCTAssertEqual(rows.count, 1)
+        XCTAssertEqual(rows[0]["thermal_state"], "nominal")  // Simulator is always nominal
+    }
+
+    func testExecuteManagedConfig() {
+        // No MDM config on simulator, should return empty
+        let rows = engine.execute("SELECT * FROM managed_config")
+        XCTAssertTrue(rows.isEmpty)
+    }
+
+    func testExecutePasscodeInfo() {
+        let rows = engine.execute("SELECT * FROM passcode_info")
+        XCTAssertEqual(rows.count, 1)
+        let row = rows[0]
+        XCTAssertNotNil(row["biometric_type"])
+        XCTAssertNotNil(row["is_available"])
     }
 
     func testExecuteUnknownTable() {

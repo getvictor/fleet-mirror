@@ -310,6 +310,35 @@ xcrun simctl spawn booted log stream --predicate 'process == "FleetAgent"'
 
 ---
 
+## Step 8 — Server-Side Support (Implementation Plan)
+
+### A. Make osquery endpoints accept orbit_node_key
+
+**Problem:** `/api/osquery/distributed/read` and `/write` authenticate via `LoadHostByNodeKey` which queries `WHERE node_key = ?`. Mobile agents only have `orbit_node_key`.
+
+**Fix 1:** Modify `LoadHostByNodeKey` in `server/datastore/mysql/hosts.go` — change WHERE clause to `WHERE h.node_key = ? OR h.orbit_node_key = ?`. Both columns have UNIQUE indexes.
+
+**Fix 2:** In `EnrollOrbit` re-enrollment path, for mobile platforms (ios/ipados/android), also update `node_key` alongside `orbit_node_key` to keep them in sync.
+
+### B. Push token endpoint: `POST /api/fleet/orbit/push_token`
+
+New authenticated orbit endpoint to store the iOS agent's APNs push token. Follows the `setOrUpdateDeviceToken` pattern. Stores token in `host_orbit_info.push_token` column.
+
+**Files modified:**
+- `server/fleet/api_orbit.go` — request/response types
+- `server/fleet/service.go` — Service interface method
+- `server/fleet/datastore.go` — Datastore interface method
+- `server/service/orbit.go` — endpoint + service implementation
+- `server/service/handler.go` — endpoint registration
+- `server/datastore/mysql/hosts.go` — datastore implementation
+- `server/mock/datastore_mock.go` — mock
+
+### C. Migration
+
+Add `push_token VARCHAR(500)` column to `host_orbit_info` table.
+
+---
+
 ## References
 
 - Android agent: `android/` in fleet repo, PR fleetdm/fleet#43924
