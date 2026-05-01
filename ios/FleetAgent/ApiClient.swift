@@ -66,6 +66,7 @@ class ApiClient: ObservableObject {
             enrollSecret: config.enrollSecret,
             hardwareUUID: hardwareUUID,
             hardwareSerial: hardwareUUID,
+            hostname: UIDevice.current.name,
             platform: "ios",
             computerName: UIDevice.current.name
         )
@@ -243,6 +244,7 @@ struct EnrollRequest: Encodable {
     let enrollSecret: String
     let hardwareUUID: String
     let hardwareSerial: String
+    let hostname: String
     let platform: String
     let computerName: String
 
@@ -250,6 +252,7 @@ struct EnrollRequest: Encodable {
         case enrollSecret = "enroll_secret"
         case hardwareUUID = "hardware_uuid"
         case hardwareSerial = "hardware_serial"
+        case hostname
         case platform
         case computerName = "computer_name"
     }

@@ -23,9 +23,11 @@ export const QUERYABLE_PLATFORMS = [
   "windows",
   "linux",
   "chrome",
+  "ios",
+  "ipados",
 ] as const;
 
-export const NON_QUERYABLE_PLATFORMS = ["ios", "ipados", "android"] as const;
+export const NON_QUERYABLE_PLATFORMS = ["android"] as const;
 
 export type Platform = keyof typeof PLATFORM_DISPLAY_NAMES;
 export type DisplayPlatform = typeof PLATFORM_DISPLAY_NAMES[keyof typeof PLATFORM_DISPLAY_NAMES];

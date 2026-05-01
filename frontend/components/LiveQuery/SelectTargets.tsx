@@ -88,7 +88,9 @@ const parseLabels = (list?: ILabelSummary[]) => {
         l.name === "macOS" ||
         l.name === "MS Windows" ||
         l.name === "All Linux" ||
-        l.name === "chrome"
+        l.name === "chrome" ||
+        l.name === "iOS" ||
+        l.name === "iPadOS"
     ) || [];
   const other = list?.filter((l) => l.label_type === "regular") || [];
 

@@ -15,7 +15,7 @@ class PollingManager: ObservableObject {
     @Published var lastQueryResults: [String: QueryExecutionResult] = [:]
 
     private var foregroundTimer: Timer?
-    let foregroundInterval: TimeInterval = 60
+    let foregroundInterval: TimeInterval = 15
 
     let apiClient: ApiClient
     let configManager: ConfigurationManager
