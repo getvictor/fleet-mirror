@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep *)",
+      "Bash(xcodebuild -project FleetAgent.xcodeproj -scheme FleetAgent -destination 'platform=iOS Simulator,name=iPhone 16' -configuration Debug build)",
+      "Bash(xcrun simctl *)",
+      "Bash(xcodebuild test *)",
+      "Read(//Users/sharonkatz/repos/fleet/**)",
+      "Bash(./build/fleetctl get *)",
+      "Bash(curl -sk -H \"Authorization: Bearer $\\(cd ~/repos/fleet && ./build/fleetctl get enroll-secret)",
+      "Bash(python3 -c ' *)",
+      "Bash(mysql *)",
+      "Bash(curl *)",
+      "Bash(ls -1t /Users/sharonkatz/repos/ios_osquery/fleet/server/datastore/mysql/migrations/tables/*.go)"
+    ]
+  }
+}

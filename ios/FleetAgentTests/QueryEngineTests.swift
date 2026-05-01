@@ -168,4 +168,68 @@ final class QueryEngineTests: XCTestCase {
         let rows = engine.execute("INVALID SQL")
         XCTAssertTrue(rows.isEmpty)
     }
+
+    // MARK: - SELECT 1 (Label Queries)
+
+    func testSelectOne() {
+        let rows = engine.execute("select 1;")
+        XCTAssertEqual(rows.count, 1)
+        XCTAssertEqual(rows[0]["1"], "1")
+    }
+
+    func testSelectOneNoSemicolon() {
+        let rows = engine.execute("SELECT 1")
+        XCTAssertEqual(rows.count, 1)
+    }
+
+    // MARK: - WHERE Clause Filtering
+
+    func testWhereClauseMatches() {
+        let rows = engine.execute("SELECT * FROM os_version WHERE platform = 'ios'")
+        XCTAssertEqual(rows.count, 1)
+        XCTAssertEqual(rows[0]["platform"], "ios")
+    }
+
+    func testWhereClauseNoMatch() {
+        let rows = engine.execute("SELECT * FROM os_version WHERE platform = 'darwin'")
+        XCTAssertTrue(rows.isEmpty, "iOS agent should not match darwin platform")
+    }
+
+    func testWhereClauseMultipleConditions() {
+        let version = ProcessInfo.processInfo.operatingSystemVersion
+        let rows = engine.execute("SELECT * FROM os_version WHERE platform = 'ios' AND major = '\(version.majorVersion)'")
+        XCTAssertEqual(rows.count, 1)
+    }
+
+    func testParseWhereConditions() {
+        let conditions = engine.parseWhereConditions("SELECT * FROM t WHERE platform = 'ios' AND version = '16'")
+        XCTAssertEqual(conditions.count, 2)
+        XCTAssertEqual(conditions[0].0, "platform")
+        XCTAssertEqual(conditions[0].1, "ios")
+        XCTAssertEqual(conditions[1].0, "version")
+        XCTAssertEqual(conditions[1].1, "16")
+    }
+
+    func testParseWhereNoConditions() {
+        let conditions = engine.parseWhereConditions("SELECT * FROM os_version")
+        XCTAssertTrue(conditions.isEmpty)
+    }
+
+    func testLabelQueryAllHosts() {
+        // Fleet's "All Hosts" label query
+        let rows = engine.execute("select 1;")
+        XCTAssertFalse(rows.isEmpty)
+    }
+
+    func testLabelQueryIOSPlatform() {
+        // Fleet's "iOS" label query
+        let rows = engine.execute("select 1 from os_version where platform = 'ios';")
+        XCTAssertEqual(rows.count, 1)
+    }
+
+    func testLabelQueryMacOSPlatformNoMatch() {
+        // Fleet's "macOS" label query should NOT match on iOS
+        let rows = engine.execute("select 1 from os_version where platform = 'darwin';")
+        XCTAssertTrue(rows.isEmpty)
+    }
 }

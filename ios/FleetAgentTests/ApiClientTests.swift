@@ -9,6 +9,7 @@ final class EnrollRequestJSONTests: XCTestCase {
             enrollSecret: "secret123",
             hardwareUUID: "uuid-abc",
             hardwareSerial: "serial-xyz",
+            hostname: "Test iPhone",
             platform: "ios",
             computerName: "Test iPhone"
         )
