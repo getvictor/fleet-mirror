@@ -15,6 +15,7 @@
 		FA00000000000000000075AA /* KeychainManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA00000000000000000065AA /* KeychainManager.swift */; };
 		FA00000000000000000076AA /* ApiClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA00000000000000000066AA /* ApiClient.swift */; };
 		FA00000000000000000077AA /* PollingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA00000000000000000067AA /* PollingManager.swift */; };
+		FA00000000000000000085BB /* ScheduleManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA000000000000000000F1AA /* ScheduleManager.swift */; };
 		FA00000000000000000078AA /* QueryEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA000000000000000000D1AA /* QueryEngine.swift */; };
 		FA00000000000000000079AA /* DeviceInfoTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA000000000000000000D2AA /* DeviceInfoTable.swift */; };
 		FA0000000000000000007AAA /* OSVersionTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA000000000000000000D3AA /* OSVersionTable.swift */; };
@@ -63,6 +64,7 @@
 		FA000000000000000000C7AA /* QueryEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueryEngineTests.swift; sourceTree = "<group>"; };
 		FA000000000000000000D5AA /* DebugTablesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugTablesView.swift; sourceTree = "<group>"; };
 		FA000000000000000000C9AA /* PollingManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollingManagerTests.swift; sourceTree = "<group>"; };
+		FA000000000000000000F1AA /* ScheduleManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleManager.swift; sourceTree = "<group>"; };
 		FA000000000000000000E1AA /* DiskSpaceTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiskSpaceTable.swift; sourceTree = "<group>"; };
 		FA000000000000000000E2AA /* NetworkInfoTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkInfoTable.swift; sourceTree = "<group>"; };
 		FA000000000000000000E3AA /* SystemInfoTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemInfoTable.swift; sourceTree = "<group>"; };
@@ -115,6 +117,7 @@
 				FA00000000000000000065AA /* KeychainManager.swift */,
 				FA00000000000000000067AA /* PollingManager.swift */,
 				FA000000000000000000D5AA /* DebugTablesView.swift */,
+				FA000000000000000000F1AA /* ScheduleManager.swift */,
 				FA000000000000000000D0AA /* Tables */,
 				FA00000000000000000068AA /* Info.plist */,
 				FA00000000000000000064AA /* Assets.xcassets */,
@@ -269,6 +272,7 @@
 				FA0000000000000000007AAA /* OSVersionTable.swift in Sources */,
 				FA0000000000000000007BAA /* BatteryTable.swift in Sources */,
 				FA0000000000000000007CAA /* DebugTablesView.swift in Sources */,
+				FA00000000000000000085BB /* ScheduleManager.swift in Sources */,
 				FA0000000000000000007DAA /* DiskSpaceTable.swift in Sources */,
 				FA0000000000000000007EAA /* NetworkInfoTable.swift in Sources */,
 				FA0000000000000000007FAA /* SystemInfoTable.swift in Sources */,

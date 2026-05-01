@@ -143,6 +143,20 @@ class ApiClient: ObservableObject {
         )
     }
 
+    // MARK: - Osquery Config (Scheduled Queries)
+
+    /// Fetch osquery configuration including scheduled query packs.
+    func getOsqueryConfig(config: ConfigurationManager) async throws -> OsqueryConfigResponse {
+        guard let nodeKey = osqueryNodeKey() else {
+            throw ApiError(statusCode: 0, message: "Not enrolled")
+        }
+        return try await post(
+            baseURL: config.serverURL,
+            path: "/api/osquery/config",
+            body: DistributedReadRequest(nodeKey: nodeKey)
+        )
+    }
+
     // MARK: - Push Token
 
     /// Register the APNs push token with Fleet server.
@@ -202,6 +216,27 @@ class ApiClient: ObservableObject {
                 queries: results,
                 statuses: statuses,
                 messages: messages
+            )
+        )
+    }
+
+    // MARK: - Scheduled Query Results
+
+    /// Submit scheduled query results via the osquery log endpoint.
+    func submitScheduledResults(
+        config: ConfigurationManager,
+        results: [ScheduledQueryResultLog]
+    ) async throws {
+        guard let nodeKey = osqueryNodeKey() else {
+            throw ApiError(statusCode: 0, message: "Not enrolled")
+        }
+        let _: SubmitLogsResponse = try await post(
+            baseURL: config.serverURL,
+            path: "/api/osquery/log",
+            body: SubmitLogsRequest(
+                nodeKey: nodeKey,
+                logType: "result",
+                data: results
             )
         )
     }
@@ -337,6 +372,62 @@ struct DistributedWriteRequest: Encodable {
 }
 
 struct DistributedWriteResponse: Decodable {}
+
+struct SubmitLogsRequest: Encodable {
+    let nodeKey: String
+    let logType: String
+    let data: [ScheduledQueryResultLog]
+
+    enum CodingKeys: String, CodingKey {
+        case nodeKey = "node_key"
+        case logType = "log_type"
+        case data
+    }
+}
+
+struct ScheduledQueryResultLog: Encodable {
+    let name: String              // "pack/Global/query_name"
+    let hostIdentifier: String    // hardware UUID
+    let snapshot: [[String: String]]
+    let unixTime: Int
+}
+
+struct SubmitLogsResponse: Decodable {}
+
+// MARK: - Osquery Config Models (Scheduled Queries)
+
+struct OsqueryConfigResponse: Decodable {
+    let packs: [String: PackContent]?
+    let options: [String: AnyCodable]?
+}
+
+struct PackContent: Decodable {
+    let queries: [String: ScheduledQueryContent]?
+    let platform: String?
+}
+
+struct ScheduledQueryContent: Decodable {
+    let query: String
+    let interval: Int?
+    let platform: String?
+    let snapshot: Bool?
+    let removed: Bool?
+    let description: String?
+}
+
+/// Type-erased Decodable for arbitrary JSON values (used for "options").
+struct AnyCodable: Decodable {
+    let value: Any
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        if let s = try? container.decode(String.self) { value = s }
+        else if let i = try? container.decode(Int.self) { value = i }
+        else if let b = try? container.decode(Bool.self) { value = b }
+        else if let d = try? container.decode(Double.self) { value = d }
+        else { value = "" }
+    }
+}
 
 struct ApiError: Error, LocalizedError {
     let statusCode: Int

@@ -20,11 +20,13 @@ class PollingManager: ObservableObject {
     let apiClient: ApiClient
     let configManager: ConfigurationManager
     let queryEngine: QueryEngine
+    let scheduleManager: ScheduleManager
 
-    init(apiClient: ApiClient, configManager: ConfigurationManager, queryEngine: QueryEngine = QueryEngine()) {
+    init(apiClient: ApiClient, configManager: ConfigurationManager, queryEngine: QueryEngine = QueryEngine(), scheduleManager: ScheduleManager? = nil) {
         self.apiClient = apiClient
         self.configManager = configManager
         self.queryEngine = queryEngine
+        self.scheduleManager = scheduleManager ?? ScheduleManager(apiClient: apiClient, configManager: configManager)
     }
 
     // MARK: - Foreground Polling
@@ -86,7 +88,11 @@ class PollingManager: ObservableObject {
             }
             lastConfig = config
 
-            // Step 2: Fetch distributed queries
+            // Step 2: Fetch osquery config (scheduled queries) and run due ones
+            await scheduleManager.fetchConfig()
+            await scheduleManager.runDueQueries()
+
+            // Step 3: Fetch distributed queries
             let pendingQueries: [String: String]
             do {
                 pendingQueries = try await apiClient.withReenrollOnUnauthorized(config: configManager) {

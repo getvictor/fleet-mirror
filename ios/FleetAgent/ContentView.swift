@@ -197,6 +197,13 @@ struct ContentView: View {
                     .font(.caption)
             }
 
+            if !pollingManager.scheduleManager.scheduledQueries.isEmpty {
+                let sm = pollingManager.scheduleManager
+                let runInfo = sm.lastRunCount > 0 ? " (\(sm.lastRunCount) ran)" : ""
+                LabeledContent("Scheduled", value: "\(sm.scheduledQueries.count) queries\(runInfo)")
+                    .font(.caption)
+            }
+
             LabeledContent("Interval", value: "\(Int(pollingManager.foregroundInterval))s (fg)")
                 .font(.caption)
 

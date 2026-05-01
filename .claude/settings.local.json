@@ -11,7 +11,9 @@
       "Bash(python3 -c ' *)",
       "Bash(mysql *)",
       "Bash(curl *)",
-      "Bash(ls -1t /Users/sharonkatz/repos/ios_osquery/fleet/server/datastore/mysql/migrations/tables/*.go)"
+      "Bash(ls -1t /Users/sharonkatz/repos/ios_osquery/fleet/server/datastore/mysql/migrations/tables/*.go)",
+      "Bash(find /Users/sharonkatz/repos/ios_osquery/fleet -type f -name \"*test*.go\" -exec grep -l \"packs\\\\|schedule\\\\|osquery.*config\" {} \\\\;)",
+      "Bash(find /Users/sharonkatz/repos/ios_osquery/fleet -type f -path \"*/integrationtest*\" -name \"*test*.go\" -exec grep -l \"config\\\\|osquery\" {} \\\\;)"
     ]
   }
 }
