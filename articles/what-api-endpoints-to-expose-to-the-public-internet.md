@@ -69,6 +69,7 @@ If you use [Account-driven User Enrollment](https://fleetdm.com/guides/enroll-pe
 
 - `/api/mdm/apple/account_driven_enroll`: Allows hosts to complete enrollment using a Managed Apple Account.
 - `/mdm/apple/account_driven_enroll/sso`: If end users authenticate with your IdP during Account-driven User Enrollment, allows that SSO flow to complete.
+- `/mdm/apple/service_discovery`: Allows hosts to discover the MDM account driven enrollment URL, when redirecting the well-known request from Apple.
 
 ### Android
 
