@@ -3894,8 +3894,12 @@ func (s *integrationMDMTestSuite) TestListMDMConfigProfiles() {
 	}, nil)
 	require.NoError(t, err)
 
-	// break lblFoo by deleting it
-	require.NoError(t, s.ds.DeleteLabel(ctx, lblFoo.Name, fleet.TeamFilter{User: &fleet.User{GlobalRole: ptr.String(fleet.RoleAdmin)}}))
+	// break lblFoo by nullifying label_id in profile label associations (simulates deletion
+	// while bypassing the FK restriction that prevents deleting referenced labels)
+	mysqltest.ExecAdhocSQL(t, s.ds, func(q sqlx.ExtContext) error {
+		_, err := q.ExecContext(ctx, `UPDATE mdm_configuration_profile_labels SET label_id = NULL WHERE label_id = ?`, lblFoo.ID)
+		return err
+	})
 
 	// test that all fields are correctly returned with team 2
 	var listResp listMDMConfigProfilesResponse
