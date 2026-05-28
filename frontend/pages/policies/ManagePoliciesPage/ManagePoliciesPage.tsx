@@ -57,6 +57,8 @@ import PageDescription from "components/PageDescription";
 import LastUpdatedText from "components/LastUpdatedText";
 import TooltipWrapper from "components/TooltipWrapper";
 
+import { getTicketOrWebhookInfo } from "pages/policies/components/PolicyAutomationsFields";
+
 import PoliciesTable from "./components/PoliciesTable";
 import DeletePoliciesModal from "./components/DeletePoliciesModal";
 import { DEFAULT_POLICY } from "../constants";
@@ -609,33 +611,12 @@ const ManagePolicyPage = ({
   const hasPoliciesToDelete =
     hasPoliciesToAutomate || (isPrimoMode && (teamPolicies?.length ?? 0) > 0); // in Primo mode, allow deleting inherited policies, which will be included in teamPolicies, from this view
 
-  // NOTE: backend uses webhook_settings to store automated policy ids for both webhooks and integrations
-  let currentAutomatedPolicies: number[] = [];
-  let otherAutomationType: OtherAutomationType | undefined;
-  if (automationsConfig) {
-    const {
-      webhook_settings: { failing_policies_webhook: webhook },
-      integrations,
-    } = automationsConfig;
-
-    let isIntegrationEnabled = false;
-    if (integrations) {
-      const { jira, zendesk } = integrations;
-      isIntegrationEnabled =
-        !!jira?.find((j) => j.enable_failing_policies) ||
-        !!zendesk?.find((z) => z.enable_failing_policies);
-    }
-
-    if (isIntegrationEnabled || webhook?.enable_failing_policies_webhook) {
-      currentAutomatedPolicies = webhook?.policy_ids || [];
-    }
-
-    if (isIntegrationEnabled) {
-      otherAutomationType = "ticket";
-    } else if (webhook?.enable_failing_policies_webhook) {
-      otherAutomationType = "webhook";
-    }
-  }
+  const {
+    state: ticketOrWebhookState,
+    policyIds: currentAutomatedPolicies,
+  } = getTicketOrWebhookInfo(automationsConfig);
+  const otherAutomationType: OtherAutomationType | undefined =
+    ticketOrWebhookState === "disabled" ? undefined : ticketOrWebhookState;
 
   const renderPoliciesCountAndLastUpdated = (
     count?: number,
@@ -969,7 +950,6 @@ const ManagePolicyPage = ({
             teamIdForApi={teamIdForApi}
             automationsConfig={automationsConfig}
             globalConfig={globalConfig}
-            webhookOrTicketPolicyIds={currentAutomatedPolicies}
             refetchPolicies={() => refetchPolicies(teamIdForApi)}
             onExit={onCloseManageAutomationsModal}
           />
