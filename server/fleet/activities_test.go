@@ -1,10 +1,66 @@
 package fleet
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
+
+func TestFailedPolicyAutomationActivities(t *testing.T) {
+	t.Run("calendar", func(t *testing.T) {
+		act := ActivityTypeFailedCalendarPolicyAutomation{
+			PolicyID:      14,
+			HostIDList:    []uint{42},
+			StatusCode:    403,
+			ErrorResponse: "Rate Limit Exceeded",
+		}
+
+		assert.Equal(t, "failed_calendar_policy_automation", act.ActivityName())
+		assert.Equal(t, []uint{42}, act.HostIDs())
+		assert.True(t, act.WasFromAutomation())
+
+		b, err := json.Marshal(act)
+		require.NoError(t, err)
+		var got map[string]any
+		require.NoError(t, json.Unmarshal(b, &got))
+		assert.EqualValues(t, 14, got["policy_id"])
+		assert.EqualValues(t, 403, got["status_code"])
+		assert.Equal(t, "Rate Limit Exceeded", got["error_response"])
+	})
+}
+
+func TestSuccessPolicyAutomationActivities(t *testing.T) {
+	// assertNoHostIDsOrPolicyName fails if the marshaled details leak the
+	// host ID list or a policy name (both are intentionally omitted; hosts
+	// live one-per-row in activity_host_past).
+	assertNoHostIDsOrPolicyName := func(t *testing.T, got map[string]any) {
+		t.Helper()
+		_, hasHostIDs := got["host_ids"]
+		assert.False(t, hasHostIDs)
+		_, hasPolicyName := got["policy_name"]
+		assert.False(t, hasPolicyName)
+	}
+
+	t.Run("calendar event created", func(t *testing.T) {
+		act := ActivityTypeCreatedCalendarEventPolicyAutomation{
+			PolicyID:   14,
+			HostIDList: []uint{42},
+		}
+
+		assert.Equal(t, "created_calendar_event_policy_automation", act.ActivityName())
+		assert.Equal(t, []uint{42}, act.HostIDs())
+		assert.True(t, act.WasFromAutomation())
+
+		b, err := json.Marshal(act)
+		require.NoError(t, err)
+		var got map[string]any
+		require.NoError(t, json.Unmarshal(b, &got))
+		assert.EqualValues(t, 14, got["policy_id"])
+		assertNoHostIDsOrPolicyName(t, got)
+	})
+}
 
 // TestVPPInstallFailureEmptyCommandUUIDDoesNotActivateNext exercises the
 // scenario where a VPP install is attempted during setup experience for a
@@ -13,8 +69,6 @@ import (
 // CommandUUID is empty. In that case the next upcoming activity must NOT
 // be activated, because the current activity was never truly started —
 // activating the next one would break the intended sequential ordering.
-//
-// See commit 159194acc9d92843bb2de933309f159c84a501aa for the fix.
 func TestVPPInstallFailureEmptyCommandUUIDDoesNotActivateNext(t *testing.T) {
 	t.Parallel()
 
