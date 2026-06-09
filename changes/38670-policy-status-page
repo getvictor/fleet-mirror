@@ -1,1 +1,0 @@
-- Added per-host activity log entries when policy calendar (maintenance window) automations fail or succeed (calendar event created).
