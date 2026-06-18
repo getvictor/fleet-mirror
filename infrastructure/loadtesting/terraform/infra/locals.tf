@@ -56,6 +56,9 @@ locals {
       FLEET_MYSQL_TLS_CA                  = local.cert_path
       FLEET_MYSQL_READ_REPLICA_TLS_CA     = local.cert_path
       FLEET_MYSQL_READ_REPLICA_TLS_CONFIG = "custom"
+
+      # QA #42288
+      FLEET_SES_SENDER_DOMAIN = qa-42288.loadtest.fleetdm.com
     },
     local.otel_environment_variables,
     local.elastic_apm_environment_variables
