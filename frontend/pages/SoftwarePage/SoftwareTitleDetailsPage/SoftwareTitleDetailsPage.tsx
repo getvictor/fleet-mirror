@@ -31,8 +31,6 @@ import softwareAPI, {
 } from "services/entities/software";
 
 import { getPathWithQueryParams } from "utilities/url";
-import endpoints from "utilities/endpoints";
-import URL_PREFIX from "router/url_prefix";
 import { DEFAULT_USE_QUERY_OPTIONS } from "utilities/constants";
 
 import { notify } from "components/ToastNotification";
@@ -56,7 +54,11 @@ import AddPackageModal from "./AddPackageModal";
 import PoliciesModal from "./PoliciesModal";
 import VersionsModal from "./VersionsModal";
 import { getDisplayedSoftwareName, mergePolicies } from "../helpers";
-import { buildLibraryVersionRows } from "./helpers";
+import {
+  buildInstallerDownloadUrl,
+  buildLibraryVersionRows,
+  resolveDownloadTarget,
+} from "./helpers";
 import TitleVersionsTable from "./TitleVersionsTable";
 
 const baseClass = "software-title-details-page";
@@ -196,33 +198,38 @@ const SoftwareTitleDetailsPage = ({
     );
   }, [queryClient, refetchSoftwareTitle, router, softwareTitle, teamIdForApi]);
 
-  // Mints a one-shot download token and triggers the browser download via a
-  // synthetic `<a download>` click. The token-based URL is unauthenticated;
-  // we must build it client-side rather than redirecting.
-  const onDownloadInstaller = useCallback(async () => {
-    const pkg = softwareTitle?.software_package;
-    if (!pkg || typeof teamIdForApi !== "number") return;
-    try {
-      const resp = await softwareAPI.getSoftwarePackageToken(
-        softwareId,
-        teamIdForApi
+  // Mints a one-shot download token pinned to the clicked package and triggers
+  // the browser download via a synthetic `<a download>` click. The token-based
+  // URL is unauthenticated; we must build it client-side rather than
+  // redirecting. Falls back to the title's first-added `software_package` when
+  // no per-row pkg is supplied (single-package titles / legacy callers).
+  const onDownloadInstaller = useCallback(
+    async (pkg?: ISoftwarePackage) => {
+      const target = resolveDownloadTarget(
+        pkg,
+        softwareTitle?.software_package
       );
-      if (!resp.token) {
-        throw new Error("No download token returned");
+      if (!target || typeof teamIdForApi !== "number") return;
+      try {
+        const resp = await softwareAPI.getSoftwarePackageToken(
+          softwareId,
+          teamIdForApi,
+          target.installer_id
+        );
+        if (!resp.token) {
+          throw new Error("No download token returned");
+        }
+        const a = document.createElement("a");
+        a.href = buildInstallerDownloadUrl(softwareId, resp.token);
+        a.download = target.name;
+        a.click();
+        a.remove();
+      } catch (e) {
+        notify.error("Couldn't download. Please try again.");
       }
-      const { origin } = global.window.location;
-      const url = `${origin}${URL_PREFIX}/api${endpoints.SOFTWARE_PACKAGE_TOKEN(
-        softwareId
-      )}/${resp.token}`;
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = pkg.name;
-      a.click();
-      a.remove();
-    } catch (e) {
-      notify.error("Couldn't download. Please try again.");
-    }
-  }, [softwareId, softwareTitle, teamIdForApi]);
+    },
+    [softwareId, softwareTitle, teamIdForApi]
+  );
 
   const onTeamChange = useCallback(
     (teamId: number) => {
@@ -381,7 +388,7 @@ const SoftwareTitleDetailsPage = ({
           }
           onLabelCountClick={() => openEditModal(pkg.installer_id)}
           onLabelsClick={() => openEditModal(pkg.installer_id)}
-          onDownloadClick={onDownloadInstaller}
+          onDownloadClick={() => onDownloadInstaller(pkg)}
           onTrashClick={() => openDeleteModal(pkg.installer_id)}
           onSelfServiceClick={() => openEditModal(pkg.installer_id)}
           onAutoInstallClick={() => {

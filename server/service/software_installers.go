@@ -542,9 +542,15 @@ func (svc *Service) DeleteSoftwareInstaller(ctx context.Context, titleID uint, t
 }
 
 type getSoftwareInstallerRequest struct {
-	Alt     string `query:"alt,optional"`
-	TeamID  *uint  `query:"team_id" renameto:"fleet_id"`
-	TitleID uint   `url:"title_id"`
+	Alt string `query:"alt,optional"`
+	// TeamID is required. Kept as *uint so a missing query parameter returns a
+	// validation error instead of matching team 0.
+	TeamID  *uint `query:"team_id" renameto:"fleet_id"`
+	TitleID uint  `url:"title_id"`
+	// InstallerID pins the download to a specific package on a multi-package
+	// title. Omit for single-package titles or to fall back to the first-added
+	// package.
+	InstallerID *uint `query:"installer_id,optional"`
 }
 
 type downloadSoftwareInstallerRequest struct {
@@ -555,7 +561,7 @@ type downloadSoftwareInstallerRequest struct {
 func getSoftwareInstallerEndpoint(ctx context.Context, request interface{}, svc fleet.Service) (fleet.Errorer, error) {
 	req := request.(*getSoftwareInstallerRequest)
 
-	payload, err := svc.DownloadSoftwareInstaller(ctx, false, req.Alt, req.TitleID, req.TeamID)
+	payload, err := svc.DownloadSoftwareInstaller(ctx, false, req.Alt, req.TitleID, req.TeamID, req.InstallerID)
 	if err != nil {
 		return orbitDownloadSoftwareInstallerResponse{Err: err}, nil
 	}
@@ -566,7 +572,7 @@ func getSoftwareInstallerEndpoint(ctx context.Context, request interface{}, svc 
 func getSoftwareInstallerTokenEndpoint(ctx context.Context, request interface{}, svc fleet.Service) (fleet.Errorer, error) {
 	req := request.(*getSoftwareInstallerRequest)
 
-	token, err := svc.GenerateSoftwareInstallerToken(ctx, req.Alt, req.TitleID, req.TeamID)
+	token, err := svc.GenerateSoftwareInstallerToken(ctx, req.Alt, req.TitleID, req.TeamID, req.InstallerID)
 	if err != nil {
 		return getSoftwareInstallerTokenResponse{Err: err}, nil
 	}
@@ -581,7 +587,13 @@ func downloadSoftwareInstallerEndpoint(ctx context.Context, request interface{},
 		return orbitDownloadSoftwareInstallerResponse{Err: err}, nil
 	}
 
-	payload, err := svc.DownloadSoftwareInstaller(ctx, true, "media", meta.TitleID, &meta.TeamID)
+	// Zero InstallerID means the token was minted without a specific pin — fall
+	// back to first-added by passing nil.
+	var installerID *uint
+	if meta.InstallerID != 0 {
+		installerID = &meta.InstallerID
+	}
+	payload, err := svc.DownloadSoftwareInstaller(ctx, true, "media", meta.TitleID, &meta.TeamID, installerID)
 	if err != nil {
 		return orbitDownloadSoftwareInstallerResponse{Err: err}, nil
 	}
@@ -589,7 +601,7 @@ func downloadSoftwareInstallerEndpoint(ctx context.Context, request interface{},
 	return orbitDownloadSoftwareInstallerResponse{payload: payload}, nil
 }
 
-func (svc *Service) GenerateSoftwareInstallerToken(ctx context.Context, _ string, _ uint, _ *uint) (string, error) {
+func (svc *Service) GenerateSoftwareInstallerToken(ctx context.Context, _ string, _ uint, _ *uint, _ *uint) (string, error) {
 	// skipauth: No authorization check needed due to implementation returning
 	// only license error.
 	svc.authz.SkipAuthorization(ctx)
@@ -653,7 +665,7 @@ func (r orbitDownloadSoftwareInstallerResponse) HijackRender(ctx context.Context
 }
 
 func (svc *Service) DownloadSoftwareInstaller(ctx context.Context, _ bool, _ string, _ uint,
-	_ *uint) (*fleet.DownloadSoftwareInstallerPayload,
+	_ *uint, _ *uint) (*fleet.DownloadSoftwareInstallerPayload,
 	error,
 ) {
 	// skipauth: No authorization check needed due to implementation returning
