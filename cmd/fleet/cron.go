@@ -1625,11 +1625,15 @@ func newCleanupsAndAggregationSchedule(
 }
 
 // buildChartScopeResolver returns a per-dataset scope resolver for the chart
-// collection cron. It computes (skip, disabledFleetIDs) from the global and
-// per-team historical-data flags. Extracted from the cron closure so it can be
-// unit-tested without spinning up a schedule.
-func buildChartScopeResolver(appCfg *fleet.AppConfig, teams []*fleet.Team, logger *slog.Logger) chart_api.CollectScopeFn {
+// collection cron. It computes (skip, disabledFleetIDs) from the license and the
+// global and per-team historical-data flags. Extracted from the cron closure so
+// it can be unit-tested without spinning up a schedule.
+func buildChartScopeResolver(appCfg *fleet.AppConfig, teams []*fleet.Team, isPremium bool, logger *slog.Logger) chart_api.CollectScopeFn {
 	return func(name string) (skip bool, disabledFleetIDs []uint) {
+		if name == chart_api.MetricCVE && !isPremium {
+			return true, nil
+		}
+
 		ok, err := appCfg.Features.HistoricalData.Enabled(name)
 		if err != nil {
 			// Unknown dataset — fall back to enabled with no team filter.
@@ -1660,6 +1664,7 @@ func newChartDataCollectionSchedule(
 	instanceID string,
 	ds fleet.Datastore,
 	chartSvc chart_api.Service,
+	isPremium bool,
 	logger *slog.Logger,
 ) (*schedule.Schedule, error) {
 	const (
@@ -1688,7 +1693,7 @@ func newChartDataCollectionSchedule(
 				logger.ErrorContext(ctx, "list teams for chart scope", "err", err)
 				return ctxerr.Wrap(ctx, err, "list teams for chart scope")
 			}
-			return chartSvc.CollectDatasets(ctx, time.Now(), buildChartScopeResolver(appCfg, teams, logger))
+			return chartSvc.CollectDatasets(ctx, time.Now(), buildChartScopeResolver(appCfg, teams, isPremium, logger))
 		}),
 	)
 
