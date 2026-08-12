@@ -318,7 +318,7 @@ export const HostInstallerActionCell = ({
     if (uninstallDisabled || isInstallUninstallPendingLocal) return;
     // On My Device, uninstall opens a confirmation modal instead of calling the
     // API directly. Skip the optimistic pending flag so cancelling the modal
-    // doesn't leave the row's buttons stuck disabled (#50856).
+    // doesn't leave the row's buttons stuck disabled.
     if (!isMyDevicePage) {
       setIsInstallUninstallPendingLocal(true);
     }

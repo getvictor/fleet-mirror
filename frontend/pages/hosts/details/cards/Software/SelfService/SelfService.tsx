@@ -201,6 +201,14 @@ const SoftwareSelfService = ({
   const [recentlyUpdatedSoftwareIds, setRecentlyUpdatedSoftwareIds] = useState<
     Set<number>
   >(new Set());
+  // IDs whose uninstall modal was just confirmed. The confirmation API succeeds
+  // before the next polling cycle can report the transition to
+  // `pending_uninstall`, so we overlay that status locally to keep Reinstall +
+  // Uninstall disabled during that gap. Cleared as soon as real data agrees.
+  const [
+    optimisticPendingUninstallIds,
+    setOptimisticPendingUninstallIds,
+  ] = useState<Set<number>>(new Set());
 
   // Cleanup on unmount
   useEffect(() => {
@@ -251,16 +259,26 @@ const SoftwareSelfService = ({
 
   const enhancedSoftware: IDeviceSoftwareWithUiStatus[] = useMemo(() => {
     if (!selfServiceData) return [];
-    return selfServiceData.software.map((software) => ({
-      ...software,
-      ui_status: getUiStatus(
-        software,
-        true,
-        hostSoftwareUpdatedAt,
-        recentlyUpdatedSoftwareIds
-      ),
-    }));
-  }, [selfServiceData, recentlyUpdatedSoftwareIds, hostSoftwareUpdatedAt]);
+    return selfServiceData.software.map((software) => {
+      const withOverlay = optimisticPendingUninstallIds.has(software.id)
+        ? { ...software, status: "pending_uninstall" as const }
+        : software;
+      return {
+        ...withOverlay,
+        ui_status: getUiStatus(
+          withOverlay,
+          true,
+          hostSoftwareUpdatedAt,
+          recentlyUpdatedSoftwareIds
+        ),
+      };
+    });
+  }, [
+    selfServiceData,
+    recentlyUpdatedSoftwareIds,
+    hostSoftwareUpdatedAt,
+    optimisticPendingUninstallIds,
+  ]);
 
   // Promote completed user-initiated actions to "recently updated" on every
   // `selfServiceData` change, regardless of which path produced it (main query,
@@ -305,6 +323,27 @@ const SoftwareSelfService = ({
 
     lastObservedPendingIdsRef.current = currentlyPendingIds;
   }, [selfServiceData, scheduleRecentlyUpdatedExpiry]);
+
+  // Drop optimistic pending_uninstall overlays as soon as real data catches up.
+  // Once polling reports the id as pending_uninstall (or the item is gone), the
+  // overlay is no longer needed and would otherwise pin buttons disabled if the
+  // status later changes back through this component without a poll cycle.
+  useEffect(() => {
+    if (!selfServiceData || optimisticPendingUninstallIds.size === 0) return;
+    const realStatusById = new Map(
+      selfServiceData.software.map((s) => [s.id, s.status])
+    );
+    const idsToDrop = [...optimisticPendingUninstallIds].filter((id) => {
+      const realStatus = realStatusById.get(id);
+      return realStatus === undefined || realStatus === "pending_uninstall";
+    });
+    if (idsToDrop.length === 0) return;
+    setOptimisticPendingUninstallIds((prev) => {
+      const next = new Set(prev);
+      idsToDrop.forEach((id) => next.delete(id));
+      return next;
+    });
+  }, [selfServiceData, optimisticPendingUninstallIds]);
 
   const selectedSoftwareForUninstall = useRef<{
     softwareId: number;
@@ -689,8 +728,16 @@ const SoftwareSelfService = ({
   };
 
   const onSuccessUninstallSoftwareModal = () => {
+    const uninstalledId = selectedSoftwareForUninstall.current?.softwareId;
     selectedSoftwareForUninstall.current = null;
     setShowUninstallSoftwareModal(false);
+    if (uninstalledId !== undefined) {
+      setOptimisticPendingUninstallIds((prev) => {
+        const next = new Set(prev);
+        next.add(uninstalledId);
+        return next;
+      });
+    }
     onInstallOrUninstall();
   };
 
