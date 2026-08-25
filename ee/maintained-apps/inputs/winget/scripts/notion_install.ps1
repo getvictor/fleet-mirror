@@ -1,9 +1,9 @@
 # Learn more about .exe install scripts:
 # http://fleetdm.com/learn-more-about/exe-install-scripts
 #
-# Notion installs per user and has no machine-wide mode. Run from this script's
-# SYSTEM context its installer crashes outright (access violation), so hand the
-# installer to the signed-in user instead.
+# Notion installs per user and has no machine-wide mode, so installing it from this
+# script's SYSTEM context would put it in SYSTEM's profile where nobody can launch
+# it. Run the installer as the signed-in user instead.
 
 $exeFilePath = "${env:INSTALLER_PATH}"
 $taskName = "fleet-install-notion"
@@ -26,7 +26,12 @@ try {
     $stagedInstaller = Join-Path $env:PUBLIC (Split-Path $exeFilePath -Leaf)
     Copy-Item -Path $exeFilePath -Destination $stagedInstaller -Force
 
-    $action = New-ScheduledTaskAction -Execute $stagedInstaller -Argument "/S"
+    $installArgs = "/S"
+    if ($installArgs) {
+        $action = New-ScheduledTaskAction -Execute $stagedInstaller -Argument $installArgs
+    } else {
+        $action = New-ScheduledTaskAction -Execute $stagedInstaller
+    }
     $trigger = New-ScheduledTaskTrigger -AtLogOn
     $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries
     $principal = New-ScheduledTaskPrincipal -UserId $userAccount

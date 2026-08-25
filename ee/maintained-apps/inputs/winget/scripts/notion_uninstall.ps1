@@ -4,14 +4,13 @@
 # install it exits 0 and deletes nothing. So search every hive and run the
 # uninstaller as the user who owns the entry.
 #
-# Match "Notion <version>" rather than "Notion*": Notion Calendar is a separate app
-# from the same publisher and must not be caught here.
+# Match "Notion <version>" rather than "Notion*": Notion Calendar is a separate
+# app from the same publisher and must not be caught here.
 
 $displayNamePattern = '^Notion \d'
 $publisher = "Notion Labs, Inc"
-$processName = "Notion"
-$shortcutName = "Notion.lnk"
 $taskName = "fleet-uninstall-notion"
+$removedDirs = [System.Collections.Generic.List[string]]::new()
 $taskRunning = 267009  # SCHED_S_TASK_RUNNING
 $exitCode = 0
 
@@ -30,8 +29,10 @@ function Get-AppEntries {
         foreach ($sub in (Get-ChildItem -Path $root -ErrorAction SilentlyContinue)) {
             $key = Get-ItemProperty $sub.PSPath -ErrorAction SilentlyContinue
             if (-not $key.DisplayName) { continue }
-            if ($key.DisplayName -notmatch $displayNamePattern) { continue }
-            if ($key.Publisher -ne $publisher) { continue }
+            # Some installers pad these values with nulls (Fork writes "Fork" + 15 of them).
+            $name = ($key.DisplayName -replace "`0", "").Trim()
+            if ($name -notmatch $displayNamePattern) { continue }
+            if (($key.Publisher -replace "`0", "").Trim() -ne $publisher) { continue }
 
             # Only a real user's entry needs the uninstaller run for them; HKLM and the
             # service SIDs are already in the right context.
@@ -39,7 +40,7 @@ function Get-AppEntries {
             if ($sub.PSPath -match 'HKEY_USERS\\(S-1-5-21-[\d-]+)\\') { $sid = $matches[1] }
 
             $entries += [PSCustomObject]@{
-                DisplayName = $key.DisplayName
+                DisplayName = $name
                 KeyPath     = $sub.PSPath
                 Sid         = $sid
                 Command     = if ($key.QuietUninstallString) { $key.QuietUninstallString } else { $key.UninstallString }
@@ -76,6 +77,7 @@ function Resolve-Uninstaller {
 
     # \b does not match between a space and a slash, so anchor on whitespace.
     if ($arguments -notmatch '(?i)(^|\s)/S($|\s)') { $arguments = "$arguments /S".Trim() }
+
     return [PSCustomObject]@{ ExePath = $exePath; Arguments = $arguments }
 }
 
@@ -87,7 +89,11 @@ function Invoke-UninstallerAsUser {
     Write-Host "  Running the uninstaller as $account"
 
     try {
-        $action = New-ScheduledTaskAction -Execute $ExePath -Argument $Arguments
+        if ($Arguments) {
+            $action = New-ScheduledTaskAction -Execute $ExePath -Argument $Arguments
+        } else {
+            $action = New-ScheduledTaskAction -Execute $ExePath
+        }
         $trigger = New-ScheduledTaskTrigger -AtLogOn
         $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries
         $principal = New-ScheduledTaskPrincipal -UserId $account
@@ -106,8 +112,9 @@ function Invoke-UninstallerAsUser {
             if ($state -ne "Running" -and $info.LastTaskResult -ne $taskRunning) {
                 return $info.LastTaskResult
             }
-            if ((New-TimeSpan -Start $startDate).TotalSeconds -gt 600) {
-                Throw "Timed out waiting for the uninstall task to finish."
+            if ((New-TimeSpan -Start $startDate).TotalSeconds -gt 300) {
+                Write-Host "  Uninstall task still running after 300s; checking the result anyway."
+                return $null
             }
             Start-Sleep -Seconds 5
         }
@@ -135,9 +142,12 @@ try {
 
         $uninstaller = Resolve-Uninstaller $entry.Command
         $installDir = Split-Path $uninstaller.ExePath -Parent
+        $removedDirs.Add($installDir)
 
-        # Scope the kill to this install so another user's session is left alone.
-        Get-Process -Name $processName -ErrorAction SilentlyContinue |
+        # Anything running out of this install directory blocks removal. Matching on the
+        # directory rather than a process name keeps another install of the same app,
+        # in another user's profile, running.
+        Get-Process -ErrorAction SilentlyContinue |
             Where-Object { $_.Path -and $_.Path.StartsWith($installDir, [System.StringComparison]::OrdinalIgnoreCase) } |
             Stop-Process -Force -ErrorAction SilentlyContinue
 
@@ -157,11 +167,11 @@ try {
             $result = $process.ExitCode
         }
         Write-Host "  Uninstall exit code: $result"
-        if ($result -ne 0 -and $exitCode -eq 0) { $exitCode = $result }
+        if ($null -ne $result -and $result -ne 0 -and $exitCode -eq 0) { $exitCode = $result }
 
-        # An NSIS uninstaller relaunches itself from %TEMP%, so the process we waited on
-        # exits while removal is still in flight. Either the directory or the
-        # registration going away means it got there.
+        # An uninstaller that relaunches itself from %TEMP% exits while removal is
+        # still in flight. Either the directory or the registration going away means
+        # it got there.
         for ($waited = 0; $waited -lt 60; $waited++) {
             if (-not (Test-Path -LiteralPath $installDir)) { break }
             if (-not (Get-ItemProperty $entry.KeyPath -ErrorAction SilentlyContinue)) {
@@ -185,13 +195,28 @@ try {
         }
     }
 
-    foreach ($profileDir in (Get-ChildItem 'C:\Users' -Directory -ErrorAction SilentlyContinue)) {
-        foreach ($shortcut in @(
-            (Join-Path $profileDir.FullName "AppData\Roaming\Microsoft\Windows\Start Menu\Programs\$shortcutName"),
-            (Join-Path $profileDir.FullName "Desktop\$shortcutName")
-        )) {
-            if (Test-Path -LiteralPath $shortcut) {
-                Remove-Item -LiteralPath $shortcut -Force -ErrorAction SilentlyContinue
+    # Shortcuts sit in the installing user's profile, so an uninstall that could not
+    # reach that profile leaves them behind. Match on where they point rather than on a
+    # filename, which also catches the vendor subfolders some installers create.
+    if ($removedDirs.Count) {
+        $shell = New-Object -ComObject WScript.Shell
+        foreach ($profileDir in (Get-ChildItem 'C:\Users' -Directory -ErrorAction SilentlyContinue)) {
+            foreach ($root in @(
+                (Join-Path $profileDir.FullName 'AppData\Roaming\Microsoft\Windows\Start Menu\Programs'),
+                (Join-Path $profileDir.FullName 'Desktop')
+            )) {
+                if (-not (Test-Path -LiteralPath $root)) { continue }
+                foreach ($lnk in (Get-ChildItem -LiteralPath $root -Filter '*.lnk' -Recurse -ErrorAction SilentlyContinue)) {
+                    $target = $null
+                    try { $target = $shell.CreateShortcut($lnk.FullName).TargetPath } catch {}
+                    if (-not $target) { continue }
+                    foreach ($dir in $removedDirs) {
+                        if ($target.StartsWith($dir, [System.StringComparison]::OrdinalIgnoreCase)) {
+                            Remove-Item -LiteralPath $lnk.FullName -Force -ErrorAction SilentlyContinue
+                            break
+                        }
+                    }
+                }
             }
         }
     }
