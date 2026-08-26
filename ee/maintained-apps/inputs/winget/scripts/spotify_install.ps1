@@ -26,7 +26,7 @@ try {
     $stagedInstaller = Join-Path $env:PUBLIC (Split-Path $exeFilePath -Leaf)
     Copy-Item -Path $exeFilePath -Destination $stagedInstaller -Force
 
-    $installArgs = "/silent"
+    $installArgs = "/silent /skip-app-launch"
     if ($installArgs) {
         $action = New-ScheduledTaskAction -Execute $stagedInstaller -Argument $installArgs
     } else {
