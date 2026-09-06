@@ -203,7 +203,7 @@ module.exports.custom = {
 
     // 💝 Fleet-maintained apps
     'ee/maintained-apps/inputs': 'allenhouchins',
-    'pkg/patch_policy': 'allenhouchins',//« Patch policy query generation shared by FMA tooling and the Fleet server
+    'pkg/patch_policy': 'allenhouchins',//« Patch policy query generation shared by FMA tooling
   },
 
   // FUTURE: Support DRIs for confidential and other repos (except see other note above about a consolidated way to do it, to reduce these 4-6 config keys into one)
