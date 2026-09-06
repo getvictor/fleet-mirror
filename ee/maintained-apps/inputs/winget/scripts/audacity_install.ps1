@@ -2,10 +2,7 @@
 # http://fleetdm.com/learn-more-about/install-scripts
 #
 # Audacity 4 ships as a WiX MSI that installs to "%ProgramFiles%\Audacity 4"
-# and registers as "Audacity 4.0" (publisher "Audacity"). The MSI does not set
-# ALLUSERS in its Property table, so a plain silent install under Fleet's
-# SYSTEM context would register per-user in the SYSTEM profile; ALLUSERS=1
-# forces a per-machine install.
+# and registers as "Audacity 4.0" (publisher "Audacity").
 #
 # Audacity 4 installs side by side with Audacity 3 (a separate Inno Setup
 # product registered as "Audacity 3.x" by "Audacity Team"). After a successful
