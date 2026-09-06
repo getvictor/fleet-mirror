@@ -192,7 +192,7 @@ func TestIngestValidations(t *testing.T) {
 			case "webex":
 				require.Equal(t, "SELECT 1 FROM apps WHERE bundle_identifier = 'Cisco-Systems.Spark';", out.Queries.Exists)
 				require.Equal(t,
-					"SELECT 1 WHERE NOT EXISTS (SELECT 1 FROM apps WHERE bundle_identifier = 'Cisco-Systems.Spark' AND path NOT LIKE '%/Cisco Spark/Webexteams_upgrades_%' AND version_compare(bundle_short_version, '1.0') < 0);",
+					"SELECT 1 WHERE NOT EXISTS (SELECT 1 FROM apps WHERE bundle_identifier = 'Cisco-Systems.Spark' AND path NOT LIKE '%/Library/Application Support/Cisco Spark/Webexteams\\_upgrades\\_%' ESCAPE '\\' AND version_compare(bundle_short_version, '1.0') < 0);",
 					out.Queries.Patched,
 				)
 			case "firefox@developer-edition":

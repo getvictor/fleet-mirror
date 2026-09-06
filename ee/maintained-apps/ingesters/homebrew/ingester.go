@@ -247,8 +247,10 @@ func (i *brewIngester) ingestOne(ctx context.Context, input inputApp) (*maintain
 		// leave older ones behind (or re-download them between FMA installs). They
 		// share the real app's bundle identifier at a stale version, so exclude
 		// them from patch status rather than relying on the install script's cleanup.
+		// Match from /Library so any home directory location works; ESCAPE keeps the
+		// underscores literal (they are single-character wildcards in LIKE).
 		out.Queries.Patched = fmt.Sprintf(
-			"SELECT 1 WHERE NOT EXISTS (SELECT 1 FROM apps WHERE bundle_identifier = '%s' AND path NOT LIKE '%%/Cisco Spark/Webexteams_upgrades_%%' AND version_compare(bundle_short_version, '%s') < 0);",
+			"SELECT 1 WHERE NOT EXISTS (SELECT 1 FROM apps WHERE bundle_identifier = '%s' AND path NOT LIKE '%%/Library/Application Support/Cisco Spark/Webexteams\\_upgrades\\_%%' ESCAPE '\\' AND version_compare(bundle_short_version, '%s') < 0);",
 			out.UniqueIdentifier, out.Version,
 		)
 	}
