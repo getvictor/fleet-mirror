@@ -203,6 +203,7 @@ module.exports.custom = {
 
     // 💝 Fleet-maintained apps
     'ee/maintained-apps/inputs': 'allenhouchins',
+    'pkg/patch_policy': 'allenhouchins',//« Patch policy query generation shared by FMA tooling and the Fleet server
   },
 
   // FUTURE: Support DRIs for confidential and other repos (except see other note above about a consolidated way to do it, to reduce these 4-6 config keys into one)
@@ -271,6 +272,7 @@ module.exports.custom = {
     // FMA and icons
     'frontend/pages/SoftwarePage/components/icons': 'allenhouchins',
     'ee/maintained-apps': 'allenhouchins',
+    'pkg/patch_policy': 'allenhouchins',
     'website/assets/images': 'allenhouchins',
 
     // Other brandfronts
