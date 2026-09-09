@@ -822,7 +822,7 @@ func (svc *Service) GetOrbitConfig(ctx context.Context) (fleet.OrbitConfig, erro
 
 		// only unset this flag once we know there were no errors so this notification will be picked up by the agent
 		if notifs.RunDiskEncryptionEscrow {
-			_ = svc.ds.ClearPendingEscrow(ctx, host.ID)
+			_ = svc.ds.MarkEscrowSentToAgent(ctx, host.ID)
 		}
 
 		mergedFlags, debugLogging, err := resolveOrbitDebugLogging(ctx, host, opts.CommandLineStartUpFlags)
@@ -904,7 +904,7 @@ func (svc *Service) GetOrbitConfig(ctx context.Context) (fleet.OrbitConfig, erro
 
 	// only unset this flag once we know there were no errors so this notification will be picked up by the agent
 	if notifs.RunDiskEncryptionEscrow {
-		_ = svc.ds.ClearPendingEscrow(ctx, host.ID)
+		_ = svc.ds.MarkEscrowSentToAgent(ctx, host.ID)
 	}
 
 	mergedFlags, debugLogging, err := resolveOrbitDebugLogging(ctx, host, opts.CommandLineStartUpFlags)
