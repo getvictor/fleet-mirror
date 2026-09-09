@@ -24,17 +24,20 @@
   // App/org logo sits in the bottom-left slot of the actions row.
   // `margin-right: auto` eats free space to its right so the logo hugs the
   // left edge while the error slot and buttons stay packed on the right
-  // under `justify-content: flex-end`. Uses <picture> for dark-mode swap.
-  &__logo {
+  // under `justify-content: flex-end`.
+  // Qualified with .org-logo-icon to outrank that component's nav bar sizing.
+  &__logo.org-logo-icon {
     margin-right: auto;
     flex-shrink: 0;
     width: 28px;
     height: 28px;
+    min-height: 28px;
+    max-height: 28px;
+    padding: 0;
+    object-fit: contain;
 
-    img {
-      width: 28px;
-      height: 28px;
-      object-fit: contain;
+    &.default-fleet-logo {
+      transform: none;
     }
   }
 
