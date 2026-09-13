@@ -28849,6 +28849,14 @@ func (s *integrationMDMTestSuite) TestBitLockerPINRelay() {
 	s.DoJSON("POST", "/api/fleet/orbit/disk_encryption_pin/request",
 		json.RawMessage(fmt.Sprintf(`{"orbit_node_key": %q}`, *host.OrbitNodeKey)), http.StatusOK, &pinResp)
 	require.Equal(t, "123456", pinResp.PIN)
+	require.NotEmpty(t, pinResp.RequestUUID)
+	firstRequestUUID := pinResp.RequestUUID
+
+	// An outcome that names no collected submission is refused, so a host cannot mark itself as having a PIN it was
+	// never given.
+	s.Do("POST", "/api/fleet/orbit/disk_encryption_pin",
+		json.RawMessage(fmt.Sprintf(`{"orbit_node_key": %q, "request_uuid": "not-a-real-request", "outcome": "set"}`,
+			*host.OrbitNodeKey)), http.StatusNotFound)
 
 	// A replayed collect gets nothing, and the notification is already gone.
 	s.Do("POST", "/api/fleet/orbit/disk_encryption_pin/request",
@@ -28857,11 +28865,11 @@ func (s *integrationMDMTestSuite) TestBitLockerPINRelay() {
 
 	// A failure is reported back to the waiting page, and needs a reason.
 	s.Do("POST", "/api/fleet/orbit/disk_encryption_pin",
-		json.RawMessage(fmt.Sprintf(`{"orbit_node_key": %q, "outcome": "failed"}`, *host.OrbitNodeKey)),
-		http.StatusUnprocessableEntity)
+		json.RawMessage(fmt.Sprintf(`{"orbit_node_key": %q, "request_uuid": %q, "outcome": "failed"}`,
+			*host.OrbitNodeKey, firstRequestUUID)), http.StatusUnprocessableEntity)
 	s.Do("POST", "/api/fleet/orbit/disk_encryption_pin",
-		json.RawMessage(fmt.Sprintf(`{"orbit_node_key": %q, "outcome": "failed", "client_error": "PIN already set"}`,
-			*host.OrbitNodeKey)), http.StatusNoContent)
+		json.RawMessage(fmt.Sprintf(`{"orbit_node_key": %q, "request_uuid": %q, "outcome": "failed", "client_error": "PIN already set"}`,
+			*host.OrbitNodeKey, firstRequestUUID)), http.StatusNoContent)
 	resp = deviceHost()
 	require.NotNil(t, resp.Host.MDM.OSSettings.DiskEncryption.PINRequest)
 	require.Equal(t, fleet.BitLockerPINRequestFailed, resp.Host.MDM.OSSettings.DiskEncryption.PINRequest.Status)
@@ -28876,9 +28884,16 @@ func (s *integrationMDMTestSuite) TestBitLockerPINRelay() {
 	s.DoJSON("POST", "/api/fleet/orbit/disk_encryption_pin/request",
 		json.RawMessage(fmt.Sprintf(`{"orbit_node_key": %q}`, *host.OrbitNodeKey)), http.StatusOK, &pinResp)
 	require.Equal(t, "654321", pinResp.PIN)
+	require.NotEqual(t, firstRequestUUID, pinResp.RequestUUID, "each submission gets its own id")
+
+	// A late outcome for the superseded submission must not be recorded against this one.
 	s.Do("POST", "/api/fleet/orbit/disk_encryption_pin",
-		json.RawMessage(fmt.Sprintf(`{"orbit_node_key": %q, "outcome": "set"}`, *host.OrbitNodeKey)),
-		http.StatusNoContent)
+		json.RawMessage(fmt.Sprintf(`{"orbit_node_key": %q, "request_uuid": %q, "outcome": "set"}`,
+			*host.OrbitNodeKey, firstRequestUUID)), http.StatusNotFound)
+
+	s.Do("POST", "/api/fleet/orbit/disk_encryption_pin",
+		json.RawMessage(fmt.Sprintf(`{"orbit_node_key": %q, "request_uuid": %q, "outcome": "set"}`,
+			*host.OrbitNodeKey, pinResp.RequestUUID)), http.StatusNoContent)
 
 	// The PIN is recorded, so the end user's banner clears without them pressing Refetch.
 	resp = deviceHost()

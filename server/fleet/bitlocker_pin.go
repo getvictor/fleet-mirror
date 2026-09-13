@@ -22,6 +22,10 @@ const (
 // so this is generous, and it bounds how long the server holds the secret when an agent is offline.
 const BitLockerPINRequestTTL = 5 * time.Minute
 
+// BitLockerPINRequestTimedOutError is recorded against a submission the agent never came for, so the waiting page is
+// told what happened instead of spinning on a request that will never be delivered.
+const BitLockerPINRequestTimedOutError = "Fleet didn't hear back from this device. It may be offline."
+
 // BitLockerPINRequestStatus is where an end user's PIN submission stands.
 type BitLockerPINRequestStatus string
 

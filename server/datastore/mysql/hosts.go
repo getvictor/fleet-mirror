@@ -592,6 +592,7 @@ var hostRefs = []string{
 	"host_disks",
 	"host_updates",
 	"host_disk_encryption_keys",
+	"host_bitlocker_pin_requests",
 	"host_software_installed_paths",
 	"query_results",
 	"host_mdm_actions",

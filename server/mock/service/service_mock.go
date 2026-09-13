@@ -769,9 +769,9 @@ type SetOrUpdateDiskEncryptionKeyFunc func(ctx context.Context, encryptionKey st
 
 type SetOrUpdateDiskEncryptionProtectionFunc func(ctx context.Context, outcome fleet.DiskEncryptionProtectionOutcome, clientError string) error
 
-type GetBitLockerPINForHostFunc func(ctx context.Context) (string, error)
+type GetBitLockerPINForHostFunc func(ctx context.Context) (pin string, requestUUID string, err error)
 
-type SetBitLockerPINOutcomeFunc func(ctx context.Context, outcome fleet.BitLockerPINRequestStatus, clientError string) error
+type SetBitLockerPINOutcomeFunc func(ctx context.Context, requestUUID string, outcome fleet.BitLockerPINRequestStatus, clientError string) error
 
 type GetMDMWindowsConfigProfileFunc func(ctx context.Context, profileUUID string) (*fleet.MDMWindowsConfigProfile, error)
 
@@ -5153,18 +5153,18 @@ func (s *Service) SetOrUpdateDiskEncryptionProtection(ctx context.Context, outco
 	return s.SetOrUpdateDiskEncryptionProtectionFunc(ctx, outcome, clientError)
 }
 
-func (s *Service) GetBitLockerPINForHost(ctx context.Context) (string, error) {
+func (s *Service) GetBitLockerPINForHost(ctx context.Context) (pin string, requestUUID string, err error) {
 	s.mu.Lock()
 	s.GetBitLockerPINForHostFuncInvoked = true
 	s.mu.Unlock()
 	return s.GetBitLockerPINForHostFunc(ctx)
 }
 
-func (s *Service) SetBitLockerPINOutcome(ctx context.Context, outcome fleet.BitLockerPINRequestStatus, clientError string) error {
+func (s *Service) SetBitLockerPINOutcome(ctx context.Context, requestUUID string, outcome fleet.BitLockerPINRequestStatus, clientError string) error {
 	s.mu.Lock()
 	s.SetBitLockerPINOutcomeFuncInvoked = true
 	s.mu.Unlock()
-	return s.SetBitLockerPINOutcomeFunc(ctx, outcome, clientError)
+	return s.SetBitLockerPINOutcomeFunc(ctx, requestUUID, outcome, clientError)
 }
 
 func (s *Service) GetMDMWindowsConfigProfile(ctx context.Context, profileUUID string) (*fleet.MDMWindowsConfigProfile, error) {

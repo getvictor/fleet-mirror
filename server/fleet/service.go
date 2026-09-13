@@ -1316,10 +1316,10 @@ type Service interface {
 
 	// GetBitLockerPINForHost hands the agent the startup PIN the end user submitted. It can only succeed once per
 	// submission: the PIN is cleared as it is read.
-	GetBitLockerPINForHost(ctx context.Context) (string, error)
+	GetBitLockerPINForHost(ctx context.Context) (pin string, requestUUID string, err error)
 
 	// SetBitLockerPINOutcome records whether the agent managed to apply the PIN it collected.
-	SetBitLockerPINOutcome(ctx context.Context, outcome BitLockerPINRequestStatus, clientError string) error
+	SetBitLockerPINOutcome(ctx context.Context, requestUUID string, outcome BitLockerPINRequestStatus, clientError string) error
 
 	// GetMDMWindowsConfigProfile retrieves the specified configuration profile.
 	GetMDMWindowsConfigProfile(ctx context.Context, profileUUID string) (*MDMWindowsConfigProfile, error)

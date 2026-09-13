@@ -17,6 +17,9 @@ func Up_20260911193825(tx *sql.Tx) error {
 	if _, err := tx.Exec(`
 		CREATE TABLE IF NOT EXISTS host_bitlocker_pin_requests (
 			host_id INT UNSIGNED NOT NULL PRIMARY KEY,
+			-- Identifies which submission the agent collected, so a delayed outcome for an earlier PIN cannot be
+			-- recorded against a newer one the user submitted in the meantime.
+			request_uuid VARCHAR(36) NOT NULL,
 			-- NULL once the agent has collected the PIN, so a terminal row carries no secret.
 			pin_encrypted TEXT NULL DEFAULT NULL,
 			status ENUM('pending', 'delivered', 'set', 'failed') NOT NULL DEFAULT 'pending',

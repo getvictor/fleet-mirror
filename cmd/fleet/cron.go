@@ -1427,6 +1427,14 @@ func newCleanupsAndAggregationSchedule(
 			},
 		),
 		schedule.WithJob(
+			// Discards the encrypted PIN of a BitLocker submission the host never came to collect, so a device that
+			// went offline right after its user submitted does not leave the secret sitting in the database.
+			"cleanup_expired_bitlocker_pin_requests",
+			func(ctx context.Context) error {
+				return ds.CleanupExpiredBitLockerPINRequests(ctx)
+			},
+		),
+		schedule.WithJob(
 			"expired_challenges",
 			func(ctx context.Context) error {
 				_, err := ds.CleanupExpiredChallenges(ctx)

@@ -282,9 +282,10 @@ func testBitLockerPINRequestLifecycle(t *testing.T, ds *Datastore) {
 	// Queuing and raising the flag commit together, so the poll can see it immediately.
 	require.True(t, pendingFlag(t, ds, host.UUID))
 
-	pin, err := ds.TakeBitLockerPINRequest(ctx, host)
+	pin, requestUUID, err := ds.TakeBitLockerPINRequest(ctx, host)
 	require.NoError(t, err)
 	require.Equal(t, "encrypted-pin", pin)
+	require.NotEmpty(t, requestUUID)
 	// Collected, so there is nothing left to wake the agent for.
 	require.False(t, pendingFlag(t, ds, host.UUID))
 
@@ -292,7 +293,11 @@ func testBitLockerPINRequestLifecycle(t *testing.T, ds *Datastore) {
 	require.NoError(t, err)
 	require.Equal(t, fleet.BitLockerPINRequestDelivered, req.Status)
 
-	require.NoError(t, ds.SetBitLockerPINRequestOutcome(ctx, host, fleet.BitLockerPINRequestSet, ""))
+	// An outcome naming a submission this host never collected is refused, so a host cannot mark itself as having a PIN.
+	require.True(t, fleet.IsNotFound(
+		ds.SetBitLockerPINRequestOutcome(ctx, host, "not-the-collected-request", fleet.BitLockerPINRequestSet, "")))
+
+	require.NoError(t, ds.SetBitLockerPINRequestOutcome(ctx, host, requestUUID, fleet.BitLockerPINRequestSet, ""))
 	req, err = ds.GetBitLockerPINRequest(ctx, host.ID)
 	require.NoError(t, err)
 	// The row survives success so the waiting page has a positive signal to poll for.
@@ -306,12 +311,12 @@ func testBitLockerPINRequestTakeIsOnlyEverOnce(t *testing.T, ds *Datastore) {
 
 	require.NoError(t, ds.QueueBitLockerPINRequest(ctx, host, "encrypted-pin"))
 
-	pin, err := ds.TakeBitLockerPINRequest(ctx, host)
+	pin, _, err := ds.TakeBitLockerPINRequest(ctx, host)
 	require.NoError(t, err)
 	require.Equal(t, "encrypted-pin", pin)
 
 	// A replayed or concurrent collect must come away with nothing, and must not resurrect the ciphertext.
-	_, err = ds.TakeBitLockerPINRequest(ctx, host)
+	_, _, err = ds.TakeBitLockerPINRequest(ctx, host)
 	require.True(t, fleet.IsNotFound(err))
 
 	var stored *string
@@ -336,10 +341,24 @@ UPDATE host_bitlocker_pin_requests SET created_at = DATE_SUB(NOW(6), INTERVAL ? 
 		return err
 	})
 
-	_, err := ds.TakeBitLockerPINRequest(ctx, host)
+	_, _, err := ds.TakeBitLockerPINRequest(ctx, host)
 	require.True(t, fleet.IsNotFound(err))
 	// A collect that finds nothing clears the flag rather than leaving it to wake the agent on every poll.
 	require.False(t, pendingFlag(t, ds, host.UUID))
+
+	// The cleanups cron retires it so the ciphertext is not left sitting in the database, and the waiting page is told
+	// what happened instead of spinning on a pending row.
+	require.NoError(t, ds.CleanupExpiredBitLockerPINRequests(ctx))
+	req, err := ds.GetBitLockerPINRequest(ctx, host.ID)
+	require.NoError(t, err)
+	require.Equal(t, fleet.BitLockerPINRequestFailed, req.Status)
+	require.Equal(t, fleet.BitLockerPINRequestTimedOutError, req.Error)
+	var stored *string
+	ExecAdhocSQL(t, ds, func(q sqlx.ExtContext) error {
+		return sqlx.GetContext(ctx, q, &stored,
+			`SELECT pin_encrypted FROM host_bitlocker_pin_requests WHERE host_id = ?`, host.ID)
+	})
+	require.Nil(t, stored)
 }
 
 func testBitLockerPINRequestResubmitReplaces(t *testing.T, ds *Datastore) {
@@ -347,7 +366,9 @@ func testBitLockerPINRequestResubmitReplaces(t *testing.T, ds *Datastore) {
 	host := newBitLockerPINHost(t, ds)
 
 	require.NoError(t, ds.QueueBitLockerPINRequest(ctx, host, "first-pin"))
-	require.NoError(t, ds.SetBitLockerPINRequestOutcome(ctx, host, fleet.BitLockerPINRequestFailed, "PIN rejected"))
+	_, firstUUID, err := ds.TakeBitLockerPINRequest(ctx, host)
+	require.NoError(t, err)
+	require.NoError(t, ds.SetBitLockerPINRequestOutcome(ctx, host, firstUUID, fleet.BitLockerPINRequestFailed, "PIN rejected"))
 
 	req, err := ds.GetBitLockerPINRequest(ctx, host.ID)
 	require.NoError(t, err)
@@ -357,15 +378,19 @@ func testBitLockerPINRequestResubmitReplaces(t *testing.T, ds *Datastore) {
 
 	// Retrying supersedes the failure: one row per host, back to pending, with the error cleared.
 	require.NoError(t, ds.QueueBitLockerPINRequest(ctx, host, "second-pin"))
+	// A late outcome for the superseded submission must not land on the replacement.
+	require.True(t, fleet.IsNotFound(
+		ds.SetBitLockerPINRequestOutcome(ctx, host, firstUUID, fleet.BitLockerPINRequestSet, "")))
 	req, err = ds.GetBitLockerPINRequest(ctx, host.ID)
 	require.NoError(t, err)
 	require.Equal(t, fleet.BitLockerPINRequestPending, req.Status)
 	require.Empty(t, req.Error)
 	require.True(t, pendingFlag(t, ds, host.UUID))
 
-	pin, err := ds.TakeBitLockerPINRequest(ctx, host)
+	pin, secondUUID, err := ds.TakeBitLockerPINRequest(ctx, host)
 	require.NoError(t, err)
 	require.Equal(t, "second-pin", pin)
+	require.NotEqual(t, firstUUID, secondUUID)
 }
 
 func testBitLockerPINRequestDelete(t *testing.T, ds *Datastore) {

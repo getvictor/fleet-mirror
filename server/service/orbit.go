@@ -679,7 +679,7 @@ func (svc *Service) GetOrbitConfig(ctx context.Context) (fleet.OrbitConfig, erro
 
 			// Hand over a startup PIN the end user submitted, if one is waiting and this host still needs it. Both
 			// gates ride on the state row already read above, so a poll with nothing waiting costs no extra query.
-			if err := svc.setBitLockerPINNotification(ctx, &notifs, host, state); err != nil {
+			if err := svc.setBitLockerPINNotification(ctx, &notifs, host, state, pinCapable); err != nil {
 				return fleet.OrbitConfig{}, ctxerr.Wrap(ctx, err, "setting bitlocker pin notification")
 			}
 

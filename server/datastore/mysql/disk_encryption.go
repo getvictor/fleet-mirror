@@ -10,6 +10,7 @@ import (
 	"github.com/fleetdm/fleet/v4/server/contexts/ctxerr"
 	"github.com/fleetdm/fleet/v4/server/fleet"
 	"github.com/go-sql-driver/mysql"
+	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -491,16 +492,18 @@ WHERE host_uuid = ? ORDER BY created_at DESC, id DESC LIMIT 1`, pending, hostUUI
 // request instead of racing it.
 func (ds *Datastore) QueueBitLockerPINRequest(ctx context.Context, host *fleet.Host, encryptedPIN string) error {
 	const stmt = `
-INSERT INTO host_bitlocker_pin_requests (host_id, pin_encrypted, status, client_error, created_at, updated_at)
-VALUES (?, ?, 'pending', '', NOW(6), NOW(6))
+INSERT INTO host_bitlocker_pin_requests (host_id, request_uuid, pin_encrypted, status, client_error, created_at, updated_at)
+VALUES (?, ?, ?, 'pending', '', NOW(6), NOW(6))
 ON DUPLICATE KEY UPDATE
+	request_uuid = VALUES(request_uuid),
 	pin_encrypted = VALUES(pin_encrypted),
 	status = 'pending',
 	client_error = '',
 	created_at = NOW(6),
 	updated_at = NOW(6)`
 	return ds.withTx(ctx, func(tx sqlx.ExtContext) error {
-		if _, err := tx.ExecContext(ctx, stmt, host.ID, encryptedPIN); err != nil {
+		// A fresh id per submission is what lets a late outcome for a superseded PIN be recognized and ignored.
+		if _, err := tx.ExecContext(ctx, stmt, host.ID, uuid.NewString(), encryptedPIN); err != nil {
 			return ctxerr.Wrap(ctx, err, "queue bitlocker pin request")
 		}
 		return setBitLockerPINPendingFlag(ctx, tx, host.UUID, true)
@@ -530,15 +533,19 @@ SELECT status, client_error, created_at FROM host_bitlocker_pin_requests WHERE h
 // so a skewed server cannot hand out a PIN the page has already given up on. Reports notFound when there is nothing
 // collectable, which covers "never submitted", "already delivered", "already finished" and "too old" alike: the caller
 // treats them identically.
-func (ds *Datastore) TakeBitLockerPINRequest(ctx context.Context, host *fleet.Host) (string, error) {
+func (ds *Datastore) TakeBitLockerPINRequest(ctx context.Context, host *fleet.Host) (string, string, error) {
 	var (
 		encryptedPIN string
+		requestUUID  string
 		collected    bool
 	)
 	err := ds.withTx(ctx, func(tx sqlx.ExtContext) error {
-		var pin string
-		err := sqlx.GetContext(ctx, tx, &pin, `
-SELECT pin_encrypted
+		var row struct {
+			PIN         string `db:"pin_encrypted"`
+			RequestUUID string `db:"request_uuid"`
+		}
+		err := sqlx.GetContext(ctx, tx, &row, `
+SELECT pin_encrypted, request_uuid
 FROM host_bitlocker_pin_requests
 WHERE host_id = ?
 	AND status = 'pending'
@@ -562,35 +569,88 @@ UPDATE host_bitlocker_pin_requests SET status = 'delivered', pin_encrypted = NUL
 			return err
 		}
 
-		encryptedPIN, collected = pin, true
+		encryptedPIN, requestUUID, collected = row.PIN, row.RequestUUID, true
 		return nil
 	})
 	switch {
 	case err != nil:
-		return "", err
+		return "", "", err
 	case !collected:
-		return "", ctxerr.Wrap(ctx, notFound("BitLockerPINRequest").WithID(host.ID))
+		return "", "", ctxerr.Wrap(ctx, notFound("BitLockerPINRequest").WithID(host.ID))
 	}
-	return encryptedPIN, nil
+	return encryptedPIN, requestUUID, nil
 }
 
 // SetBitLockerPINRequestOutcome records what the agent did with the PIN it collected. The row is kept on success
 // rather than deleted, so the waiting page has a positive signal to poll for instead of having to read success from a
 // missing row. The ciphertext was already cleared at delivery, so a terminal row holds no secret.
+//
+// The update matches on the request id the agent was handed AND on the row still being delivered, which is what makes
+// an outcome trustworthy. Together those close two holes: a host cannot report a PIN it never collected, and so cannot
+// mark itself as having a startup PIN it does not have; and an outcome for a superseded submission cannot be recorded
+// against the replacement, whether it arrives late or is retried after the user resubmitted. Reports notFound when no
+// matching collected submission is outstanding, and the caller then records nothing.
 func (ds *Datastore) SetBitLockerPINRequestOutcome(
-	ctx context.Context, host *fleet.Host, outcome fleet.BitLockerPINRequestStatus, clientError string,
+	ctx context.Context, host *fleet.Host, requestUUID string, outcome fleet.BitLockerPINRequestStatus, clientError string,
 ) error {
 	const stmt = `
 UPDATE host_bitlocker_pin_requests
 SET status = ?, client_error = ?, pin_encrypted = NULL
-WHERE host_id = ?`
-	return ds.withTx(ctx, func(tx sqlx.ExtContext) error {
-		if _, err := tx.ExecContext(ctx, stmt, outcome, clientError, host.ID); err != nil {
+WHERE host_id = ? AND request_uuid = ? AND status = 'delivered'`
+	var matched bool
+	err := ds.withTx(ctx, func(tx sqlx.ExtContext) error {
+		res, err := tx.ExecContext(ctx, stmt, outcome, clientError, host.ID, requestUUID)
+		if err != nil {
 			return ctxerr.Wrap(ctx, err, "set bitlocker pin request outcome")
 		}
+		affected, err := res.RowsAffected()
+		if err != nil {
+			return ctxerr.Wrap(ctx, err, "rows affected setting bitlocker pin request outcome")
+		}
+		if affected == 0 {
+			return nil
+		}
+		matched = true
 		// Both outcomes are terminal, so there is nothing left for the agent to collect.
 		return setBitLockerPINPendingFlag(ctx, tx, host.UUID, false)
 	})
+	switch {
+	case err != nil:
+		return err
+	case !matched:
+		return ctxerr.Wrap(ctx, notFound("BitLockerPINRequest").WithID(host.ID))
+	}
+	return nil
+}
+
+// CleanupExpiredBitLockerPINRequests retires submissions the agent never collected.
+//
+// The TTL stops an old PIN being handed out, but on its own it would leave the ciphertext and the pending state in
+// place forever: a host that goes offline right after its user submits never calls the collect path that would clear
+// them, and neither does a host whose enrollment row was replaced by a re-enrollment. This runs on the cleanups cron
+// so the secret is discarded and the waiting page is told the submission timed out, rather than spinning on a pending
+// row that will never be delivered.
+func (ds *Datastore) CleanupExpiredBitLockerPINRequests(ctx context.Context) error {
+	const stmt = `
+UPDATE host_bitlocker_pin_requests
+SET status = 'failed', pin_encrypted = NULL, client_error = ?
+WHERE status = 'pending' AND created_at <= DATE_SUB(NOW(6), INTERVAL ? SECOND)`
+	if _, err := ds.writer(ctx).ExecContext(ctx, stmt,
+		fleet.BitLockerPINRequestTimedOutError, int(fleet.BitLockerPINRequestTTL.Seconds())); err != nil {
+		return ctxerr.Wrap(ctx, err, "cleanup expired bitlocker pin requests")
+	}
+
+	// Lower any flag left raised by a submission that just expired. Scoped to enrollments whose host has no collectable
+	// request, so it cannot race a fresh submission on another host.
+	const flagStmt = `
+UPDATE mdm_windows_enrollments e
+LEFT JOIN host_bitlocker_pin_requests r ON r.host_id = (SELECT h.id FROM hosts h WHERE h.uuid = e.host_uuid LIMIT 1)
+SET e.bitlocker_pin_request_pending = 0
+WHERE e.bitlocker_pin_request_pending = 1 AND (r.host_id IS NULL OR r.status != 'pending')`
+	if _, err := ds.writer(ctx).ExecContext(ctx, flagStmt); err != nil {
+		return ctxerr.Wrap(ctx, err, "cleanup stale bitlocker pin pending flags")
+	}
+	return nil
 }
 
 // DeleteBitLockerPINRequest drops a host's PIN submission. Used when the host's fleet no longer requires a PIN, so a

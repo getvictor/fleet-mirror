@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"encoding/json"
 	"testing"
 
 	activity_api "github.com/fleetdm/fleet/v4/server/activity/api"
@@ -26,7 +27,7 @@ func newBitLockerPINTestService(
 	ds := new(mock.Store)
 	cfg := config.TestConfig()
 	cfg.Server.PrivateKey = testBitLockerPINPrivateKey
-	opts := &TestServerOpts{SkipCreateTestUsers: true}
+	opts := &TestServerOpts{SkipCreateTestUsers: true, License: &fleet.LicenseInfo{Tier: fleet.TierPremium}}
 	svc, ctx := newTestServiceWithConfig(t, ds, cfg, nil, nil, opts)
 
 	ds.GetMDMWindowsHostConfigStateFunc = func(ctx context.Context, hostUUID string) (*fleet.MDMWindowsHostConfigState, error) {
@@ -120,24 +121,25 @@ func TestGetBitLockerPINForHost(t *testing.T) {
 
 		encrypted, err := mdm.EncryptAndEncode("654321", testBitLockerPINPrivateKey)
 		require.NoError(t, err)
-		ds.TakeBitLockerPINRequestFunc = func(ctx context.Context, h *fleet.Host) (string, error) {
+		ds.TakeBitLockerPINRequestFunc = func(ctx context.Context, h *fleet.Host) (string, string, error) {
 			require.Equal(t, host.ID, h.ID)
-			return encrypted, nil
+			return encrypted, "req-1", nil
 		}
 
-		pin, err := svc.GetBitLockerPINForHost(ctx)
+		pin, requestUUID, err := svc.GetBitLockerPINForHost(ctx)
 		require.NoError(t, err)
 		require.Equal(t, "654321", pin)
+		require.Equal(t, "req-1", requestUUID)
 	})
 
 	t.Run("passes through nothing-to-collect", func(t *testing.T) {
 		host := windowsPINHost()
 		svc, ds, ctx, _ := newBitLockerPINTestService(t, host)
-		ds.TakeBitLockerPINRequestFunc = func(ctx context.Context, h *fleet.Host) (string, error) {
-			return "", newNotFoundError()
+		ds.TakeBitLockerPINRequestFunc = func(ctx context.Context, h *fleet.Host) (string, string, error) {
+			return "", "", newNotFoundError()
 		}
 
-		_, err := svc.GetBitLockerPINForHost(ctx)
+		_, _, err := svc.GetBitLockerPINForHost(ctx)
 		require.Error(t, err)
 		require.True(t, fleet.IsNotFound(err))
 	})
@@ -159,7 +161,7 @@ func TestSetBitLockerPINOutcome(t *testing.T) {
 		}
 		var outcome fleet.BitLockerPINRequestStatus
 		ds.SetBitLockerPINRequestOutcomeFunc = func(
-			ctx context.Context, h *fleet.Host, o fleet.BitLockerPINRequestStatus, clientError string,
+			ctx context.Context, h *fleet.Host, requestUUID string, o fleet.BitLockerPINRequestStatus, clientError string,
 		) error {
 			outcome = o
 			require.Empty(t, clientError)
@@ -175,7 +177,7 @@ func TestSetBitLockerPINOutcome(t *testing.T) {
 			return nil
 		}
 
-		require.NoError(t, svc.SetBitLockerPINOutcome(ctx, fleet.BitLockerPINRequestSet, ""))
+		require.NoError(t, svc.SetBitLockerPINOutcome(ctx, "req-1", fleet.BitLockerPINRequestSet, ""))
 		require.True(t, pinSet)
 		require.True(t, refetch)
 		require.Equal(t, fleet.BitLockerPINRequestSet, outcome)
@@ -188,14 +190,14 @@ func TestSetBitLockerPINOutcome(t *testing.T) {
 
 		var gotError string
 		ds.SetBitLockerPINRequestOutcomeFunc = func(
-			ctx context.Context, h *fleet.Host, o fleet.BitLockerPINRequestStatus, clientError string,
+			ctx context.Context, h *fleet.Host, requestUUID string, o fleet.BitLockerPINRequestStatus, clientError string,
 		) error {
 			require.Equal(t, fleet.BitLockerPINRequestFailed, o)
 			gotError = clientError
 			return nil
 		}
 
-		require.NoError(t, svc.SetBitLockerPINOutcome(ctx, fleet.BitLockerPINRequestFailed, "  PIN already set  "))
+		require.NoError(t, svc.SetBitLockerPINOutcome(ctx, "req-1", fleet.BitLockerPINRequestFailed, "  PIN already set  "))
 		require.Equal(t, "PIN already set", gotError)
 		require.False(t, ds.SetOrUpdateHostDiskTpmPINFuncInvoked)
 		require.False(t, ds.UpdateHostRefetchRequestedFuncInvoked)
@@ -205,7 +207,7 @@ func TestSetBitLockerPINOutcome(t *testing.T) {
 		host := windowsPINHost()
 		svc, ds, ctx, _ := newBitLockerPINTestService(t, host)
 
-		err := svc.SetBitLockerPINOutcome(ctx, fleet.BitLockerPINRequestFailed, "   ")
+		err := svc.SetBitLockerPINOutcome(ctx, "req-1", fleet.BitLockerPINRequestFailed, "   ")
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "client_error")
 		require.False(t, ds.SetBitLockerPINRequestOutcomeFuncInvoked)
@@ -215,8 +217,43 @@ func TestSetBitLockerPINOutcome(t *testing.T) {
 		host := windowsPINHost()
 		svc, ds, ctx, _ := newBitLockerPINTestService(t, host)
 
-		err := svc.SetBitLockerPINOutcome(ctx, fleet.BitLockerPINRequestPending, "")
+		err := svc.SetBitLockerPINOutcome(ctx, "req-1", fleet.BitLockerPINRequestPending, "")
 		require.Error(t, err)
 		require.False(t, ds.SetBitLockerPINRequestOutcomeFuncInvoked)
 	})
+}
+
+// TestBitLockerPINNeverReachesDebugLogs guards the one place a submitted PIN and the collected PIN pass through
+// structures that host debug logging marshals wholesale. Without redaction the end user's startup PIN is written to
+// the server log in the clear.
+func TestBitLockerPINNeverReachesDebugLogs(t *testing.T) {
+	t.Parallel()
+
+	const pin = "867530"
+
+	for _, tc := range []struct {
+		name  string
+		value any
+	}{
+		{name: "submitted PIN", value: &submitDiskEncryptionPINRequest{Token: "device-token", PIN: pin}},
+		{name: "collected PIN", value: fleet.OrbitGetDiskEncryptionPINResponse{PIN: pin, RequestUUID: "req-1"}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			// The value must opt in, or logJSON would marshal it verbatim.
+			redactor, ok := tc.value.(interface{ RedactedForDebugLog() any })
+			require.True(t, ok, "type must implement RedactedForDebugLog")
+
+			logged, err := json.Marshal(redactor.RedactedForDebugLog())
+			require.NoError(t, err)
+			require.NotContains(t, string(logged), pin)
+			require.Contains(t, string(logged), fleet.MaskedPassword)
+
+			// The wire format still carries the real PIN: redaction is for the log, not the API.
+			onTheWire, err := json.Marshal(tc.value)
+			require.NoError(t, err)
+			require.Contains(t, string(onTheWire), pin)
+		})
+	}
 }

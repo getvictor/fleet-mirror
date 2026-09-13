@@ -1421,12 +1421,15 @@ type Datastore interface {
 	// TakeBitLockerPINRequest returns the encrypted PIN exactly once and clears it, so a replayed or concurrent agent
 	// request cannot collect it twice. Reports notFound when there is nothing collectable, including when the pending
 	// request has expired.
-	TakeBitLockerPINRequest(ctx context.Context, host *Host) (string, error)
+	TakeBitLockerPINRequest(ctx context.Context, host *Host) (encryptedPIN string, requestUUID string, err error)
 	// SetBitLockerPINRequestOutcome records what the agent did with the PIN. The row is kept so the waiting page can
 	// observe the result.
-	SetBitLockerPINRequestOutcome(ctx context.Context, host *Host, outcome BitLockerPINRequestStatus, clientError string) error
+	SetBitLockerPINRequestOutcome(ctx context.Context, host *Host, requestUUID string, outcome BitLockerPINRequestStatus, clientError string) error
 	// DeleteBitLockerPINRequest drops a host's PIN submission, used when its fleet no longer requires a PIN.
 	DeleteBitLockerPINRequest(ctx context.Context, host *Host) error
+	// CleanupExpiredBitLockerPINRequests discards the ciphertext of submissions the agent never collected and marks
+	// them timed out, so an offline or re-enrolled host does not leave a PIN sitting in the database indefinitely.
+	CleanupExpiredBitLockerPINRequests(ctx context.Context) error
 	AssertHasNoEncryptionKeyStored(ctx context.Context, hostID uint) error
 
 	// GetHostCertAssociationsToExpire retrieves host certificate

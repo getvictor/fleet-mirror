@@ -4,9 +4,12 @@ import (
 	"context"
 	"net/http"
 	"strings"
+	"time"
 
+	"github.com/fleetdm/fleet/v4/server/contexts/ctxdb"
 	"github.com/fleetdm/fleet/v4/server/contexts/ctxerr"
 	hostctx "github.com/fleetdm/fleet/v4/server/contexts/host"
+	"github.com/fleetdm/fleet/v4/server/contexts/license"
 	"github.com/fleetdm/fleet/v4/server/fleet"
 	"github.com/fleetdm/fleet/v4/server/mdm"
 )
@@ -23,6 +26,17 @@ import (
 // bitLockerPINClientErrorMaxLength matches the width of host_bitlocker_pin_requests.client_error.
 const bitLockerPINClientErrorMaxLength = 255
 
+// bitLockerPINLicensed reports whether this instance's license covers the BitLocker PIN flow.
+//
+// Only a Premium instance can turn on require_bitlocker_pin in the first place (UpdateMDMDiskEncryption refuses
+// without a Premium license), so in practice a Free host never reaches these paths. The check is still made on every
+// device-facing and agent-facing path so that a queued submission cannot outlive the license that justified it, and so
+// the licensing boundary is stated here rather than inferred from a setting three layers away.
+func bitLockerPINLicensed(ctx context.Context) bool {
+	lic, _ := license.FromContext(ctx)
+	return lic != nil && lic.IsPremium()
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Submit a BitLocker PIN from the My device page
 ////////////////////////////////////////////////////////////////////////////////
@@ -34,6 +48,15 @@ type submitDiskEncryptionPINRequest struct {
 
 func (r *submitDiskEncryptionPINRequest) deviceAuthToken() string {
 	return r.Token
+}
+
+// RedactedForDebugLog keeps the submitted PIN out of the server's debug logs, which marshal whole request objects.
+func (r *submitDiskEncryptionPINRequest) RedactedForDebugLog() any {
+	redacted := *r
+	if redacted.PIN != "" {
+		redacted.PIN = fleet.MaskedPassword
+	}
+	return redacted
 }
 
 type submitDiskEncryptionPINResponse struct {
@@ -62,13 +85,18 @@ func (svc *Service) SubmitBitLockerPIN(ctx context.Context, host *fleet.Host, pi
 	// The device auth token in the URL is the authorization for this endpoint; there is no Fleet user.
 	svc.authz.SkipAuthorization(ctx)
 
+	if !bitLockerPINLicensed(ctx) {
+		return fleet.ErrMissingLicense
+	}
+
 	if err := fleet.ValidateBitLockerPIN(pin); err != nil {
 		return ctxerr.Wrap(ctx, err, "validate bitlocker pin")
 	}
 
 	// Re-check eligibility on submit rather than trusting the page, which may be showing a stale view of a host whose
-	// fleet stopped requiring a PIN, or whose PIN another session already set.
-	needsPIN, fleetdCapable, err := svc.bitLockerPINState(ctx, host)
+	// fleet stopped requiring a PIN, or whose PIN another session already set. Read from the primary: this gates the
+	// write below, and a lagging replica would let a stale "needs a PIN" answer queue another secret.
+	needsPIN, fleetdCapable, err := svc.bitLockerPINState(ctxdb.RequirePrimary(ctx, true), host)
 	if err != nil {
 		return ctxerr.Wrap(ctx, err, "check bitlocker pin eligibility")
 	}
@@ -98,7 +126,8 @@ func (svc *Service) BitLockerPINStateForDevice(
 	// Device-authenticated, same as SubmitBitLockerPIN.
 	svc.authz.SkipAuthorization(ctx)
 
-	if host.FleetPlatform() != "windows" {
+	// Without the license the page must not offer the PIN form, so it falls back to the Manage BitLocker instructions.
+	if !bitLockerPINLicensed(ctx) || host.FleetPlatform() != "windows" {
 		return false, nil, nil
 	}
 
@@ -117,6 +146,15 @@ func (svc *Service) BitLockerPINStateForDevice(
 		req = nil
 	case err != nil:
 		return false, nil, ctxerr.Wrap(ctx, err, "get bitlocker pin request")
+	}
+	// The cleanups cron retires abandoned submissions, but the page should not have to wait for it: a request past its
+	// TTL is already uncollectable, so report it as timed out rather than leaving the modal spinning on "pending".
+	if req != nil && req.Expired(time.Now()) {
+		req = &fleet.HostBitLockerPINRequest{
+			Status:    fleet.BitLockerPINRequestFailed,
+			Error:     fleet.BitLockerPINRequestTimedOutError,
+			CreatedAt: req.CreatedAt,
+		}
 	}
 
 	return state.FleetdBitLockerPINCapable, req, nil
@@ -154,38 +192,51 @@ func (svc *Service) bitLockerPINState(ctx context.Context, host *fleet.Host) (ne
 ////////////////////////////////////////////////////////////////////////////////
 
 func getOrbitDiskEncryptionPINEndpoint(ctx context.Context, request any, svc fleet.Service) (fleet.Errorer, error) {
-	pin, err := svc.GetBitLockerPINForHost(ctx)
+	pin, requestUUID, err := svc.GetBitLockerPINForHost(ctx)
 	if err != nil {
 		return fleet.OrbitGetDiskEncryptionPINResponse{Err: err}, nil
 	}
-	return fleet.OrbitGetDiskEncryptionPINResponse{PIN: pin}, nil
+	return fleet.OrbitGetDiskEncryptionPINResponse{PIN: pin, RequestUUID: requestUUID}, nil
 }
 
-func (svc *Service) GetBitLockerPINForHost(ctx context.Context) (string, error) {
+func (svc *Service) GetBitLockerPINForHost(ctx context.Context) (string, string, error) {
 	// Orbit node key authentication, not a Fleet user.
 	svc.authz.SkipAuthorization(ctx)
 
-	host, ok := hostctx.FromContext(ctx)
-	if !ok {
-		return "", newOsqueryError("internal error: missing host from request context")
+	if !bitLockerPINLicensed(ctx) {
+		return "", "", fleet.ErrMissingLicense
 	}
 
-	encryptedPIN, err := svc.ds.TakeBitLockerPINRequest(ctx, host)
+	host, ok := hostctx.FromContext(ctx)
+	if !ok {
+		return "", "", newOsqueryError("internal error: missing host from request context")
+	}
+
+	// Check this before consuming the request. Collecting is destructive, so discovering a missing key afterwards
+	// would burn the user's submission for nothing.
+	if svc.config.Server.PrivateKey == "" {
+		return "", "", newOsqueryError("internal error: missing server private key")
+	}
+
+	encryptedPIN, requestUUID, err := svc.ds.TakeBitLockerPINRequest(ctx, host)
 	if err != nil {
 		// notFound covers never-submitted, already-collected, already-finished and expired alike. The agent treats
 		// them identically: there is nothing to apply on this poll.
-		return "", ctxerr.Wrap(ctx, err, "take bitlocker pin request")
+		return "", "", ctxerr.Wrap(ctx, err, "take bitlocker pin request")
 	}
 
-	if svc.config.Server.PrivateKey == "" {
-		return "", newOsqueryError("internal error: missing server private key")
-	}
 	pin, err := mdm.DecodeAndDecrypt(encryptedPIN, svc.config.Server.PrivateKey)
 	if err != nil {
-		return "", ctxerr.Wrap(ctx, err, "internal error: could not decrypt BitLocker PIN")
+		// The ciphertext is already gone, so nothing can rescue this submission. Retire it as failed rather than
+		// leaving the page waiting on a delivered request that will never produce an outcome.
+		if outcomeErr := svc.ds.SetBitLockerPINRequestOutcome(ctx, host, requestUUID,
+			fleet.BitLockerPINRequestFailed, "Fleet could not read the submitted PIN. Try again."); outcomeErr != nil {
+			svc.logger.ErrorContext(ctx, "retiring undecryptable bitlocker pin request", "err", outcomeErr)
+		}
+		return "", "", ctxerr.Wrap(ctx, err, "internal error: could not decrypt BitLocker PIN")
 	}
 
-	return pin, nil
+	return pin, requestUUID, nil
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -194,17 +245,21 @@ func (svc *Service) GetBitLockerPINForHost(ctx context.Context) (string, error) 
 
 func postOrbitDiskEncryptionPINEndpoint(ctx context.Context, request any, svc fleet.Service) (fleet.Errorer, error) {
 	req := request.(*fleet.OrbitPostDiskEncryptionPINRequest)
-	if err := svc.SetBitLockerPINOutcome(ctx, req.Outcome, req.ClientError); err != nil {
+	if err := svc.SetBitLockerPINOutcome(ctx, req.RequestUUID, req.Outcome, req.ClientError); err != nil {
 		return fleet.OrbitPostDiskEncryptionPINResponse{Err: err}, nil
 	}
 	return fleet.OrbitPostDiskEncryptionPINResponse{}, nil
 }
 
 func (svc *Service) SetBitLockerPINOutcome(
-	ctx context.Context, outcome fleet.BitLockerPINRequestStatus, clientError string,
+	ctx context.Context, requestUUID string, outcome fleet.BitLockerPINRequestStatus, clientError string,
 ) error {
 	// Orbit node key authentication, not a Fleet user.
 	svc.authz.SkipAuthorization(ctx)
+
+	if !bitLockerPINLicensed(ctx) {
+		return fleet.ErrMissingLicense
+	}
 
 	host, ok := hostctx.FromContext(ctx)
 	if !ok {
@@ -219,13 +274,16 @@ func (svc *Service) SetBitLockerPINOutcome(
 
 	switch outcome {
 	case fleet.BitLockerPINRequestSet:
+		// Record the outcome first, and only go on if it actually landed on a submission this host collected. That is
+		// what stops a host claiming a PIN it was never given: without it, any Windows MDM host could post a success
+		// and have Fleet mark it as having a startup PIN it does not have.
+		if err := svc.ds.SetBitLockerPINRequestOutcome(ctx, host, requestUUID, outcome, ""); err != nil {
+			return ctxerr.Wrap(ctx, err, "set bitlocker pin request outcome")
+		}
 		// The agent's report is a claim, not an observation of record: tpm_pin_set_verify owns the protector list. Set
 		// the flag so the end user's banner clears now, and ask for a refetch so osquery confirms it within seconds.
 		if err := svc.ds.SetOrUpdateHostDiskTpmPIN(ctx, host.ID, true); err != nil {
 			return ctxerr.Wrap(ctx, err, "recording bitlocker pin set")
-		}
-		if err := svc.ds.SetBitLockerPINRequestOutcome(ctx, host, outcome, ""); err != nil {
-			return ctxerr.Wrap(ctx, err, "set bitlocker pin request outcome")
 		}
 		if err := svc.ds.UpdateHostRefetchRequested(ctx, host.ID, true); err != nil {
 			return ctxerr.Wrap(ctx, err, "requesting refetch after setting bitlocker pin")
@@ -245,7 +303,7 @@ func (svc *Service) SetBitLockerPINOutcome(
 		if clientError == "" {
 			return fleet.NewInvalidArgumentError("client_error", "cannot be empty when outcome is failed")
 		}
-		if err := svc.ds.SetBitLockerPINRequestOutcome(ctx, host, outcome, clientError); err != nil {
+		if err := svc.ds.SetBitLockerPINRequestOutcome(ctx, host, requestUUID, outcome, clientError); err != nil {
 			return ctxerr.Wrap(ctx, err, "set bitlocker pin request outcome")
 		}
 
@@ -263,13 +321,18 @@ func (svc *Service) SetBitLockerPINOutcome(
 // needs it, so that turning the requirement off, or another session setting a PIN first, quietly drops the submission
 // rather than applying it late.
 func (svc *Service) setBitLockerPINNotification(
-	ctx context.Context, notifs *fleet.OrbitConfigNotifications, host *fleet.Host, state *fleet.MDMWindowsHostConfigState,
+	ctx context.Context, notifs *fleet.OrbitConfigNotifications, host *fleet.Host,
+	state *fleet.MDMWindowsHostConfigState, fleetdCapable bool,
 ) error {
-	if state == nil || !state.FleetdBitLockerPINCapable || !state.BitLockerPINRequestPending {
+	// fleetdCapable comes from this request's capability header rather than state, which was read before the header was
+	// persisted: on the poll where an agent first advertises the capability the stored value is still false, and gating
+	// on it would swallow the notification for that poll.
+	if state == nil || !fleetdCapable || !state.BitLockerPINRequestPending || !bitLockerPINLicensed(ctx) {
 		return nil
 	}
 
-	de, err := svc.ds.GetMDMWindowsBitLockerStatus(ctx, host)
+	// Primary-routed: a stale replica read here would delete a submission the user just made and is waiting on.
+	de, err := svc.ds.GetMDMWindowsBitLockerStatus(ctxdb.RequirePrimary(ctx, true), host)
 	if err != nil {
 		return ctxerr.Wrap(ctx, err, "get bitlocker status for pin notification")
 	}
