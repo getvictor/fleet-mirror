@@ -513,12 +513,14 @@ const nanoOrphanCommandMinAge = 24 * time.Hour
 // on a budget hit it stays before the current page so the rows the LIMIT
 // left behind are retried next run.
 func (ds *Datastore) mopOrphanedNanoCommands(ctx context.Context, state *fleet.MDMAppleCommandCleanupState, budget int) (int, bool, error) {
-	// rides idx_nano_commands_created_at plus the appended primary key
+	// rides idx_nano_commands_created_at plus the appended primary key; the
+	// keyset is nested ORs rather than a row constructor so MySQL seeks to
+	// the cursor instead of filtering from the start of the range
 	const scanStmt = `
 		SELECT command_uuid, created_at
 		FROM nano_commands
 		WHERE created_at < NOW(6) - INTERVAL ? SECOND
-		  AND (created_at, command_uuid) > (?, ?)
+		  AND (created_at > ? OR (created_at = ? AND command_uuid > ?))
 		ORDER BY created_at, command_uuid
 		LIMIT ?`
 
@@ -532,7 +534,7 @@ func (ds *Datastore) mopOrphanedNanoCommands(ctx context.Context, state *fleet.M
 	for range nanoCleanupMaxScansPerRun {
 		var page []orphanCandidate
 		if err := sqlx.SelectContext(ctx, ds.writer(ctx), &page, scanStmt,
-			int(nanoOrphanCommandMinAge.Seconds()), cursor.CreatedAt, cursor.CommandUUID, nanoCleanupScanBatchSize); err != nil {
+			int(nanoOrphanCommandMinAge.Seconds()), cursor.CreatedAt, cursor.CreatedAt, cursor.CommandUUID, nanoCleanupScanBatchSize); err != nil {
 			return deleted, false, ctxerr.Wrap(ctx, err, "select nano commands for orphan mop")
 		}
 		if len(page) == 0 {
