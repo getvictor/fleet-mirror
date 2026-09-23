@@ -2,6 +2,7 @@ package mysql
 
 import (
 	"context"
+	"fmt"
 	"slices"
 	"strings"
 	"time"
@@ -25,31 +26,34 @@ var nanoCleanupMaxScansPerRun = 50
 // the pair is rolled back together.
 var nanoCleanupAfterQueueDeleteHook func() error
 
-// nanoCommandUnreferencedFilter is true for a nano_commands row c that no
-// feature still reads state from. Every probe is an indexed point lookup, so
-// the same full set is applied to every candidate rather than tailored per
-// request type.
-const nanoCommandUnreferencedFilter = `
-	NOT EXISTS (SELECT 1 FROM host_mdm_actions hma WHERE hma.lock_ref = c.command_uuid)
-	AND NOT EXISTS (SELECT 1 FROM host_mdm_actions hma WHERE hma.wipe_ref = c.command_uuid)
-	AND NOT EXISTS (SELECT 1 FROM host_mdm_actions hma WHERE hma.unlock_ref = c.command_uuid)
-	AND NOT EXISTS (SELECT 1 FROM host_mdm_apple_profiles hmap WHERE hmap.command_uuid = c.command_uuid)
-	AND NOT EXISTS (SELECT 1 FROM host_mdm_apple_bootstrap_packages hmabp WHERE hmabp.command_uuid = c.command_uuid)
-	AND NOT EXISTS (SELECT 1 FROM nano_cert_auth_associations ncaa WHERE ncaa.renew_command_uuid = c.command_uuid)
+// nanoCommandReferenceProbes is true when no feature still reads state from
+// the nano_commands row whose command_uuid is %[1]s.command_uuid. Every probe
+// is an indexed point lookup, so the same full set is applied to every
+// candidate rather than tailored per request type. Formatted once for the
+// pair guard (alias c) and once for the orphan walk (the DELETE target).
+const nanoCommandReferenceProbes = `
+	NOT EXISTS (SELECT 1 FROM host_mdm_actions hma WHERE hma.lock_ref = %[1]s.command_uuid)
+	AND NOT EXISTS (SELECT 1 FROM host_mdm_actions hma WHERE hma.wipe_ref = %[1]s.command_uuid)
+	AND NOT EXISTS (SELECT 1 FROM host_mdm_actions hma WHERE hma.unlock_ref = %[1]s.command_uuid)
+	AND NOT EXISTS (SELECT 1 FROM host_mdm_apple_profiles hmap WHERE hmap.command_uuid = %[1]s.command_uuid)
+	AND NOT EXISTS (SELECT 1 FROM host_mdm_apple_bootstrap_packages hmabp WHERE hmabp.command_uuid = %[1]s.command_uuid)
+	AND NOT EXISTS (SELECT 1 FROM nano_cert_auth_associations ncaa WHERE ncaa.renew_command_uuid = %[1]s.command_uuid)
 	AND NOT EXISTS (SELECT 1 FROM host_vpp_software_installs hvsi
-		WHERE (hvsi.command_uuid = c.command_uuid OR hvsi.verification_command_uuid = c.command_uuid)
+		WHERE (hvsi.command_uuid = %[1]s.command_uuid OR hvsi.verification_command_uuid = %[1]s.command_uuid)
 		AND hvsi.verification_at IS NULL AND hvsi.verification_failed_at IS NULL AND hvsi.canceled = 0)
 	AND NOT EXISTS (SELECT 1 FROM host_in_house_software_installs hihsi
-		WHERE (hihsi.command_uuid = c.command_uuid OR hihsi.verification_command_uuid = c.command_uuid)
+		WHERE (hihsi.command_uuid = %[1]s.command_uuid OR hihsi.verification_command_uuid = %[1]s.command_uuid)
 		AND hihsi.verification_at IS NULL AND hihsi.verification_failed_at IS NULL AND hihsi.canceled = 0)
-	AND NOT EXISTS (SELECT 1 FROM host_recovery_key_passwords rkp WHERE rkp.pending_set_command_uuid = c.command_uuid)
-	AND NOT EXISTS (SELECT 1 FROM host_recovery_key_passwords rkp WHERE rkp.pending_verify_command_uuid = c.command_uuid)
-	AND NOT EXISTS (SELECT 1 FROM host_recovery_key_passwords rkp WHERE rkp.set_command_uuid = c.command_uuid)
-	AND NOT EXISTS (SELECT 1 FROM host_recovery_key_passwords rkp WHERE rkp.verify_command_uuid = c.command_uuid)
-	AND NOT EXISTS (SELECT 1 FROM host_managed_local_account_passwords hmlap WHERE hmlap.command_uuid = c.command_uuid)
-	AND NOT EXISTS (SELECT 1 FROM host_managed_local_account_passwords hmlap WHERE hmlap.pending_command_uuid = c.command_uuid)
+	AND NOT EXISTS (SELECT 1 FROM host_recovery_key_passwords rkp WHERE rkp.pending_set_command_uuid = %[1]s.command_uuid)
+	AND NOT EXISTS (SELECT 1 FROM host_recovery_key_passwords rkp WHERE rkp.pending_verify_command_uuid = %[1]s.command_uuid)
+	AND NOT EXISTS (SELECT 1 FROM host_recovery_key_passwords rkp WHERE rkp.set_command_uuid = %[1]s.command_uuid)
+	AND NOT EXISTS (SELECT 1 FROM host_recovery_key_passwords rkp WHERE rkp.verify_command_uuid = %[1]s.command_uuid)
+	AND NOT EXISTS (SELECT 1 FROM host_managed_local_account_passwords hmlap WHERE hmlap.command_uuid = %[1]s.command_uuid)
+	AND NOT EXISTS (SELECT 1 FROM host_managed_local_account_passwords hmlap WHERE hmlap.pending_command_uuid = %[1]s.command_uuid)
 	AND NOT EXISTS (SELECT 1 FROM setup_experience_status_results sesr
-		WHERE sesr.nano_command_uuid = c.command_uuid AND sesr.status IN ('pending', 'running'))`
+		WHERE sesr.nano_command_uuid = %[1]s.command_uuid AND sesr.status IN ('pending', 'running'))`
+
+var nanoCommandUnreferencedFilter = fmt.Sprintf(nanoCommandReferenceProbes, "c")
 
 // nanoQueuePair identifies one nano_enrollment_queue row and its paired
 // nano_command_results row.
@@ -122,12 +126,22 @@ func (ds *Datastore) CleanupNanoCommands(ctx context.Context, opts fleet.MDMAppl
 		touched = append(touched, cmdUUIDs...)
 	}
 
-	if opts.MaxCmdDeletions > 0 && len(touched) > 0 {
-		deleted, exhausted, err := ds.mopNanoCommands(ctx, uniqueStrings(touched), opts.MaxCmdDeletions)
+	cmdBudget := opts.MaxCmdDeletions
+	if cmdBudget > 0 && len(touched) > 0 {
+		deleted, exhausted, err := ds.mopNanoCommands(ctx, uniqueStrings(touched), cmdBudget, nanoCommandMopFilter)
 		if err != nil {
 			return state, stats, err
 		}
 		stats.CommandsDeleted = deleted
+		stats.CmdBudgetExhausted = exhausted
+		cmdBudget -= deleted
+	}
+	if cmdBudget > 0 && !stats.CmdBudgetExhausted {
+		deleted, exhausted, err := ds.mopOrphanedNanoCommands(ctx, state, cmdBudget)
+		if err != nil {
+			return state, stats, err
+		}
+		stats.OrphanCommandsDeleted = deleted
 		stats.CmdBudgetExhausted = exhausted
 	}
 	return state, stats, nil
@@ -438,21 +452,30 @@ func (ds *Datastore) deleteNanoQueuePairs(ctx context.Context, pairs []nanoQueue
 	return int(deleted), nil
 }
 
-// mopNanoCommands deletes, among cmdUUIDs, the nano_commands rows that no queue
-// row, result row, bootstrap package or certificate renewal still references,
-// up to budget. Those four are the tables a delete would cascade into or
-// FK-fail on, so they are rechecked inside the DELETE itself; the soft
-// references were checked by the pair guard moments earlier, and a finished
-// command does not acquire new ones.
-func (ds *Datastore) mopNanoCommands(ctx context.Context, cmdUUIDs []string, budget int) (int, bool, error) {
-	const stmt = `
-		DELETE FROM nano_commands
-		WHERE command_uuid IN (?)
-		  AND NOT EXISTS (SELECT 1 FROM nano_enrollment_queue neq WHERE neq.command_uuid = nano_commands.command_uuid)
+// nanoCommandMopFilter is true for a nano_commands row that no queue row,
+// result row, bootstrap package or certificate renewal still references: the
+// four places that either cascade on delete or hold a real FK to it.
+const nanoCommandMopFilter = `
+		  NOT EXISTS (SELECT 1 FROM nano_enrollment_queue neq WHERE neq.command_uuid = nano_commands.command_uuid)
 		  AND NOT EXISTS (SELECT 1 FROM nano_command_results ncr WHERE ncr.command_uuid = nano_commands.command_uuid)
 		  AND NOT EXISTS (SELECT 1 FROM host_mdm_apple_bootstrap_packages hmabp WHERE hmabp.command_uuid = nano_commands.command_uuid)
-		  AND NOT EXISTS (SELECT 1 FROM nano_cert_auth_associations ncaa WHERE ncaa.renew_command_uuid = nano_commands.command_uuid)
-		LIMIT ?`
+		  AND NOT EXISTS (SELECT 1 FROM nano_cert_auth_associations ncaa WHERE ncaa.renew_command_uuid = nano_commands.command_uuid)`
+
+// nanoCommandDefensiveMopFilter is the orphan walk's test: the cascade/FK set
+// plus every soft reference the pair guard checks, plus device renames. The
+// walk sees commands whose pairs were removed by paths that never ran the
+// pair guard, so it must not be weaker than that guard.
+var nanoCommandDefensiveMopFilter = nanoCommandMopFilter + ` AND ` +
+	fmt.Sprintf(nanoCommandReferenceProbes, "nano_commands") + `
+		  AND NOT EXISTS (SELECT 1 FROM host_mdm_apple_device_names hmadn WHERE hmadn.command_uuid = nano_commands.command_uuid)`
+
+// mopNanoCommands deletes, among cmdUUIDs, the nano_commands rows that pass
+// filter, up to budget. The checks are part of the DELETE itself so the
+// tables a delete would cascade into or FK-fail on are rechecked atomically;
+// the soft references were checked by the pair guard moments earlier, and a
+// finished command does not acquire new ones.
+func (ds *Datastore) mopNanoCommands(ctx context.Context, cmdUUIDs []string, budget int, filter string) (int, bool, error) {
+	stmt := `DELETE FROM nano_commands WHERE command_uuid IN (?) AND ` + filter + ` LIMIT ?`
 
 	var deleted int
 	for start := 0; start < len(cmdUUIDs); start += nanoCleanupScanBatchSize {
@@ -477,6 +500,69 @@ func (ds *Datastore) mopNanoCommands(ctx context.Context, cmdUUIDs []string, bud
 		}
 	}
 	return deleted, false, nil
+}
+
+// nanoOrphanCommandMinAge keeps the background walk off commands that may
+// still be mid-enqueue: nano writes the command row before its queue rows.
+const nanoOrphanCommandMinAge = 24 * time.Hour
+
+// mopOrphanedNanoCommands walks nano_commands oldest-first from state.Orphan
+// and deletes the rows nothing references any more, up to budget. It catches
+// commands whose pairs were removed without the targeted mop seeing them. The
+// cursor is stored on a full page and reset on a short one so the walk laps;
+// on a budget hit it stays before the current page so the rows the LIMIT
+// left behind are retried next run.
+func (ds *Datastore) mopOrphanedNanoCommands(ctx context.Context, state *fleet.MDMAppleCommandCleanupState, budget int) (int, bool, error) {
+	// rides idx_nano_commands_created_at plus the appended primary key
+	const scanStmt = `
+		SELECT command_uuid, created_at
+		FROM nano_commands
+		WHERE created_at < NOW(6) - INTERVAL ? SECOND
+		  AND (created_at, command_uuid) > (?, ?)
+		ORDER BY created_at, command_uuid
+		LIMIT ?`
+
+	type orphanCandidate struct {
+		CommandUUID string    `db:"command_uuid"`
+		CreatedAt   time.Time `db:"created_at"`
+	}
+
+	var deleted int
+	cursor := state.Orphan
+	for range nanoCleanupMaxScansPerRun {
+		var page []orphanCandidate
+		if err := sqlx.SelectContext(ctx, ds.writer(ctx), &page, scanStmt,
+			int(nanoOrphanCommandMinAge.Seconds()), cursor.CreatedAt, cursor.CommandUUID, nanoCleanupScanBatchSize); err != nil {
+			return deleted, false, ctxerr.Wrap(ctx, err, "select nano commands for orphan mop")
+		}
+		if len(page) == 0 {
+			state.Orphan = fleet.MDMAppleCommandOrphanCursor{}
+			return deleted, false, nil
+		}
+		pageFull := len(page) == nanoCleanupScanBatchSize
+		cmdUUIDs := make([]string, 0, len(page))
+		for _, c := range page {
+			cmdUUIDs = append(cmdUUIDs, c.CommandUUID)
+		}
+		n, hit, err := ds.mopNanoCommands(ctx, cmdUUIDs, budget-deleted, nanoCommandDefensiveMopFilter)
+		deleted += n // earlier chunks of the page may have committed before an error
+		if err != nil {
+			return deleted, false, err
+		}
+		if hit {
+			state.Orphan = cursor
+			return deleted, true, nil
+		}
+		last := page[len(page)-1]
+		cursor = fleet.MDMAppleCommandOrphanCursor{CreatedAt: last.CreatedAt, CommandUUID: last.CommandUUID}
+		if !pageFull {
+			state.Orphan = fleet.MDMAppleCommandOrphanCursor{}
+			return deleted, false, nil
+		}
+		state.Orphan = cursor
+	}
+	// scan cap reached with a full last page: more rows remain
+	return deleted, true, nil
 }
 
 func uniqueStrings(in []string) []string {
