@@ -11,7 +11,6 @@ import ActionsDropdown from "components/ActionsDropdown";
 import Button from "components/buttons/Button";
 import CustomLink from "components/CustomLink";
 import DataSet from "components/DataSet";
-import GitOpsModeTooltipWrapper from "components/GitOpsModeTooltipWrapper";
 import LastUpdatedHostCount from "components/LastUpdatedHostCount";
 import TooltipTruncatedText from "components/TooltipTruncatedText";
 import TooltipWrapper from "components/TooltipWrapper";
@@ -60,7 +59,6 @@ export const buildActionOptions = ({
   canManageVersions,
   canConfigureAutoUpdate,
 }: BuildActionOptionsArgs): IDropdownOption[] => {
-  let disableEditAppearanceTooltipContent: TooltipContent | undefined;
   let disabledEditConfigurationTooltipContent: TooltipContent | undefined;
 
   // Disable state is keyed off `gitOpsModeEnabled` directly (see each option
@@ -71,16 +69,16 @@ export const buildActionOptions = ({
     const gitOpsModeTooltipContent =
       repoURL && getGitOpsModeTipContent(repoURL);
 
-    disableEditAppearanceTooltipContent = gitOpsModeTooltipContent;
     disabledEditConfigurationTooltipContent = gitOpsModeTooltipContent;
   }
 
+  // Edit appearance stays clickable in gitops mode so admins can open the
+  // modal to view the applied icon and display name; the modal disables its
+  // own fields and Save button.
   const options: IDropdownOption[] = [
     {
       label: "Edit appearance",
       value: ACTION_EDIT_APPEARANCE,
-      disabled: gitOpsModeEnabled,
-      tooltipContent: disableEditAppearanceTooltipContent,
     },
   ];
 
@@ -322,24 +320,18 @@ const SoftwareDetailsSummary = ({
           {canManageSoftware && (
             <div className={`${baseClass}__actions-wrapper`}>
               {useSingleEditAppearanceButton ? (
-                // GitOps mode wraps the button so hover surfaces the
-                // "Managed by GitOps" tooltip + repo link, mirroring how the
-                // Actions dropdown's items are disabled with the same tip.
-                <GitOpsModeTooltipWrapper
-                  entityType="software"
-                  position="top"
-                  renderChildren={(disableChildren) => (
-                    <Button
-                      variant="secondary"
-                      size="small"
-                      onClick={onClickEditAppearance}
-                      disabled={disableChildren || !onClickEditAppearance}
-                      icon="pencil"
-                    >
-                      Edit
-                    </Button>
-                  )}
-                />
+                // Clickable in gitops mode so admins can open the modal to
+                // view the applied icon and display name; the modal disables
+                // its own fields and Save button.
+                <Button
+                  variant="secondary"
+                  size="small"
+                  onClick={onClickEditAppearance}
+                  disabled={!onClickEditAppearance}
+                  icon="pencil"
+                >
+                  Edit
+                </Button>
               ) : (
                 <ActionsDropdown
                   className={`${baseClass}__actions-dropdown`}

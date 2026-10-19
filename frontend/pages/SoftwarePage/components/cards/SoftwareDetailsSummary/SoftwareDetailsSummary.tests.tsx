@@ -33,8 +33,6 @@ describe("buildActionOptions", () => {
       {
         label: "Edit appearance",
         value: ACTION_EDIT_APPEARANCE,
-        disabled: false,
-        tooltipContent: undefined,
       },
     ]);
   });
@@ -87,7 +85,7 @@ describe("buildActionOptions", () => {
     });
   });
 
-  it("applies gitops tooltip to Edit appearance and Edit configuration but leaves Edit software clickable (modal disables fields and Save itself)", () => {
+  it("applies gitops tooltip only to Edit configuration; Edit appearance and Edit software stay clickable (their modals disable fields and Save themselves)", () => {
     const result = buildActionOptions({
       gitOpsModeEnabled: true,
       repoURL: "https://repo.git",
@@ -108,9 +106,9 @@ describe("buildActionOptions", () => {
       (opt) => opt.value === ACTION_EDIT_SOFTWARE
     );
 
-    expect(editAppearance).toMatchObject({
-      disabled: true,
-      tooltipContent: expect.anything(),
+    expect(editAppearance).toEqual({
+      label: "Edit appearance",
+      value: ACTION_EDIT_APPEARANCE,
     });
 
     expect(editConfig).toMatchObject({
