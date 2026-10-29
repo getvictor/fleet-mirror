@@ -11,6 +11,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/fleetdm/fleet/v4/pkg/fleethttp"
 	"github.com/fleetdm/fleet/v4/server/contexts/ctxerr"
 	"github.com/fleetdm/fleet/v4/server/fleet"
 	"golang.org/x/oauth2/google"
@@ -43,8 +44,9 @@ const (
 )
 
 // tokenURIKey is the key holding the OAuth2 token endpoint in a service-account
-// JSON. Real Google service-account JSON always includes it; we honor it so a
-// QA/load-test fake can route the token exchange to a stub endpoint.
+// JSON. Real Google service-account JSON always includes it. It is only honored
+// under endpointOverrideEnv, so a QA/load-test fake can route the token exchange
+// to a stub; otherwise the exchange always goes to Google's endpoint.
 const tokenURIKey = "token_uri"
 
 // endpointOverrideEnv, when set, redirects the Admin SDK Directory API base URL
@@ -398,10 +400,14 @@ type googleAPI struct {
 }
 
 func newGoogleAPI(ctx context.Context, intg *fleet.GoogleWorkspaceIntegration, logger *slog.Logger, limits Limits) (*googleAPI, error) {
-	// Honor token_uri from the service-account JSON (real GSA JSON always carries
-	// it). Falls back to Google's endpoint when absent.
+	// The service-account JSON is operator-supplied, so its token_uri is not a
+	// trusted destination: only the QA/load-test seam may redirect the exchange.
+	endpoint := os.Getenv(endpointOverrideEnv)
 	tokenURL := google.JWTTokenURL
-	if v := intg.ApiKey.Values[tokenURIKey]; v != "" {
+	if v := intg.ApiKey.Values[tokenURIKey]; v != "" && v != google.JWTTokenURL {
+		if endpoint == "" {
+			return nil, ctxerr.Errorf(ctx, "google workspace service account token_uri %q is not supported; only %s is allowed", v, google.JWTTokenURL)
+		}
 		tokenURL = v
 	}
 
@@ -413,8 +419,8 @@ func newGoogleAPI(ctx context.Context, intg *fleet.GoogleWorkspaceIntegration, l
 		Subject:    intg.ImpersonatedUserEmail,
 	}
 
-	opts := []option.ClientOption{option.WithHTTPClient(conf.Client(ctx))}
-	if endpoint := os.Getenv(endpointOverrideEnv); endpoint != "" {
+	opts := []option.ClientOption{option.WithHTTPClient(conf.Client(fleethttp.WithOAuth2Client(ctx)))}
+	if endpoint != "" {
 		// QA/load-test only: redirect the Directory API to a fake server.
 		if logger != nil {
 			logger.WarnContext(ctx, "using Google Workspace Directory API endpoint override; do not use in production",
