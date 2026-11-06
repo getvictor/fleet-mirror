@@ -2468,6 +2468,11 @@ type ActivityTypeSetHostGoogleDeviceID struct {
 	HostID          uint   `json:"host_id"`
 	HostDisplayName string `json:"host_display_name"`
 	GoogleDeviceID  string `json:"google_device_id"`
+	// GoogleEmail is the Google account that signed in. A sign-in is the only record of who
+	// bound the host; a Fleet user setting the ID names no account.
+	GoogleEmail string `json:"google_email,omitempty"`
+	// FromSignIn is set when the end user's Google sign-in bound the host, not a Fleet user.
+	FromSignIn bool `json:"-"`
 }
 
 func (a ActivityTypeSetHostGoogleDeviceID) ActivityName() string {
@@ -2476,6 +2481,10 @@ func (a ActivityTypeSetHostGoogleDeviceID) ActivityName() string {
 
 func (a ActivityTypeSetHostGoogleDeviceID) HostIDs() []uint {
 	return []uint{a.HostID}
+}
+
+func (a ActivityTypeSetHostGoogleDeviceID) WasFromAutomation() bool {
+	return a.FromSignIn
 }
 
 type ActivityTypeDeletedHostGoogleDeviceID struct {
