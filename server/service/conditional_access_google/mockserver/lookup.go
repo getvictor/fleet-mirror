@@ -59,9 +59,7 @@ func (s *Server) lookupIOS(ctx context.Context, p *pendingSignIn, code string) (
 	if s.cfg.OAuth == nil {
 		return s.fakeLookup(p.customerID, p.hostUUID, code)
 	}
-	return s.cfg.OAuth.lookup(ctx, s.cfg.PublicURL+callbackPath, code, func(c *cloudidentity.DevicesDeviceUsersLookupCall) {
-		c.Partner(s.cfg.OAuth.PartnerID).IosDeviceId(p.hostUUID)
-	})
+	return s.cfg.OAuth.lookup(ctx, s.cfg.PublicURL+callbackPath, code, p.hostUUID)
 }
 
 var errRefused = errors.New("invalid_grant: simulated by the mock")
@@ -137,11 +135,9 @@ func fakeUserID(deviceResourceID, email string) string {
 	return fakeID("user", deviceResourceID+"/"+email)
 }
 
-// lookup exchanges the code with real Google and, when configure is set, runs the
-// DeviceUsers lookup for the signed-in user.
-func (o *OAuthConfig) lookup(
-	ctx context.Context, redirectURL, code string, configure func(*cloudidentity.DevicesDeviceUsersLookupCall),
-) (*lookup, error) {
+// lookup exchanges the code with real Google and runs the DeviceUsers lookup of the
+// signed-in user for the iOS host.
+func (o *OAuthConfig) lookup(ctx context.Context, redirectURL, code, hostUUID string) (*lookup, error) {
 	if code == "" {
 		return nil, errors.New("missing code")
 	}
@@ -152,10 +148,6 @@ func (o *OAuthConfig) lookup(
 		return nil, fmt.Errorf("exchange the code: %w", err)
 	}
 	out := &lookup{Email: idTokenEmail(tok)}
-	if configure == nil {
-		return out, nil
-	}
-
 	opts := []option.ClientOption{option.WithHTTPClient(oauth2.NewClient(ctx, oauth2.StaticTokenSource(tok)))}
 	if o.APIEndpoint != "" {
 		opts = append(opts, option.WithEndpoint(o.APIEndpoint))
@@ -164,8 +156,7 @@ func (o *OAuthConfig) lookup(
 	if err != nil {
 		return nil, fmt.Errorf("create cloud identity service: %w", err)
 	}
-	call := svc.Devices.DeviceUsers.Lookup("devices/-/deviceUsers").UserId("me")
-	configure(call)
+	call := svc.Devices.DeviceUsers.Lookup("devices/-/deviceUsers").UserId("me").Partner(o.PartnerID).IosDeviceId(hostUUID)
 	if err := call.Pages(ctx, func(resp *cloudidentity.GoogleAppsCloudidentityDevicesV1LookupSelfDeviceUsersResponse) error {
 		out.Names = append(out.Names, resp.Names...)
 		if resp.Customer != "" {
