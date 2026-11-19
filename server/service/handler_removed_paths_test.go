@@ -122,6 +122,9 @@ func TestRemovedPathsThroughHandler(t *testing.T) {
 		{"/api/latest/fleet/packs/schedule/7", "/packs/schedule/{id}"},
 		{"/api/v1/fleet/packs/id/7", "/packs/id/{id}"},
 		{"/api/v1/fleet/packs/my-pack", "/packs/{id}"},
+		{"/api/v1/fleet/queries/run", "/queries/run"}, // a literal next to {id}
+		{"/api/latest/fleet/queries/delete", "/queries/delete"},
+		{"/api/v1/fleet/queries/my-report", "/queries/{id}"},
 		{"/api/mdm/apple/installer", "/api/mdm/apple/installer"}, // outside the Fleet API
 	} {
 		for _, method := range []string{http.MethodGet, http.MethodPost} {
