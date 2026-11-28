@@ -1,4 +1,21 @@
 # PowerShell script to log off all users and block all logons
+#
+# Record of the host's state before the lock: HKLM:\SOFTWARE\Fleet\WindowsLock
+#   Version           (DWORD)       Layout of the record. Currently 2. Version 1 was the
+#                                   original lock, which kept no record.
+#   DenyInteractive   (String)      "Deny log on locally" value before the lock.
+#   DenyRemote        (String)      "Deny log on through Remote Desktop Services" value before the lock.
+#   SignInOptions     (String)      AllowSignInOptions value before the lock. Empty if it didn't exist.
+#   DisabledAccounts  (MultiString) SIDs of the local accounts the lock disabled.
+#
+# windows_lock.ps1 writes the record and windows_unlock.ps1 reads it. The unlock
+# that runs is the one in the Fleet server at that time, so a host locked today
+# can be unlocked by a much newer script. Keep the record readable across versions:
+#   - Never change what an existing field means. Add a new field instead.
+#   - Treat a missing field as "not changed" and leave that setting alone.
+#   - Keep unlock's fallback for hosts locked before this record existed.
+#   - Bump Version for a change an older unlock could misread. Unlock refuses
+#     a record with a newer Version than it knows, and keeps the record.
 
 # Log off all users
 $loggedOffUsers = @{}
@@ -132,6 +149,7 @@ try {
     # Merge with any earlier record so locking twice doesn't forget accounts.
     $sids = @(@($saved.DisabledAccounts) + ($accountsToDisable | ForEach-Object { $_.SID.Value }) | Where-Object { $_ } | Select-Object -Unique)
     New-ItemProperty -Path $stateKey -Name DisabledAccounts -Value $sids -PropertyType MultiString -Force -ErrorAction Stop | Out-Null
+    New-ItemProperty -Path $stateKey -Name Version -Value 2 -PropertyType DWORD -Force -ErrorAction Stop | Out-Null
 
     $rightsChanged = $true
     Set-DenyLogonRights -Values @{ SeDenyInteractiveLogonRight = $denied; SeDenyRemoteInteractiveLogonRight = $denied }

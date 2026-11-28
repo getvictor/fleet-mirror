@@ -1,4 +1,21 @@
 # PowerShell script to undo windows_lock.ps1 and allow logons again
+#
+# Record of the host's state before the lock: HKLM:\SOFTWARE\Fleet\WindowsLock
+#   Version           (DWORD)       Layout of the record. Currently 2. Version 1 was the
+#                                   original lock, which kept no record.
+#   DenyInteractive   (String)      "Deny log on locally" value before the lock.
+#   DenyRemote        (String)      "Deny log on through Remote Desktop Services" value before the lock.
+#   SignInOptions     (String)      AllowSignInOptions value before the lock. Empty if it didn't exist.
+#   DisabledAccounts  (MultiString) SIDs of the local accounts the lock disabled.
+#
+# windows_lock.ps1 writes the record and windows_unlock.ps1 reads it. The unlock
+# that runs is the one in the Fleet server at that time, so a host locked today
+# can be unlocked by a much newer script. Keep the record readable across versions:
+#   - Never change what an existing field means. Add a new field instead.
+#   - Treat a missing field as "not changed" and leave that setting alone.
+#   - Keep unlock's fallback for hosts locked before this record existed.
+#   - Bump Version for a change an older unlock could misread. Unlock refuses
+#     a record with a newer Version than it knows, and keeps the record.
 
 $denyRights = 'SeDenyInteractiveLogonRight', 'SeDenyRemoteInteractiveLogonRight'
 
@@ -86,6 +103,7 @@ function Enable-Accounts {
 }
 
 $signInKey = "HKLM:\Software\Microsoft\PolicyManager\default\Settings\AllowSignInOptions"
+$supportedRecordVersion = 2
 
 # Put the sign-in options value back. 1 is the default ("allowed"); 0 means
 # "not allowed" and grays out Settings > Accounts > Sign-in options. Pass $null
@@ -118,6 +136,12 @@ try {
 if (Test-Path $stateKey) {
     $saved = Get-ItemProperty -Path $stateKey
 
+    # Written by a newer windows_lock.ps1. Don't guess at it or delete it.
+    if ($null -ne $saved.Version -and [int]$saved.Version -gt $supportedRecordVersion) {
+        Write-Host "The saved lock record is version $($saved.Version), but this script only understands version $supportedRecordVersion. Nothing was changed."
+        exit 1
+    }
+
     if ($null -ne $saved.DenyInteractive -and $null -ne $saved.DenyRemote) {
         try {
             Set-DenyLogonRights -Values @{ SeDenyInteractiveLogonRight = $saved.DenyInteractive; SeDenyRemoteInteractiveLogonRight = $saved.DenyRemote }
@@ -134,12 +158,13 @@ if (Test-Path $stateKey) {
         $restored = $false
     }
 
-    # Locks from before this value was saved have none, so use the default.
     # This only affects the Settings page, so a failure doesn't fail the unlock.
-    try {
-        Restore-SignInOptions -Original $saved.SignInOptions
-    } catch {
-        Write-Host "Could not restore sign-in options: $($_.Exception.Message)"
+    if ($null -ne $saved.SignInOptions) {
+        try {
+            Restore-SignInOptions -Original $saved.SignInOptions
+        } catch {
+            Write-Host "Could not restore sign-in options: $($_.Exception.Message)"
+        }
     }
 
     if ($restored) { Remove-Item -Path $stateKey -Recurse -Force }
