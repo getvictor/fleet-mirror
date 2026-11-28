@@ -135,11 +135,11 @@ if (Test-Path $stateKey) {
     }
 
     # Locks from before this value was saved have none, so use the default.
+    # This only affects the Settings page, so a failure doesn't fail the unlock.
     try {
         Restore-SignInOptions -Original $saved.SignInOptions
     } catch {
         Write-Host "Could not restore sign-in options: $($_.Exception.Message)"
-        $restored = $false
     }
 
     if ($restored) { Remove-Item -Path $stateKey -Recurse -Force }
@@ -164,7 +164,6 @@ if (Test-Path $stateKey) {
         Restore-SignInOptions -Original $null
     } catch {
         Write-Host "Could not restore sign-in options: $($_.Exception.Message)"
-        $restored = $false
     }
 }
 
