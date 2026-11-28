@@ -49,6 +49,13 @@ function Get-DenyLogonRights {
     $result
 }
 
+# Sorted, so two lists compare equal whatever order secedit writes them in.
+function ConvertTo-RightsList {
+    param([string]$Value)
+
+    (@($Value -split ',' | ForEach-Object { $_.Trim() } | Where-Object { $_ } | Sort-Object) -join ',')
+}
+
 function Set-DenyLogonRights {
     param([hashtable]$Values)
 
@@ -72,15 +79,26 @@ function Set-DenyLogonRights {
         $lines | Set-Content -Path $cfg -Encoding Unicode
 
         secedit /configure /db $db /cfg $cfg /areas USER_RIGHTS | Out-Null
-        if ($LASTEXITCODE -ne 0) { throw "secedit configure failed with exit code $LASTEXITCODE" }
+        $configureExit = $LASTEXITCODE
     } finally {
         Remove-Item -Path $cfg, $db -Force -ErrorAction SilentlyContinue
     }
+
+    # secedit can apply the rights and still exit non-zero with warnings (for
+    # example, when it can't map an account), so check the result, not the exit code.
+    $after = Get-DenyLogonRights
+    foreach ($right in $denyRights) {
+        if ((ConvertTo-RightsList $after[$right]) -ne (ConvertTo-RightsList $Values[$right])) {
+            throw "$right is '$($after[$right])' instead of '$($Values[$right])' (secedit exit code $configureExit)"
+        }
+    }
+    if ($configureExit -ne 0) { Write-Host "secedit exited with code $configureExit, but the rights are set." }
 }
 
 $stateKey = "HKLM:\SOFTWARE\Fleet\WindowsLock"
 $signInKey = "HKLM:\Software\Microsoft\PolicyManager\default\Settings\AllowSignInOptions"
 $denied = '*S-1-5-32-545,*S-1-5-32-546'
+$rightsChanged = $false
 try {
     $current = Get-DenyLogonRights
 
@@ -94,9 +112,15 @@ try {
     if (-not (Test-Path $stateKey)) { New-Item -Path $stateKey -Force -ErrorAction Stop | Out-Null }
     $saved = Get-ItemProperty -Path $stateKey -ErrorAction SilentlyContinue
     # Don't overwrite the saved values if the host is locked twice.
-    if ($null -eq $saved.DenyInteractive -or $null -eq $saved.DenyRemote) {
+    $snapshotSaved = ($null -ne $saved.DenyInteractive -and $null -ne $saved.DenyRemote)
+    if (-not $snapshotSaved) {
         New-ItemProperty -Path $stateKey -Name DenyInteractive -Value $current['SeDenyInteractiveLogonRight'] -PropertyType String -Force -ErrorAction Stop | Out-Null
         New-ItemProperty -Path $stateKey -Name DenyRemote -Value $current['SeDenyRemoteInteractiveLogonRight'] -PropertyType String -Force -ErrorAction Stop | Out-Null
+    }
+    $originalRights = if ($snapshotSaved) {
+        @{ SeDenyInteractiveLogonRight = $saved.DenyInteractive; SeDenyRemoteInteractiveLogonRight = $saved.DenyRemote }
+    } else {
+        $current
     }
     # An empty string means the value didn't exist before the lock.
     if ($null -eq $saved.SignInOptions) {
@@ -109,10 +133,20 @@ try {
     $sids = @(@($saved.DisabledAccounts) + ($accountsToDisable | ForEach-Object { $_.SID.Value }) | Where-Object { $_ } | Select-Object -Unique)
     New-ItemProperty -Path $stateKey -Name DisabledAccounts -Value $sids -PropertyType MultiString -Force -ErrorAction Stop | Out-Null
 
+    $rightsChanged = $true
     Set-DenyLogonRights -Values @{ SeDenyInteractiveLogonRight = $denied; SeDenyRemoteInteractiveLogonRight = $denied }
     Write-Host "Logon denied for the Users and Guests groups."
 } catch {
     Write-Host "Could not deny logon: $($_.Exception.Message)"
+    # Don't leave the host half locked, which Fleet would report as not locked.
+    if ($rightsChanged) {
+        try {
+            Set-DenyLogonRights -Values $originalRights
+            Write-Host "Put the original logon rights back."
+        } catch {
+            Write-Host "Could not put the original logon rights back: $($_.Exception.Message)"
+        }
+    }
     exit 1
 }
 

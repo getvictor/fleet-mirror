@@ -2,6 +2,31 @@
 
 $denyRights = 'SeDenyInteractiveLogonRight', 'SeDenyRemoteInteractiveLogonRight'
 
+function Get-DenyLogonRights {
+    $cfg = Join-Path $env:TEMP "fleet_user_rights_$([guid]::NewGuid()).inf"
+    try {
+        secedit /export /cfg $cfg /areas USER_RIGHTS | Out-Null
+        if ($LASTEXITCODE -ne 0) { throw "secedit export failed with exit code $LASTEXITCODE" }
+        $lines = @(Get-Content -Path $cfg)
+    } finally {
+        Remove-Item -Path $cfg -Force -ErrorAction SilentlyContinue
+    }
+
+    $result = @{}
+    foreach ($right in $denyRights) {
+        $match = $lines | Where-Object { $_ -match "^$right\s*=" } | Select-Object -First 1
+        $result[$right] = if ($match) { ($match -replace "^$right\s*=\s*", '').Trim() } else { '' }
+    }
+    $result
+}
+
+# Sorted, so two lists compare equal whatever order secedit writes them in.
+function ConvertTo-RightsList {
+    param([string]$Value)
+
+    (@($Value -split ',' | ForEach-Object { $_.Trim() } | Where-Object { $_ } | Sort-Object) -join ',')
+}
+
 # Set the "Deny log on locally" and "Deny log on through Remote Desktop
 # Services" policies.
 function Set-DenyLogonRights {
@@ -27,10 +52,20 @@ function Set-DenyLogonRights {
         $lines | Set-Content -Path $cfg -Encoding Unicode
 
         secedit /configure /db $db /cfg $cfg /areas USER_RIGHTS | Out-Null
-        if ($LASTEXITCODE -ne 0) { throw "secedit configure failed with exit code $LASTEXITCODE" }
+        $configureExit = $LASTEXITCODE
     } finally {
         Remove-Item -Path $cfg, $db -Force -ErrorAction SilentlyContinue
     }
+
+    # secedit can apply the rights and still exit non-zero with warnings (for
+    # example, when it can't map an account), so check the result, not the exit code.
+    $after = Get-DenyLogonRights
+    foreach ($right in $denyRights) {
+        if ((ConvertTo-RightsList $after[$right]) -ne (ConvertTo-RightsList $Values[$right])) {
+            throw "$right is '$($after[$right])' instead of '$($Values[$right])' (secedit exit code $configureExit)"
+        }
+    }
+    if ($configureExit -ne 0) { Write-Host "secedit exited with code $configureExit, but the rights are set." }
 }
 
 # Enable the given accounts. Returns $true only if every one was enabled.
@@ -89,7 +124,8 @@ if (Test-Path $stateKey) {
             Write-Host "Restored the deny-logon policies."
         } catch {
             Write-Host "Could not restore logon rights: $($_.Exception.Message)"
-            exit 1
+            # Keep going so the accounts are still enabled, and keep the record for a retry.
+            $restored = $false
         }
     }
 
